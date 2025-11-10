@@ -138,11 +138,12 @@
 - ✅ **Dependencias instaladas:** 19 production + 13 development
 - ✅ **Total de paquetes:** ~120 (con sub-dependencias)
 - ✅ **Vulnerabilidades:** 0
-- ✅ **Tiempo total de setup:** ~20 minutos
+- ✅ **Tiempo total de setup:** ~30 minutos
 - ✅ **Archivos de documentación:** 6 archivos en /project-progress
 - ✅ **Archivos de configuración:** 3 archivos .env creados
 - ✅ **Estructura de carpetas:** 21 carpetas + 10 README.md
 - ✅ **Tipos TypeScript:** ~40 interfaces + 6 enums del backend
+- ✅ **API Client:** Configurado con interceptores y error handling
 
 ### Estado Actual
 - ✅ Proyecto base configurado
@@ -152,6 +153,7 @@
 - ✅ Variables de entorno configuradas
 - ✅ Estructura de carpetas completa y documentada
 - ✅ Tipos del backend integrados (type-safe)
+- ✅ Cliente API configurado con JWT y refresh token
 
 ---
 
@@ -244,6 +246,37 @@ Con estas tareas completadas, el proyecto tiene:
 - ✅ IntelliSense y autocompletado en VSCode
 - ✅ Validación en tiempo de compilación
 - ✅ Documentación inline de la API
+
+---
+
+### ✅ Configuración de Cliente Axios
+**Hora:** Posterior a copia de tipos  
+**Archivo creado:** `/src/api/client.ts`
+
+**Características implementadas:**
+- ✅ **Cliente Axios configurado** con baseURL y timeout desde variables de entorno
+- ✅ **Request Interceptor** - Agrega JWT automáticamente a todas las peticiones
+- ✅ **Response Interceptor** - Maneja refresh token automático en 401
+- ✅ **Sistema de Cola** - Evita múltiples refresh requests simultáneos
+- ✅ **Error Handling Global** - Traduce errores HTTP a mensajes user-friendly en español
+- ✅ **Helper Functions** - setAuthorizationToken, clearAuthTokens, isAuthenticated
+
+**Manejo de errores implementado:**
+- 400: Errores de validación (muestra cada mensaje)
+- 401: Token expirado (refresh automático o redirect a login)
+- 403: Sin permisos
+- 404: Recurso no encontrado
+- 409: Conflicto de datos
+- 422: Error de lógica de negocio
+- 429: Demasiadas solicitudes
+- 500+: Errores de servidor
+
+**Seguridad:**
+- ✅ Tokens almacenados en localStorage (preparado para httpOnly cookies)
+- ✅ Refresh token automático antes de expiración
+- ✅ Limpieza de tokens en logout
+- ✅ Prevención de múltiples refresh simultáneos
+- ✅ Redirect automático a login cuando falla autenticación
 
 ---
 
