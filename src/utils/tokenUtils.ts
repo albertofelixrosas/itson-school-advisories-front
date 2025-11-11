@@ -159,10 +159,10 @@ export function getUserFromToken(): Partial<User> | null {
   }
 
   return {
-    id: payload.sub,
+    user_id: typeof payload.sub === 'string' ? parseInt(payload.sub, 10) : payload.sub,
     email: payload.email,
     role: payload.role as User['role'],
-  };
+  } as Partial<User>;
 }
 
 /**
