@@ -9,35 +9,31 @@
  */
 
 import apiClient from '@/api/client';
-import type { LoginDto, User } from '@/api/types';
+import type { LoginDto, LoginResponse, User } from '@/api/types';
 
 /**
- * Login response interface
+ * Re-export LoginResponse from backend types
  */
-export interface LoginResponse {
-  accessToken: string;
-  refreshToken: string;
-  user: User;
-}
+export type { LoginResponse } from '@/api/types';
 
 /**
  * Refresh token response interface
  */
 export interface RefreshTokenResponse {
-  accessToken: string;
-  refreshToken: string;
+  access_token: string;
+  refresh_token: string;
 }
 
 /**
- * Login with email and password
+ * Login with username and password
  * 
- * @param credentials - User credentials (email and password)
+ * @param credentials - User credentials (username and password)
  * @returns Login response with tokens and user data
  * 
  * @example
  * ```tsx
- * const { accessToken, refreshToken, user } = await login({
- *   email: 'user@example.com',
+ * const { access_token, refresh_token, user } = await login({
+ *   username: 'user@example.com',
  *   password: 'password123'
  * });
  * ```
@@ -55,12 +51,12 @@ export async function login(credentials: LoginDto): Promise<LoginResponse> {
  * 
  * @example
  * ```tsx
- * const { accessToken, refreshToken } = await refreshAccessToken(oldRefreshToken);
+ * const { access_token, refresh_token } = await refreshAccessToken(oldRefreshToken);
  * ```
  */
 export async function refreshAccessToken(refreshToken: string): Promise<RefreshTokenResponse> {
   const response = await apiClient.post<RefreshTokenResponse>('/auth/refresh', {
-    refreshToken,
+    refresh_token: refreshToken,
   });
   return response.data;
 }
