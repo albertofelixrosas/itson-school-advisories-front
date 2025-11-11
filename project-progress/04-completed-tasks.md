@@ -484,4 +484,130 @@ const { isAuthenticated, user, login, logout } = useAuth();
 
 ---
 
-## �📊 Resumen de Logros
+## 🎨 FASE 3: Páginas de Autenticación
+
+### ✅ Creación de LoginForm Component
+**Hora:** Inicio de FASE 3  
+**Archivo creado:** `/src/components/auth/LoginForm.tsx`
+
+**Características:**
+- ✅ **Formulario con React Hook Form:**
+  - Validación con Yup schema
+  - Mode: onBlur para UX mejorada
+  - Campos: email y password
+  - Type-safe con LoginDto interface
+
+- ✅ **Validaciones:**
+  - Email: Requerido, formato válido, lowercase, trim
+  - Password: Requerido, mínimo 6 caracteres
+
+- ✅ **UI/UX:**
+  - TextField con Material-UI
+  - Iconos visuales (EmailIcon, LockIcon)
+  - Toggle para mostrar/ocultar contraseña
+  - Loading state con CircularProgress
+  - Mensajes de error inline
+  - Alert para errores globales
+  - Disabled state cuando está cargando
+
+- ✅ **Accesibilidad:**
+  - Autocompletar email y password
+  - Focus automático en email
+  - Labels y aria-labels apropiados
+  - Navegación por teclado
+
+**Props:**
+- `onSubmit` - Callback async para envío
+- `error` - Mensaje de error global
+- `isLoading` - Estado de carga
+
+---
+
+### ✅ Creación de LoginPage Component
+**Hora:** Posterior a LoginForm  
+**Archivo creado:** `/src/pages/auth/LoginPage.tsx`
+
+**Características:**
+- ✅ **Integración completa:**
+  - useAuth hook para estado global
+  - useNavigate y useLocation para routing
+  - loginApi para llamada al backend
+  - react-hot-toast para notificaciones
+
+- ✅ **Flujo de login:**
+  - Llamada a API con credenciales
+  - Almacenamiento de tokens via login()
+  - Toast de bienvenida con nombre del usuario
+  - Redirect a ubicación previa o home
+  - Manejo de errores con mensajes amigables
+
+- ✅ **Redirect logic:**
+  - Si ya está autenticado → redirect a destino
+  - Después de login exitoso → redirect a página intentada
+  - Preserva location.state para UX fluida
+
+- ✅ **UI/UX:**
+  - Diseño centrado con gradient background
+  - Paper con elevación y border radius
+  - Logo/ícono de School (SchoolIcon)
+  - Título y subtítulo del sistema
+  - Container responsivo (maxWidth: sm)
+  - Footer con copyright
+
+**Estados manejados:**
+- Loading durante login
+- Error de autenticación
+- Ya autenticado (redirect)
+
+---
+
+### ✅ Creación de UnauthorizedPage Component
+**Hora:** Posterior a LoginPage  
+**Archivo creado:** `/src/pages/auth/UnauthorizedPage.tsx`
+
+**Características:**
+- ✅ **Página de error 403:**
+  - Diseño centrado con gradient background
+  - Icono de Block (sin permisos)
+  - Código de error prominente (403)
+  - Mensaje claro y amigable
+
+- ✅ **Información contextual:**
+  - Muestra email y rol del usuario actual
+  - Mensajes personalizados según rol:
+    * STUDENT: Puede crear solicitudes y ver invitaciones
+    * PROFESSOR: Puede revisar solicitudes y gestionar asesorías
+    * ADMIN: Tiene acceso completo al sistema
+    * No autenticado: Invitación a iniciar sesión
+
+- ✅ **Navegación:**
+  - Botón "Volver Atrás" con navigate(-1)
+  - Botón "Ir al Inicio" con redirect según rol:
+    * Student → /student/dashboard
+    * Professor → /professor/dashboard
+    * Admin → /admin/dashboard
+    * Default → /
+
+- ✅ **UI/UX:**
+  - Box informativo con bgcolor info.light
+  - Iconos visuales (Block, ArrowBack, Home)
+  - Responsive y centrado
+  - Footer con texto de ayuda
+
+**Integración:**
+- useAuth para obtener user y role
+- UserRole enum para comparaciones type-safe
+- useNavigate para routing
+
+---
+
+### ✅ Creación de Barrel Exports
+**Archivos creados:**
+- ✅ `/src/components/auth/index.ts` - Export LoginForm
+- ✅ `/src/pages/auth/index.ts` - Export LoginPage, UnauthorizedPage
+
+**Beneficio:** Imports limpios desde índices
+
+---
+
+## � Resumen de Logros
