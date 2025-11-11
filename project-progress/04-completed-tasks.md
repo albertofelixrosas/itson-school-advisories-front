@@ -320,4 +320,168 @@ Con estas tareas completadas, el proyecto tiene:
 
 ---
 
-## 📊 Resumen de Logros
+## � FASE 2: Sistema de Autenticación
+
+### ✅ Creación de Utilidades de Token JWT
+**Hora:** Inicio de FASE 2  
+**Archivo creado:** `/src/utils/tokenUtils.ts`  
+**Dependencia instalada:** `jwt-decode`
+
+**Funciones implementadas:**
+- ✅ **Token Storage:**
+  - `getAuthToken()` - Obtener token de localStorage
+  - `getRefreshToken()` - Obtener refresh token
+  - `setAuthToken()` - Guardar token
+  - `setRefreshToken()` - Guardar refresh token
+  - `setTokens()` - Guardar ambos tokens
+  - `removeAllTokens()` - Limpiar todos los tokens
+
+- ✅ **Token Decoding:**
+  - `decodeToken()` - Decodificar JWT
+  - `getUserFromToken()` - Extraer datos de usuario
+  - `getUserId()` - Obtener ID de usuario
+  - `getUserEmail()` - Obtener email
+  - `getUserRole()` - Obtener rol
+
+- ✅ **Token Validation:**
+  - `isTokenExpired()` - Verificar expiración
+  - `isAuthTokenExpired()` - Verificar token actual
+  - `isAuthenticated()` - Verificar autenticación
+  - `getTokenExpirationTime()` - Tiempo de expiración
+  - `getTokenTimeRemaining()` - Tiempo restante
+
+- ✅ **Role Checks:**
+  - `hasRole()` - Verificar rol específico
+  - `hasAnyRole()` - Verificar múltiples roles
+
+**Configuración:**
+- Buffer de expiración: 5 minutos (configurable)
+- Storage keys desde variables de entorno
+- Type-safe con interfaces TypeScript
+
+---
+
+### ✅ Configuración de Path Aliases
+**Archivos modificados:**
+- ✅ `tsconfig.app.json` - Agregado baseUrl y paths con `@/*`
+- ✅ `vite.config.ts` - Configurado resolve.alias con path module
+- ✅ `@types/node` instalado para soporte de módulo path
+
+**Beneficios:**
+- Imports absolutos: `@/api/types` en lugar de `../../api/types`
+- Mejor refactoring y organización
+- Menos errores de rutas relativas
+
+---
+
+### ✅ Creación de Context de Autenticación
+**Archivos creados:**
+- ✅ `/src/contexts/AuthContext.tsx` - Context provider
+- ✅ `/src/hooks/useAuth.ts` - Custom hook
+
+**Características:**
+- ✅ **Estado de autenticación:**
+  - `isAuthenticated` - Estado de autenticación
+  - `isLoading` - Estado de carga inicial
+  - `user` - Datos del usuario actual
+  - `role` - Rol del usuario
+
+- ✅ **Métodos:**
+  - `login(accessToken, refreshToken)` - Iniciar sesión
+  - `logout()` - Cerrar sesión
+  - `updateUser(user)` - Actualizar datos de usuario
+  - `checkAuth()` - Verificar autenticación
+
+- ✅ **Funcionalidades:**
+  - Inicialización automática desde tokens almacenados
+  - Integración con Axios client (setAuthorizationToken)
+  - Verificación periódica de expiración (cada minuto)
+  - Logout automático cuando token expira
+  - Memoización para optimizar re-renders
+
+**Uso:**
+```tsx
+const { isAuthenticated, user, login, logout } = useAuth();
+```
+
+---
+
+### ✅ Creación de Endpoints de Autenticación
+**Archivo creado:** `/src/api/endpoints/auth.ts`
+
+**Endpoints implementados:**
+- ✅ `login(credentials)` - POST /auth/login
+- ✅ `refreshAccessToken(refreshToken)` - POST /auth/refresh
+- ✅ `getProfile()` - GET /users/profile
+- ✅ `logout()` - Limpieza client-side
+- ✅ `isAuthenticated()` - Verificación local
+
+**Interfaces:**
+- `LoginResponse` - accessToken, refreshToken, user
+- `RefreshTokenResponse` - nuevos tokens
+
+---
+
+### ✅ Creación de Componente ProtectedRoute
+**Archivo creado:** `/src/components/common/ProtectedRoute.tsx`
+
+**Características:**
+- ✅ Protección de rutas por autenticación
+- ✅ Protección de rutas por roles
+- ✅ Loading state mientras verifica auth
+- ✅ Redirect a /login si no autenticado
+- ✅ Redirect a /unauthorized si sin permisos
+- ✅ Preserva ubicación intentada para redirect post-login
+
+**Uso:**
+```tsx
+<ProtectedRoute allowedRoles={['ADMIN']}>
+  <AdminPanel />
+</ProtectedRoute>
+```
+
+---
+
+### ✅ Configuración de React Query
+**Archivos creados:**
+- ✅ `/src/config/queryClient.ts` - Instancia de QueryClient
+- ✅ `/src/contexts/QueryContext.tsx` - Provider component
+
+**Configuración:**
+- ✅ **Queries:**
+  - Stale time: 5 minutos
+  - Cache time (gcTime): 10 minutos
+  - Retry: 1 intento con backoff exponencial
+  - No refetch en window focus
+  - Refetch en reconnect y mount
+
+- ✅ **Mutations:**
+  - Retry: 1 intento
+  - Retry delay: 1 segundo
+
+- ✅ **DevTools:**
+  - Habilitado solo en development
+  - Posición: bottom-right
+  - Inicialmente cerrado
+
+---
+
+### ✅ Integración de Providers en App
+**Archivo modificado:** `/src/App.tsx`
+
+**Providers integrados:**
+1. ✅ `QueryProvider` - React Query (nivel superior)
+2. ✅ `AuthProvider` - Autenticación (dentro de Query)
+3. ✅ `BrowserRouter` - React Router (dentro de Auth)
+4. ✅ `Toaster` - Notificaciones toast
+
+**Configuración de Toaster:**
+- Posición: top-right
+- Duración por defecto: 4 segundos
+- Success: 3 segundos (verde)
+- Error: 5 segundos (rojo)
+- Estilo oscuro con texto blanco
+
+---
+
+## �📊 Resumen de Logros
