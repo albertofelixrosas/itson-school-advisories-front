@@ -111,37 +111,51 @@
 
 ## 🟢 PRIORIDAD BAJA - Componentes Comunes
 
-### 13. Crear Layout Principal
-**Status:** ⏳ PENDIENTE  
-**Archivo:** `/src/components/common/Layout.tsx`  
-**Tiempo estimado:** 3 horas  
-**Dependencias:** Tareas #5, #8
+### 13. ✅ Crear Componentes de Loading - COMPLETADO
+**Status:** ✅ COMPLETADO  
+**Archivos:**
+- `/src/components/common/LoadingSpinner.tsx`
+- `/src/components/common/LoadingOverlay.tsx`
+- `/src/components/common/PageLoader.tsx`
+
+**Características:**
+- LoadingSpinner: Spinner inline con mensaje opcional
+- LoadingOverlay: Overlay de pantalla completa
+- PageLoader: Loader de transiciones de ruta
+
+**Completado:** 10 de Noviembre, 2025
 
 ---
 
-### 14. Crear Componentes de Loading
-**Status:** ⏳ PENDIENTE  
-**Archivos:** LoadingSpinner, LoadingOverlay, PageLoader  
-**Tiempo estimado:** 1 hora  
-**Dependencias:** Tarea #5
+### 14. ✅ Crear Error Boundary - COMPLETADO
+**Status:** ✅ COMPLETADO  
+**Archivo:** `/src/components/common/ErrorBoundary.tsx`
+
+**Características:**
+- Captura de errores React
+- UI de error amigable
+- Reset y navegación
+- Preparado para Sentry
+
+**Completado:** 10 de Noviembre, 2025
 
 ---
 
-### 15. Crear Error Boundary
-**Status:** ⏳ PENDIENTE  
-**Archivo:** `/src/components/common/ErrorBoundary.tsx`  
-**Tiempo estimado:** 1 hora  
-**Dependencias:** Tarea #5
+### 15. ✅ Crear Layout Principal - COMPLETADO
+**Status:** ✅ COMPLETADO  
+**Archivo:** `/src/components/common/Layout.tsx`
+
+**Características:**
+- AppBar con título y menú de usuario
+- Sidebar colapsable responsive
+- Navegación basada en roles
+- Mobile drawer
+
+**Completado:** 10 de Noviembre, 2025
 
 ---
 
-### 16. Crear Componente de Notificaciones
-**Status:** ⏳ PENDIENTE  
-**Archivo:** `/src/components/common/NotificationProvider.tsx`  
-**Tiempo estimado:** 30 minutos  
-**Dependencias:** Ninguna
-
----
+## 🟡 PRIORIDAD MEDIA - Features Core
 
 ## 📊 Features por Rol (Pendientes)
 

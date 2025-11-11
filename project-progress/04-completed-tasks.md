@@ -610,4 +610,198 @@ const { isAuthenticated, user, login, logout } = useAuth();
 
 ---
 
-## � Resumen de Logros
+## 🧩 FASE 4: Componentes Comunes
+
+### ✅ Creación de LoadingSpinner Component
+**Hora:** Inicio de FASE 4  
+**Archivo creado:** `/src/components/common/LoadingSpinner.tsx`
+
+**Características:**
+- ✅ **Spinner personalizable:**
+  - Tamaño configurable (size prop)
+  - Color configurable (color prop)
+  - Mensaje opcional debajo del spinner
+  - Extends CircularProgressProps para flexibilidad
+
+- ✅ **Modos de display:**
+  - Modo normal: Inline spinner
+  - Modo centrado: Spinner centrado con minHeight
+
+- ✅ **UI/UX:**
+  - Flex layout responsivo
+  - Mensaje con Typography
+  - Spacing consistente
+
+**Props:**
+- `message?` - Mensaje opcional
+- `centered?` - Centrar spinner
+- `minHeight?` - Altura mínima en modo centrado
+- `size?` - Tamaño (default: 40)
+- `color?` - Color (default: 'primary')
+
+---
+
+### ✅ Creación de LoadingOverlay Component
+**Hora:** Posterior a LoadingSpinner  
+**Archivo creado:** `/src/components/common/LoadingOverlay.tsx`
+
+**Características:**
+- ✅ **Overlay de pantalla completa:**
+  - Backdrop con z-index alto
+  - Bloquea interacción del usuario
+  - Spinner grande centrado
+  - Mensaje opcional
+
+- ✅ **Configuración:**
+  - Posición fixed o absolute
+  - Tamaño de spinner configurable
+  - Extends BackdropProps
+
+- ✅ **Casos de uso:**
+  - Operaciones que bloquean UI
+  - Guardado de formularios
+  - Procesos largos
+
+**Props:**
+- `open` - Mostrar/ocultar
+- `message?` - Mensaje de carga
+- `size?` - Tamaño spinner (default: 60)
+- `absolute?` - Posición absoluta
+
+---
+
+### ✅ Creación de PageLoader Component
+**Hora:** Posterior a LoadingOverlay  
+**Archivo creado:** `/src/components/common/PageLoader.tsx`
+
+**Características:**
+- ✅ **Loader de página completa:**
+  - Full viewport height
+  - Centrado vertical y horizontal
+  - App branding con School icon
+
+- ✅ **Animaciones:**
+  - Pulse animation en el ícono
+  - Linear progress bar opcional
+
+- ✅ **Elementos:**
+  - Ícono de app (opcional)
+  - Spinner circular grande
+  - Mensaje personalizable
+  - Barra de progreso (opcional)
+  - Footer con nombre de app
+
+- ✅ **Uso ideal:**
+  - Transiciones de rutas
+  - Suspense boundaries
+  - Carga inicial de app
+
+**Props:**
+- `message?` - Mensaje (default: 'Cargando...')
+- `showProgress?` - Barra de progreso
+- `showIcon?` - Ícono de app (default: true)
+
+---
+
+### ✅ Creación de ErrorBoundary Component
+**Hora:** Posterior a PageLoader  
+**Archivo creado:** `/src/components/common/ErrorBoundary.tsx`
+
+**Características:**
+- ✅ **Componente de clase React:**
+  - Implementa getDerivedStateFromError
+  - Implementa componentDidCatch
+  - Captura errores en render y lifecycle
+
+- ✅ **UI de error:**
+  - Ícono de error grande
+  - Título y descripción amigables
+  - Alert con detalles del error
+  - Component stack en modo desarrollo
+  - Botones de acción: "Intentar de nuevo" y "Ir al inicio"
+
+- ✅ **Funcionalidades:**
+  - Error logging a consola
+  - Reset de error state
+  - Fallback UI personalizable
+  - Callback onError opcional
+  - Preparado para Sentry integration
+
+**Props:**
+- `children` - Componentes a proteger
+- `fallback?` - UI personalizada
+- `onError?` - Callback de error
+
+---
+
+### ✅ Creación de Layout Component
+**Hora:** Posterior a ErrorBoundary  
+**Archivo creado:** `/src/components/common/Layout.tsx`
+
+**Características:**
+- ✅ **Estructura completa:**
+  - AppBar fijo con título
+  - Sidebar colapsable (desktop)
+  - Drawer temporal (mobile)
+  - Área de contenido principal
+
+- ✅ **Navegación:**
+  - Items basados en rol de usuario
+  - Highlight de ruta activa
+  - Iconos de Material-UI
+  - Transiciones suaves
+
+- ✅ **Menú de usuario:**
+  - Avatar con foto o inicial
+  - Dropdown con opciones:
+    * Mi Perfil
+    * Cerrar Sesión
+
+- ✅ **Responsive:**
+  - Breakpoints de Material-UI
+  - Mobile: Drawer temporal
+  - Desktop: Sidebar permanente colapsable
+  - AppBar width dinámico según sidebar
+
+- ✅ **Estado:**
+  - Control de sidebar abierto/cerrado
+  - Control de drawer mobile
+  - Control de menú de usuario
+  - Location tracking para rutas activas
+
+**Props:**
+- `children` - Contenido de página
+- `title?` - Título del AppBar
+- `showSidebar?` - Mostrar sidebar (default: true)
+
+**Constantes:**
+- `DRAWER_WIDTH` - 260px
+
+---
+
+### ✅ Actualización de Barrel Exports
+**Archivo modificado:** `/src/components/common/index.ts`
+
+**Exports agregados:**
+- LoadingSpinner
+- LoadingOverlay
+- PageLoader
+- ErrorBoundary
+- Layout
+
+---
+
+### ✅ Creación de README
+**Archivo creado:** `/src/components/common/README.md`
+
+**Contenido:**
+- Documentación de cada componente
+- Props y ejemplos de uso
+- Patrones de uso combinado
+- Arquitectura de componentes
+- Temas y estilos
+- Próximas mejoras
+
+---
+
+## 📊 Resumen de Logros
