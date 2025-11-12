@@ -40,7 +40,7 @@ export function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Get the location user tried to access before login
-  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/student/dashboard';
 
   // Redirect if already authenticated
   if (isAuthenticated) {

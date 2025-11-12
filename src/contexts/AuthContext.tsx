@@ -75,30 +75,42 @@ export function AuthProvider({ children }: AuthProviderProps) {
           // Set token in axios client
           setAuthorizationToken(token);
           
-          setAuthState({
-            isAuthenticated: true,
-            isLoading: false,
-            user,
-            role,
+          setAuthState(prev => {
+            // Only update if state actually changed
+            if (prev.isAuthenticated && prev.user?.user_id === user.user_id && !prev.isLoading) return prev;
+            return {
+              isAuthenticated: true,
+              isLoading: false,
+              user,
+              role,
+            };
           });
           return;
         }
       }
 
       // No valid authentication
-      setAuthState({
-        isAuthenticated: false,
-        isLoading: false,
-        user: null,
-        role: null,
+      setAuthState(prev => {
+        // Only update if state actually changed
+        if (!prev.isAuthenticated && !prev.isLoading && !prev.user && !prev.role) return prev;
+        return {
+          isAuthenticated: false,
+          isLoading: false,
+          user: null,
+          role: null,
+        };
       });
     } catch (error) {
       console.error('Error initializing auth:', error);
-      setAuthState({
-        isAuthenticated: false,
-        isLoading: false,
-        user: null,
-        role: null,
+      setAuthState(prev => {
+        // Only update if state actually changed
+        if (!prev.isAuthenticated && !prev.isLoading && !prev.user && !prev.role) return prev;
+        return {
+          isAuthenticated: false,
+          isLoading: false,
+          user: null,
+          role: null,
+        };
       });
     }
   }, []);
@@ -121,12 +133,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Clear token from axios client
     clearAuthTokens();
     
-    // Reset auth state
-    setAuthState({
-      isAuthenticated: false,
-      isLoading: false,
-      user: null,
-      role: null,
+    // Reset auth state only if currently authenticated to avoid unnecessary updates
+    setAuthState(prev => {
+      if (!prev.isAuthenticated) return prev;
+      return {
+        isAuthenticated: false,
+        isLoading: false,
+        user: null,
+        role: null,
+      };
     });
   }, []);
 
@@ -147,11 +162,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const role = tokenUtils.getUserRole();
 
       if (user && role) {
-        setAuthState({
-          isAuthenticated: true,
-          isLoading: false,
-          user,
-          role,
+        setAuthState(prev => {
+          // Only update if not already authenticated with same user
+          if (prev.isAuthenticated && prev.user?.user_id === user.user_id) return prev;
+          return {
+            isAuthenticated: true,
+            isLoading: false,
+            user,
+            role,
+          };
         });
       } else {
         throw new Error('Invalid token: unable to extract user data');
@@ -177,16 +196,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
    * Returns current authentication status
    */
   const checkAuth = useCallback((): boolean => {
-    const isAuth = tokenUtils.isAuthenticated();
-    
-    if (!isAuth && authState.isAuthenticated) {
-      // Token expired, logout
-      logout();
-      return false;
-    }
-    
-    return isAuth;
-  }, [authState.isAuthenticated, logout]);
+    return tokenUtils.isAuthenticated();
+  }, []);
 
   /**
    * Set up token expiration checker
