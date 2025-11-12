@@ -20,21 +20,21 @@ import {
   InvitationResponseDto,
   AvailabilitySlotResponseDto,
   ApiErrorResponse,
-} from '../types/backend-types';
+} from "../types/backend-types";
 
 // Base configuration
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = "http://localhost:3000";
 
 // Helper function to get auth token
 const getAuthToken = (): string | null => {
-  return localStorage.getItem('access_token');
+  return localStorage.getItem("access_token");
 };
 
 // Helper function for authenticated requests
 const createAuthHeaders = (): Record<string, string> => {
   const token = getAuthToken();
   return {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
     ...(token && { Authorization: `Bearer ${token}` }),
   };
 };
@@ -43,7 +43,7 @@ const createAuthHeaders = (): Record<string, string> => {
 const handleApiResponse = async <T>(response: Response): Promise<T> => {
   if (!response.ok) {
     const error: ApiErrorResponse = await response.json();
-    throw new Error((error.message as string) || 'API request failed');
+    throw new Error((error.message as string) || "API request failed");
   }
   return response.json();
 };
@@ -54,13 +54,13 @@ export const authApi = {
   /**
    * Login user and get tokens + dashboard data
    * @example
-   * const result = await authApi.login({ username: 'john_doe', password: 'password123' });
+   * const result = await authApi.login({ email: 'john@example.com', password: 'password123' });
    * localStorage.setItem('access_token', result.access_token);
    */
   async login(credentials: LoginDto): Promise<LoginResponse> {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),
     });
 
@@ -86,8 +86,8 @@ export const authApi = {
    */
   async refreshToken(refreshToken: string): Promise<LoginResponse> {
     const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refresh_token: refreshToken }),
     });
 
@@ -108,10 +108,10 @@ export const advisoryRequestsApi = {
    * });
    */
   async create(
-    data: CreateAdvisoryRequestDto,
+    data: CreateAdvisoryRequestDto
   ): Promise<AdvisoryRequestResponseDto> {
     const response = await fetch(`${API_BASE_URL}/advisory-requests`, {
-      method: 'POST',
+      method: "POST",
       headers: createAuthHeaders(),
       body: JSON.stringify(data),
     });
@@ -127,7 +127,7 @@ export const advisoryRequestsApi = {
    */
   async getMyRequests(status?: string): Promise<AdvisoryRequestResponseDto[]> {
     const url = new URL(`${API_BASE_URL}/advisory-requests/my-requests`);
-    if (status) url.searchParams.append('status', status);
+    if (status) url.searchParams.append("status", status);
 
     const response = await fetch(url.toString(), {
       headers: createAuthHeaders(),
@@ -161,10 +161,10 @@ export const advisoryRequestsApi = {
     const response = await fetch(
       `${API_BASE_URL}/advisory-requests/${requestId}/approve`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: createAuthHeaders(),
         body: JSON.stringify(data),
-      },
+      }
     );
 
     return handleApiResponse(response);
@@ -177,10 +177,10 @@ export const advisoryRequestsApi = {
     const response = await fetch(
       `${API_BASE_URL}/advisory-requests/${requestId}/reject`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: createAuthHeaders(),
         body: JSON.stringify(data),
-      },
+      }
     );
 
     return handleApiResponse(response);
@@ -193,10 +193,10 @@ export const advisoryRequestsApi = {
     const response = await fetch(
       `${API_BASE_URL}/advisory-requests/${requestId}/cancel`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: createAuthHeaders(),
         body: JSON.stringify(data),
-      },
+      }
     );
 
     return handleApiResponse(response);
@@ -219,7 +219,7 @@ export const advisoriesApi = {
    */
   async createDirectSession(data: CreateDirectSessionDto) {
     const response = await fetch(`${API_BASE_URL}/advisories/direct-session`, {
-      method: 'POST',
+      method: "POST",
       headers: createAuthHeaders(),
       body: JSON.stringify(data),
     });
@@ -238,7 +238,7 @@ export const advisoriesApi = {
       `${API_BASE_URL}/advisories/professor/${professorId}`,
       {
         headers: createAuthHeaders(),
-      },
+      }
     );
 
     return handleApiResponse(response);
@@ -254,15 +254,15 @@ export const advisoriesApi = {
    */
   async inviteStudents(
     sessionId: number,
-    data: { student_ids: number[]; invitation_message?: string },
+    data: { student_ids: number[]; invitation_message?: string }
   ) {
     const response = await fetch(
       `${API_BASE_URL}/advisories/sessions/${sessionId}/invite`,
       {
-        method: 'POST',
+        method: "POST",
         headers: createAuthHeaders(),
         body: JSON.stringify(data),
-      },
+      }
     );
 
     return handleApiResponse(response);
@@ -297,7 +297,7 @@ export const subjectsApi = {
       `${API_BASE_URL}/subject-details/professor/${professorId}`,
       {
         headers: createAuthHeaders(),
-      },
+      }
     );
 
     return handleApiResponse<SubjectDetailDto[]>(response);
@@ -311,7 +311,7 @@ export const subjectsApi = {
       `${API_BASE_URL}/subject-details/my-subjects`,
       {
         headers: createAuthHeaders(),
-      },
+      }
     );
 
     return handleApiResponse<SubjectDetailDto[]>(response);
@@ -350,7 +350,7 @@ export const usersApi = {
    * Get users by specific role
    */
   async getByRole(
-    role: 'student' | 'professor' | 'admin',
+    role: "student" | "professor" | "admin"
   ): Promise<PublicUserDto[]> {
     const response = await fetch(`${API_BASE_URL}/users/role/${role}`, {
       headers: createAuthHeaders(),
@@ -376,15 +376,15 @@ export const availabilityApi = {
    * });
    */
   async createSlot(
-    data: CreateAvailabilitySlotDto,
+    data: CreateAvailabilitySlotDto
   ): Promise<AvailabilitySlotResponseDto> {
     const response = await fetch(
       `${API_BASE_URL}/professor-availability/slots`,
       {
-        method: 'POST',
+        method: "POST",
         headers: createAuthHeaders(),
         body: JSON.stringify(data),
-      },
+      }
     );
 
     return handleApiResponse<AvailabilitySlotResponseDto>(response);
@@ -399,11 +399,11 @@ export const availabilityApi = {
   async getAvailableSlots(
     professorId: number,
     subjectDetailId: number,
-    date: string,
+    date: string
   ) {
     const response = await fetch(
       `${API_BASE_URL}/professor-availability/available-slots/${professorId}/${subjectDetailId}?date=${date}`,
-      { headers: createAuthHeaders() },
+      { headers: createAuthHeaders() }
     );
 
     return handleApiResponse(response);
@@ -417,7 +417,7 @@ export const availabilityApi = {
       `${API_BASE_URL}/professor-availability/my-availability`,
       {
         headers: createAuthHeaders(),
-      },
+      }
     );
 
     return handleApiResponse<AvailabilitySlotResponseDto[]>(response);
@@ -435,7 +435,7 @@ export const invitationsApi = {
    */
   async getMyInvitations(status?: string): Promise<InvitationResponseDto[]> {
     const url = new URL(`${API_BASE_URL}/student-invitations/my-invitations`);
-    if (status) url.searchParams.append('status', status);
+    if (status) url.searchParams.append("status", status);
 
     const response = await fetch(url.toString(), {
       headers: createAuthHeaders(),
@@ -456,10 +456,10 @@ export const invitationsApi = {
     const response = await fetch(
       `${API_BASE_URL}/student-invitations/${invitationId}/respond`,
       {
-        method: 'POST',
+        method: "POST",
         headers: createAuthHeaders(),
         body: JSON.stringify(data),
-      },
+      }
     );
 
     return handleApiResponse(response);
@@ -494,7 +494,7 @@ export const notificationsApi = {
    */
   async updatePreferences(data: UpdateNotificationPreferencesDto) {
     const response = await fetch(`${API_BASE_URL}/notifications/preferences`, {
-      method: 'PATCH',
+      method: "PATCH",
       headers: createAuthHeaders(),
       body: JSON.stringify(data),
     });
@@ -531,10 +531,10 @@ export const attendanceApi = {
     const response = await fetch(
       `${API_BASE_URL}/advisory-attendance/session/${sessionId}/bulk-attendance`,
       {
-        method: 'POST',
+        method: "POST",
         headers: createAuthHeaders(),
         body: JSON.stringify(data),
-      },
+      }
     );
 
     return handleApiResponse(response);
@@ -545,15 +545,15 @@ export const attendanceApi = {
    */
   async completeSession(
     sessionId: number,
-    data: { session_notes: string; topics_covered?: string[] },
+    data: { session_notes: string; topics_covered?: string[] }
   ) {
     const response = await fetch(
       `${API_BASE_URL}/advisory-attendance/session/${sessionId}/complete`,
       {
-        method: 'PATCH',
+        method: "PATCH",
         headers: createAuthHeaders(),
         body: JSON.stringify(data),
-      },
+      }
     );
 
     return handleApiResponse(response);
@@ -582,16 +582,16 @@ export const isAuthenticated = (): boolean => {
  * };
  */
 export const logout = (): void => {
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('refresh_token');
-  localStorage.removeItem('user_data');
+  localStorage.removeItem("access_token");
+  localStorage.removeItem("refresh_token");
+  localStorage.removeItem("user_data");
 };
 
 /**
  * Get stored user data
  */
 export const getStoredUser = () => {
-  const userData = localStorage.getItem('user_data');
+  const userData = localStorage.getItem("user_data");
   return userData ? JSON.parse(userData) : null;
 };
 
@@ -606,21 +606,21 @@ export const getStoredUser = () => {
  *   handleApiError(error, 'Login failed');
  * }
  */
-export const handleApiError = (error: any, context: string = 'API request') => {
+export const handleApiError = (error: any, context: string = "API request") => {
   console.error(`${context}:`, error);
 
   // Handle specific error types
   if (
-    error.message?.includes('401') ||
-    error.message?.includes('Unauthorized')
+    error.message?.includes("401") ||
+    error.message?.includes("Unauthorized")
   ) {
     // Token expired, redirect to login
     logout();
-    window.location.href = '/login';
+    window.location.href = "/login";
   }
 
   // Return user-friendly message
-  return error.message || 'Something went wrong. Please try again.';
+  return error.message || "Something went wrong. Please try again.";
 };
 
 // ===== EXAMPLE USAGE IN REACT COMPONENTS =====
@@ -630,7 +630,7 @@ export const handleApiError = (error: any, context: string = 'API request') => {
 import { authApi } from '../services/api-client.example';
 
 const LoginComponent = () => {
-  const [credentials, setCredentials] = useState<LoginDto>({ username: '', password: '' });
+  const [credentials, setCredentials] = useState<LoginDto>({ email: '', password: '' });
   
   const handleLogin = async () => {
     try {

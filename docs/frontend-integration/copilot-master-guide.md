@@ -58,7 +58,7 @@ docs/frontend-integration/
 ```typescript
 // 1. Login
 POST /auth/login
-Body: { username: string, password: string }
+Body: { email: string, password: string }
 Response: { accessToken: string, refreshToken: string, user: User }
 
 // 2. Use token in headers

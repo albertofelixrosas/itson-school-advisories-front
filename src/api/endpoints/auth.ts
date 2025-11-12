@@ -25,15 +25,15 @@ export interface RefreshTokenResponse {
 }
 
 /**
- * Login with username and password
+ * Login with email and password
  * 
- * @param credentials - User credentials (username and password)
+ * @param credentials - User credentials (email and password)
  * @returns Login response with tokens and user data
  * 
  * @example
  * ```tsx
  * const { access_token, refresh_token, user } = await login({
- *   username: 'user@example.com',
+ *   email: 'user@example.com',
  *   password: 'password123'
  * });
  * ```

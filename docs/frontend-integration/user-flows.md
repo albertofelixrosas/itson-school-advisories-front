@@ -10,7 +10,7 @@ This document describes the main user flows that GitHub Copilot should understan
 ### 1. **Student Registration & Login**
 ```
 1. Student visits /login
-2. Enters username/password
+2. Enters email/password
 3. System validates credentials
 4. Redirects to student dashboard with:
    - Recent advisory requests

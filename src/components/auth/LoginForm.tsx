@@ -31,7 +31,7 @@ import type { LoginDto } from '@/api/types';
  * Login form validation schema
  */
 const loginSchema = yup.object({
-  username: yup
+  email: yup
     .string()
     .required('El correo electrónico es requerido')
     .email('Ingresa un correo electrónico válido')
@@ -106,19 +106,19 @@ export function LoginForm({ onSubmit, error, isLoading = false }: LoginFormProps
 
       {/* Email Field */}
       <TextField
-        {...register('username')}
+        {...register('email')}
         label="Correo electrónico"
         type="email"
         autoComplete="email"
         autoFocus
         fullWidth
         disabled={isFormLoading}
-        error={!!errors.username}
-        helperText={errors.username?.message}
+        error={!!errors.email}
+        helperText={errors.email?.message}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <EmailIcon color={errors.username ? 'error' : 'action'} />
+              <EmailIcon color={errors.email ? 'error' : 'action'} />
             </InputAdornment>
           ),
         }}

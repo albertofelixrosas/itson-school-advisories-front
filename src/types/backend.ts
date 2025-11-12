@@ -275,7 +275,7 @@ export interface EmailTemplate {
 
 // Authentication DTOs
 export interface LoginDto {
-  username: string;
+  email: string;
   password: string;
 }
 
