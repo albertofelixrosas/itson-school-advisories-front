@@ -30,6 +30,9 @@ const SessionsPage = lazy(() => import("@/pages/student/SessionsPage"));
 const ProfessorDashboard = lazy(
   () => import("@/pages/professor/ProfessorDashboard")
 );
+const PendingRequestsPage = lazy(
+  () => import("@/pages/professor/PendingRequestsPage")
+);
 
 // Admin pages
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
@@ -93,6 +96,14 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={[UserRole.PROFESSOR]}>
                     <ProfessorDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/professor/requests"
+                element={
+                  <ProtectedRoute allowedRoles={[UserRole.PROFESSOR]}>
+                    <PendingRequestsPage />
                   </ProtectedRoute>
                 }
               />
