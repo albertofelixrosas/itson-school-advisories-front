@@ -18,10 +18,18 @@ import "./App.css";
 const LoginPage = lazy(() => import("@/pages/auth/LoginPage"));
 const UnauthorizedPage = lazy(() => import("@/pages/auth/UnauthorizedPage"));
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
+
+// Student pages
 const StudentDashboard = lazy(() => import("@/pages/student/StudentDashboard"));
+const NewRequestPage = lazy(() => import("@/pages/student/NewRequestPage"));
+const MyRequestsPage = lazy(() => import("@/pages/student/MyRequestsPage"));
+
+// Professor pages
 const ProfessorDashboard = lazy(
   () => import("@/pages/professor/ProfessorDashboard")
 );
+
+// Admin pages
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 
 function App() {
@@ -41,6 +49,22 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={[UserRole.STUDENT]}>
                     <StudentDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/new-request"
+                element={
+                  <ProtectedRoute allowedRoles={[UserRole.STUDENT]}>
+                    <NewRequestPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/requests"
+                element={
+                  <ProtectedRoute allowedRoles={[UserRole.STUDENT]}>
+                    <MyRequestsPage />
                   </ProtectedRoute>
                 }
               />
