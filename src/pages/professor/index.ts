@@ -4,3 +4,4 @@
  */
 
 export { ProfessorDashboard } from './ProfessorDashboard';
+export { PendingRequestsPage } from './PendingRequestsPage';
