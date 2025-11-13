@@ -32,6 +32,11 @@ import {
   Person as PersonIcon,
   ExitToApp as LogoutIcon,
   ChevronLeft as ChevronLeftIcon,
+  Add as AddIcon,
+  Assignment as AssignmentIcon,
+  Event as EventIcon,
+  People as PeopleIcon,
+  CalendarToday as CalendarIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -150,10 +155,74 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
       },
     ];
 
-    // Add role-specific items here
-    // This will be expanded in future commits
+    // Student-specific items
+    const studentItems = [
+      {
+        text: 'Nueva Solicitud',
+        icon: <AddIcon />,
+        path: '/student/new-request',
+        roles: [UserRole.STUDENT],
+      },
+      {
+        text: 'Mis Solicitudes',
+        icon: <AssignmentIcon />,
+        path: '/student/requests',
+        roles: [UserRole.STUDENT],
+      },
+      {
+        text: 'Mis Invitaciones',
+        icon: <EventIcon />,
+        path: '/student/invitations',
+        roles: [UserRole.STUDENT],
+      },
+      {
+        text: 'Mis Sesiones',
+        icon: <CalendarIcon />,
+        path: '/student/sessions',
+        roles: [UserRole.STUDENT],
+      },
+    ];
 
-    return baseItems.filter((item) => item.roles.includes(role!));
+    // Professor-specific items
+    const professorItems = [
+      {
+        text: 'Solicitudes Pendientes',
+        icon: <AssignmentIcon />,
+        path: '/professor/requests',
+        roles: [UserRole.PROFESSOR],
+      },
+      {
+        text: 'Mis Asesorías',
+        icon: <EventIcon />,
+        path: '/professor/advisories',
+        roles: [UserRole.PROFESSOR],
+      },
+      {
+        text: 'Disponibilidad',
+        icon: <CalendarIcon />,
+        path: '/professor/availability',
+        roles: [UserRole.PROFESSOR],
+      },
+    ];
+
+    // Admin-specific items
+    const adminItems = [
+      {
+        text: 'Usuarios',
+        icon: <PeopleIcon />,
+        path: '/admin/users',
+        roles: [UserRole.ADMIN],
+      },
+      {
+        text: 'Materias',
+        icon: <SchoolIcon />,
+        path: '/admin/subjects',
+        roles: [UserRole.ADMIN],
+      },
+    ];
+
+    const allItems = [...baseItems, ...studentItems, ...professorItems, ...adminItems];
+    return allItems.filter((item) => item.roles.includes(role!));
   };
 
   const navigationItems = getNavigationItems();
