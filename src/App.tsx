@@ -23,6 +23,8 @@ const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 const StudentDashboard = lazy(() => import("@/pages/student/StudentDashboard"));
 const NewRequestPage = lazy(() => import("@/pages/student/NewRequestPage"));
 const MyRequestsPage = lazy(() => import("@/pages/student/MyRequestsPage"));
+const InvitationsPage = lazy(() => import("@/pages/student/InvitationsPage"));
+const SessionsPage = lazy(() => import("@/pages/student/SessionsPage"));
 
 // Professor pages
 const ProfessorDashboard = lazy(
@@ -65,6 +67,22 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={[UserRole.STUDENT]}>
                     <MyRequestsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/invitations"
+                element={
+                  <ProtectedRoute allowedRoles={[UserRole.STUDENT]}>
+                    <InvitationsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/sessions"
+                element={
+                  <ProtectedRoute allowedRoles={[UserRole.STUDENT]}>
+                    <SessionsPage />
                   </ProtectedRoute>
                 }
               />
