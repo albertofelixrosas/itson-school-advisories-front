@@ -3,12 +3,14 @@
  * School Advisories System
  */
 
+import { useNavigate } from 'react-router-dom';
 import { Layout } from '@/components/common';
-import { Box, Typography, Paper } from '@mui/material';
+import { Box, Typography, Paper, Button } from '@mui/material';
 import {
   Assignment as AssignmentIcon,
   Event as EventIcon,
   Check as CheckIcon,
+  Add as AddIcon,
 } from '@mui/icons-material';
 
 /**
@@ -17,16 +19,29 @@ import {
  * Main dashboard for student users
  */
 export function StudentDashboard() {
+  const navigate = useNavigate();
+
   return (
     <Layout title="Dashboard de Estudiante">
       <Box>
-        <Typography variant="h4" gutterBottom fontWeight="bold">
-          Bienvenido, Estudiante
-        </Typography>
-        
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-          Aquí podrás gestionar tus solicitudes de asesoría y ver tus invitaciones.
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Box>
+            <Typography variant="h4" gutterBottom fontWeight="bold">
+              Bienvenido, Estudiante
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Aquí podrás gestionar tus solicitudes de asesoría y ver tus invitaciones.
+            </Typography>
+          </Box>
+          <Button
+            variant="contained"
+            size="large"
+            startIcon={<AddIcon />}
+            onClick={() => navigate('/student/new-request')}
+          >
+            Nueva Solicitud
+          </Button>
+        </Box>
 
         {/* Stats Grid */}
         <Box
