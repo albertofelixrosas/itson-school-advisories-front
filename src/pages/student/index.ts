@@ -4,3 +4,5 @@
  */
 
 export { StudentDashboard } from './StudentDashboard';
+export { NewRequestPage } from './NewRequestPage';
+export { MyRequestsPage } from './MyRequestsPage';
