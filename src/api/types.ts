@@ -290,6 +290,58 @@ export interface RefreshTokenDto {
   refresh_token: string;
 }
 
+// User Management DTOs (Admin)
+export interface CreateUserDto {
+  username: string;
+  email: string;
+  password: string;
+  name: string;
+  last_name: string;
+  phone_number: string;
+  school_id?: string;
+  student_id?: string;
+  employee_id?: string;
+  role: UserRole;
+  photo_url?: string;
+}
+
+export interface UpdateUserDto {
+  username?: string;
+  email?: string;
+  name?: string;
+  last_name?: string;
+  phone_number?: string;
+  school_id?: string;
+  student_id?: string;
+  employee_id?: string;
+  role?: UserRole;
+  photo_url?: string;
+  is_active?: boolean;
+}
+
+// Subject Management DTOs (Admin)
+export interface CreateSubjectDto {
+  subject: string;
+}
+
+export interface UpdateSubjectDto {
+  subject?: string;
+}
+
+// Venue Management DTOs (Admin)
+export interface CreateVenueDto {
+  name: string;
+  location: string;
+  capacity: number;
+}
+
+export interface UpdateVenueDto {
+  name?: string;
+  location?: string;
+  capacity?: number;
+  is_active?: boolean;
+}
+
 export interface DashboardDataDto {
   stats: {
     total_requests?: number;

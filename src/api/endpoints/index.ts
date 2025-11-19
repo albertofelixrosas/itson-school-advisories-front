@@ -11,3 +11,4 @@ export * from './invitations';
 export * from './advisories';
 export * from './dashboard';
 export * from './venues';
+export * from './users';
