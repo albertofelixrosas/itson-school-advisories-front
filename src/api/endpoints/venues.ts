@@ -4,7 +4,7 @@
  */
 
 import { apiClient } from '../client';
-import type { Venue } from '../types';
+import type { Venue, CreateVenueDto, UpdateVenueDto } from '../types';
 
 /**
  * Get all venues
@@ -27,5 +27,36 @@ export async function getActiveVenues(): Promise<Venue[]> {
  */
 export async function getVenueById(venueId: number): Promise<Venue> {
   const response = await apiClient.get<Venue>(`/venues/${venueId}`);
+  return response.data;
+}
+
+/**
+ * Create new venue (Admin only)
+ */
+export async function createVenue(data: CreateVenueDto): Promise<Venue> {
+  const response = await apiClient.post<Venue>('/venues', data);
+  return response.data;
+}
+
+/**
+ * Update venue (Admin only)
+ */
+export async function updateVenue(venueId: number, data: UpdateVenueDto): Promise<Venue> {
+  const response = await apiClient.put<Venue>(`/venues/${venueId}`, data);
+  return response.data;
+}
+
+/**
+ * Delete venue (Admin only)
+ */
+export async function deleteVenue(venueId: number): Promise<void> {
+  await apiClient.delete(`/venues/${venueId}`);
+}
+
+/**
+ * Toggle venue active status (Admin only)
+ */
+export async function toggleVenueStatus(venueId: number): Promise<Venue> {
+  const response = await apiClient.patch<Venue>(`/venues/${venueId}/toggle-status`);
   return response.data;
 }

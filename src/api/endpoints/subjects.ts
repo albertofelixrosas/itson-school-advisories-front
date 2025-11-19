@@ -4,7 +4,7 @@
  */
 
 import { apiClient } from '../client';
-import type { Subject, SubjectDetails } from '../types';
+import type { Subject, SubjectDetails, CreateSubjectDto, UpdateSubjectDto } from '../types';
 
 /**
  * Get all subjects
@@ -30,5 +30,40 @@ export async function getAllSubjectDetails(): Promise<SubjectDetails[]> {
  */
 export async function getSubjectById(id: number): Promise<SubjectDetails> {
   const response = await apiClient.get<SubjectDetails>(`/subjects/${id}`);
+  return response.data;
+}
+
+/**
+ * Create new subject (Admin only)
+ * Endpoint: POST /subjects
+ */
+export async function createSubject(data: CreateSubjectDto): Promise<Subject> {
+  const response = await apiClient.post<Subject>('/subjects', data);
+  return response.data;
+}
+
+/**
+ * Update subject (Admin only)
+ * Endpoint: PUT /subjects/:id
+ */
+export async function updateSubject(id: number, data: UpdateSubjectDto): Promise<Subject> {
+  const response = await apiClient.put<Subject>(`/subjects/${id}`, data);
+  return response.data;
+}
+
+/**
+ * Delete subject (Admin only)
+ * Endpoint: DELETE /subjects/:id
+ */
+export async function deleteSubject(id: number): Promise<void> {
+  await apiClient.delete(`/subjects/${id}`);
+}
+
+/**
+ * Toggle subject active status (Admin only)
+ * Endpoint: PATCH /subjects/:id/toggle-status
+ */
+export async function toggleSubjectStatus(id: number): Promise<Subject> {
+  const response = await apiClient.patch<Subject>(`/subjects/${id}/toggle-status`);
   return response.data;
 }
