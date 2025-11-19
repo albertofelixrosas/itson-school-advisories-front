@@ -15,6 +15,14 @@ export const getAllUsers = async (): Promise<User[]> => {
 };
 
 /**
+ * Get all students
+ */
+export const getAllStudents = async (): Promise<User[]> => {
+  const response = await apiClient.get<User[]>('/users/students');
+  return response.data;
+};
+
+/**
  * Get user by ID
  */
 export const getUserById = async (userId: number): Promise<User> => {
