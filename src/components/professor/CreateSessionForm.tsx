@@ -126,7 +126,7 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
     formState: { errors, isSubmitting },
     reset,
   } = useForm<CreateSessionFormData>({
-    resolver: yupResolver(validationSchema) as any,
+    resolver: yupResolver(validationSchema as yup.ObjectSchema<CreateSessionFormData>),
     defaultValues: {
       subjectDetailId: 0,
       venueId: 0,
