@@ -33,10 +33,11 @@ import {
 import { format, parseISO, isFuture, isPast } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { getMyAdvisories } from '@/api/endpoints/advisories';
+import { getSessionStudents } from '@/api/endpoints/attendance';
 import { InviteStudentsModal } from '@/components/professor/InviteStudentsModal';
 import { AttendanceForm } from '@/components/professor/AttendanceForm';
 import { SessionCompletionModal } from '@/components/professor/SessionCompletionModal';
-import type { Advisory, AdvisoryDate } from '@/types';
+import type { Advisory, AdvisoryDate, User } from '@/types';
 
 /**
  * Manage Sessions Page
@@ -116,27 +117,13 @@ export function ManageSessionsPage() {
   if (attendanceView && selectedSession) {
     return (
       <Layout title="Registro de Asistencia">
-        <Box>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              setAttendanceView(false);
-              setSelectedSession(null);
-            }}
-            sx={{ mb: 3 }}
-          >
-            ← Volver a Sesiones
-          </Button>
-          
-          <AttendanceForm
-            sessionId={selectedSession.advisory_date_id}
-            students={[]} // This should come from API - session enrolled students
-            onSuccess={() => {
-              setAttendanceView(false);
-              setSelectedSession(null);
-            }}
-          />
-        </Box>
+        <AttendanceViewWrapper
+          sessionId={selectedSession.advisory_date_id}
+          onBack={() => {
+            setAttendanceView(false);
+            setSelectedSession(null);
+          }}
+        />
       </Layout>
     );
   }
@@ -350,6 +337,130 @@ function SessionCard({
         </Stack>
       </CardContent>
     </Card>
+  );
+}
+
+/**
+ * Attendance View Wrapper Component
+ * Fetches session students and renders attendance form
+ */
+interface AttendanceViewWrapperProps {
+  sessionId: number;
+  onBack: () => void;
+}
+
+function AttendanceViewWrapper({ sessionId, onBack }: AttendanceViewWrapperProps) {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['session-students', sessionId],
+    queryFn: () => getSessionStudents(sessionId),
+  });
+
+  if (isLoading) {
+    return <LoadingSpinner message="Cargando estudiantes..." />;
+  }
+
+  if (error) {
+    return (
+      <Box>
+        <Button variant="outlined" onClick={onBack} sx={{ mb: 3 }}>
+          ← Volver
+        </Button>
+        <Alert severity="error">
+          Error al cargar estudiantes. Por favor, intente de nuevo.
+        </Alert>
+      </Box>
+    );
+  }
+
+  if (!data) {
+    return (
+      <Box>
+        <Button variant="outlined" onClick={onBack} sx={{ mb: 3 }}>
+          ← Volver
+        </Button>
+        <Alert severity="info">No hay datos de la sesión disponibles.</Alert>
+      </Box>
+    );
+  }
+
+  // Map backend students to User type
+  const students: User[] = data.students.map(s => ({
+    user_id: s.user_id,
+    username: s.student_id,
+    email: s.email,
+    name: s.name,
+    last_name: s.last_name,
+    role: 'student' as const,
+    is_active: true,
+    photo_url: s.photo_url || '',
+    phone_number: s.phone_number || '',
+    created_at: '',
+    updated_at: '',
+  }));
+
+  return (
+    <Box>
+      <Button variant="outlined" onClick={onBack} sx={{ mb: 3 }}>
+        ← Volver a Sesiones
+      </Button>
+      
+      {/* Session Info Card */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom fontWeight="bold">
+            {data.session.topic}
+          </Typography>
+          <Stack spacing={1}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <EventIcon fontSize="small" color="action" />
+              <Typography variant="body2">
+                {format(parseISO(data.session.date), "EEEE d 'de' MMMM, yyyy 'a las' HH:mm", { locale: es })}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <LocationIcon fontSize="small" color="action" />
+              <Typography variant="body2">
+                {data.session.venue.building} - {data.session.venue.classroom}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <PeopleIcon fontSize="small" color="action" />
+              <Typography variant="body2">
+                {data.total_students} estudiantes inscritos
+              </Typography>
+            </Box>
+          </Stack>
+          
+          {data.total_students > 0 && (
+            <Box sx={{ mt: 2 }}>
+              <Chip
+                label={`Asistencia actual: ${data.attendance_rate.toFixed(1)}%`}
+                color={data.attendance_rate >= 80 ? 'success' : data.attendance_rate >= 60 ? 'warning' : 'error'}
+                size="small"
+              />
+              <Chip
+                label={`${data.attended_count} presentes`}
+                color="success"
+                size="small"
+                sx={{ ml: 1 }}
+              />
+              <Chip
+                label={`${data.absent_count} ausentes`}
+                color="default"
+                size="small"
+                sx={{ ml: 1 }}
+              />
+            </Box>
+          )}
+        </CardContent>
+      </Card>
+      
+      <AttendanceForm
+        sessionId={sessionId}
+        students={students}
+        onSuccess={onBack}
+      />
+    </Box>
   );
 }
 
