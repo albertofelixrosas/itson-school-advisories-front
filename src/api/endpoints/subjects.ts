@@ -16,6 +16,15 @@ export async function getAllSubjects(): Promise<Subject[]> {
 }
 
 /**
+ * Get all subject details (professor-subject combinations)
+ * Endpoint: GET /subject-details
+ */
+export async function getAllSubjectDetails(): Promise<SubjectDetails[]> {
+  const response = await apiClient.get<SubjectDetails[]>('/subject-details');
+  return response.data;
+}
+
+/**
  * Get subject by ID with details
  * Endpoint: GET /subjects/:id
  */

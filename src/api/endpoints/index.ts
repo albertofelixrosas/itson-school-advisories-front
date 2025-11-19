@@ -10,3 +10,4 @@ export * from './advisoryRequests';
 export * from './invitations';
 export * from './advisories';
 export * from './dashboard';
+export * from './venues';

@@ -192,6 +192,12 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
         roles: [UserRole.PROFESSOR],
       },
       {
+        text: 'Crear Sesión',
+        icon: <AddIcon />,
+        path: '/professor/create-session',
+        roles: [UserRole.PROFESSOR],
+      },
+      {
         text: 'Mis Asesorías',
         icon: <EventIcon />,
         path: '/professor/advisories',
