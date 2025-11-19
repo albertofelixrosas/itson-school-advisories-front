@@ -225,6 +225,12 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
         path: '/admin/subjects',
         roles: [UserRole.ADMIN],
       },
+      {
+        text: 'Sedes',
+        icon: <EventIcon />,
+        path: '/admin/venues',
+        roles: [UserRole.ADMIN],
+      },
     ];
 
     const allItems = [...baseItems, ...studentItems, ...professorItems, ...adminItems];

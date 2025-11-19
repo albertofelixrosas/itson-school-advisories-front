@@ -42,6 +42,9 @@ const AvailabilityPage = lazy(
 
 // Admin pages
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
+const AdminUsersPage = lazy(() => import("@/pages/admin/AdminUsersPage"));
+const AdminSubjectsPage = lazy(() => import("@/pages/admin/AdminSubjectsPage"));
+const AdminVenuesPage = lazy(() => import("@/pages/admin/AdminVenuesPage"));
 
 function App() {
   return (
@@ -136,6 +139,30 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
                     <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/users"
+                element={
+                  <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+                    <AdminUsersPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/subjects"
+                element={
+                  <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+                    <AdminSubjectsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/venues"
+                element={
+                  <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+                    <AdminVenuesPage />
                   </ProtectedRoute>
                 }
               />
