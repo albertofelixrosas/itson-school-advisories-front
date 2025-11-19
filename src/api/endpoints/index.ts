@@ -15,3 +15,4 @@ export * from './users';
 export * from './attendance';
 export * from './notifications';
 export * from './admin';
+export * from './subjectDetails';

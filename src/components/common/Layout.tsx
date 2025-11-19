@@ -231,6 +231,12 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
         path: '/admin/venues',
         roles: [UserRole.ADMIN],
       },
+      {
+        text: 'Asignaciones',
+        icon: <AssignmentIcon />,
+        path: '/admin/subject-details',
+        roles: [UserRole.ADMIN],
+      },
     ];
 
     const allItems = [...baseItems, ...studentItems, ...professorItems, ...adminItems];
