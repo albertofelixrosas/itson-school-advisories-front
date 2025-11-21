@@ -20,7 +20,6 @@ import {
   Home as HomeIcon,
 } from '@mui/icons-material';
 import { useAuth } from '@/hooks/useAuth';
-import { UserRole } from '@/api/types';
 
 /**
  * Unauthorized Page Component
@@ -38,13 +37,13 @@ export function UnauthorizedPage() {
   const handleGoHome = () => {
     // Redirect based on user role
     switch (role) {
-      case UserRole.STUDENT:
+      case 'student':
         navigate('/student/dashboard');
         break;
-      case UserRole.PROFESSOR:
+      case 'professor':
         navigate('/professor/dashboard');
         break;
-      case UserRole.ADMIN:
+      case 'admin':
         navigate('/admin/dashboard');
         break;
       default:
@@ -127,13 +126,13 @@ export function UnauthorizedPage() {
             }}
           >
             <Typography variant="body2">
-              {role === UserRole.STUDENT && (
+              {role === 'student' && (
                 'Como estudiante, puedes acceder al panel de estudiante, crear solicitudes de asesoría y ver tus invitaciones.'
               )}
-              {role === UserRole.PROFESSOR && (
+              {role === 'professor' && (
                 'Como profesor, puedes acceder al panel de profesores, revisar solicitudes y gestionar asesorías.'
               )}
-              {role === UserRole.ADMIN && (
+              {role === 'admin' && (
                 'Como administrador, tienes acceso completo al sistema.'
               )}
               {!role && (

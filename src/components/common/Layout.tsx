@@ -40,7 +40,6 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { UserRole } from '@/api/types';
 
 /**
  * Layout Props
@@ -151,7 +150,7 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
         text: 'Dashboard',
         icon: <DashboardIcon />,
         path: `/${role}/dashboard`,
-        roles: [UserRole.STUDENT, UserRole.PROFESSOR, UserRole.ADMIN],
+        roles: ['student', 'professor', 'admin'],
       },
     ];
 
@@ -161,25 +160,25 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
         text: 'Nueva Solicitud',
         icon: <AddIcon />,
         path: '/student/new-request',
-        roles: [UserRole.STUDENT],
+        roles: ['student'],
       },
       {
         text: 'Mis Solicitudes',
         icon: <AssignmentIcon />,
         path: '/student/requests',
-        roles: [UserRole.STUDENT],
+        roles: ['student'],
       },
       {
         text: 'Mis Invitaciones',
         icon: <EventIcon />,
         path: '/student/invitations',
-        roles: [UserRole.STUDENT],
+        roles: ['student'],
       },
       {
         text: 'Mis Sesiones',
         icon: <CalendarIcon />,
         path: '/student/sessions',
-        roles: [UserRole.STUDENT],
+        roles: ['student'],
       },
     ];
 
@@ -189,25 +188,25 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
         text: 'Solicitudes Pendientes',
         icon: <AssignmentIcon />,
         path: '/professor/requests',
-        roles: [UserRole.PROFESSOR],
+        roles: ['professor'],
       },
       {
         text: 'Crear Sesión',
         icon: <AddIcon />,
         path: '/professor/create-session',
-        roles: [UserRole.PROFESSOR],
+        roles: ['professor'],
       },
       {
         text: 'Gestionar Sesiones',
         icon: <EventIcon />,
         path: '/professor/sessions',
-        roles: [UserRole.PROFESSOR],
+        roles: ['professor'],
       },
       {
         text: 'Disponibilidad',
         icon: <CalendarIcon />,
         path: '/professor/availability',
-        roles: [UserRole.PROFESSOR],
+        roles: ['professor'],
       },
     ];
 
@@ -217,25 +216,25 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
         text: 'Usuarios',
         icon: <PeopleIcon />,
         path: '/admin/users',
-        roles: [UserRole.ADMIN],
+        roles: ['admin'],
       },
       {
         text: 'Materias',
         icon: <SchoolIcon />,
         path: '/admin/subjects',
-        roles: [UserRole.ADMIN],
+        roles: ['admin'],
       },
       {
         text: 'Sedes',
         icon: <EventIcon />,
         path: '/admin/venues',
-        roles: [UserRole.ADMIN],
+        roles: ['admin'],
       },
       {
         text: 'Asignaciones',
         icon: <AssignmentIcon />,
         path: '/admin/subject-details',
-        roles: [UserRole.ADMIN],
+        roles: ['admin'],
       },
     ];
 

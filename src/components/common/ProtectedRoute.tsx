@@ -10,7 +10,7 @@
 
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import type { User } from '@/api/types';
+import type { UserRole } from '@/api/types';
 import { Box, CircularProgress } from '@mui/material';
 
 /**
@@ -18,7 +18,7 @@ import { Box, CircularProgress } from '@mui/material';
  */
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  allowedRoles?: User['role'][];
+  allowedRoles?: UserRole[];
   requireAuth?: boolean;
 }
 
@@ -87,10 +87,12 @@ export function ProtectedRoute({
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Check role requirement
+  // Check role requirement - force string comparison
   if (allowedRoles && allowedRoles.length > 0) {
-    if (!role || !allowedRoles.includes(role)) {
-      // User doesn't have required role
+    const currentRole = role ? String(role) : null;
+    const hasPermission = currentRole && allowedRoles.some(r => String(r) === currentRole);
+    
+    if (!hasPermission) {
       return <Navigate to="/unauthorized" replace />;
     }
   }

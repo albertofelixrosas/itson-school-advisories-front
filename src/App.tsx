@@ -11,7 +11,6 @@ import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { QueryProvider } from "@/contexts/QueryContext";
 import { PageLoader, ProtectedRoute } from "@/components/common";
-import { UserRole } from "@/types";
 import "./App.css";
 
 // Lazy load pages
@@ -44,10 +43,10 @@ const ManageSessionsPage = lazy(
 );
 
 // Admin pages
-const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
-const AdminUsersPage = lazy(() => import("@/pages/admin/AdminUsersPage"));
-const AdminSubjectsPage = lazy(() => import("@/pages/admin/AdminSubjectsPage"));
-const AdminVenuesPage = lazy(() => import("@/pages/admin/AdminVenuesPage"));
+const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard").then(m => ({ default: m.AdminDashboard })));
+const AdminUsersPage = lazy(() => import("@/pages/admin/AdminUsersPage").then(m => ({ default: m.AdminUsersPage })));
+const AdminSubjectsPage = lazy(() => import("@/pages/admin/AdminSubjectsPage").then(m => ({ default: m.AdminSubjectsPage })));
+const AdminVenuesPage = lazy(() => import("@/pages/admin/AdminVenuesPage").then(m => ({ default: m.AdminVenuesPage })));
 const AdminSubjectDetailsPage = lazy(() => import("@/pages/admin/AdminSubjectDetailsPage"));
 
 function App() {
@@ -65,7 +64,7 @@ function App() {
               <Route
                 path="/student/dashboard"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.STUDENT]}>
+                  <ProtectedRoute allowedRoles={['student']}>
                     <StudentDashboard />
                   </ProtectedRoute>
                 }
@@ -73,7 +72,7 @@ function App() {
               <Route
                 path="/student/new-request"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.STUDENT]}>
+                  <ProtectedRoute allowedRoles={['student']}>
                     <NewRequestPage />
                   </ProtectedRoute>
                 }
@@ -81,7 +80,7 @@ function App() {
               <Route
                 path="/student/requests"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.STUDENT]}>
+                  <ProtectedRoute allowedRoles={['student']}>
                     <MyRequestsPage />
                   </ProtectedRoute>
                 }
@@ -89,7 +88,7 @@ function App() {
               <Route
                 path="/student/invitations"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.STUDENT]}>
+                  <ProtectedRoute allowedRoles={['student']}>
                     <InvitationsPage />
                   </ProtectedRoute>
                 }
@@ -97,7 +96,7 @@ function App() {
               <Route
                 path="/student/sessions"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.STUDENT]}>
+                  <ProtectedRoute allowedRoles={['student']}>
                     <SessionsPage />
                   </ProtectedRoute>
                 }
@@ -107,7 +106,7 @@ function App() {
               <Route
                 path="/professor/dashboard"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.PROFESSOR]}>
+                  <ProtectedRoute allowedRoles={['professor']}>
                     <ProfessorDashboard />
                   </ProtectedRoute>
                 }
@@ -115,7 +114,7 @@ function App() {
               <Route
                 path="/professor/requests"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.PROFESSOR]}>
+                  <ProtectedRoute allowedRoles={['professor']}>
                     <PendingRequestsPage />
                   </ProtectedRoute>
                 }
@@ -123,7 +122,7 @@ function App() {
               <Route
                 path="/professor/create-session"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.PROFESSOR]}>
+                  <ProtectedRoute allowedRoles={['professor']}>
                     <CreateSessionPage />
                   </ProtectedRoute>
                 }
@@ -131,7 +130,7 @@ function App() {
               <Route
                 path="/professor/availability"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.PROFESSOR]}>
+                  <ProtectedRoute allowedRoles={['professor']}>
                     <AvailabilityPage />
                   </ProtectedRoute>
                 }
@@ -139,7 +138,7 @@ function App() {
               <Route
                 path="/professor/sessions"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.PROFESSOR]}>
+                  <ProtectedRoute allowedRoles={['professor']}>
                     <ManageSessionsPage />
                   </ProtectedRoute>
                 }
@@ -149,7 +148,7 @@ function App() {
               <Route
                 path="/admin/dashboard"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+                  <ProtectedRoute allowedRoles={['admin']}>
                     <AdminDashboard />
                   </ProtectedRoute>
                 }
@@ -157,7 +156,7 @@ function App() {
               <Route
                 path="/admin/users"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+                  <ProtectedRoute allowedRoles={['admin']}>
                     <AdminUsersPage />
                   </ProtectedRoute>
                 }
@@ -165,7 +164,7 @@ function App() {
               <Route
                 path="/admin/subjects"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+                  <ProtectedRoute allowedRoles={['admin']}>
                     <AdminSubjectsPage />
                   </ProtectedRoute>
                 }
@@ -173,7 +172,7 @@ function App() {
               <Route
                 path="/admin/venues"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+                  <ProtectedRoute allowedRoles={['admin']}>
                     <AdminVenuesPage />
                   </ProtectedRoute>
                 }
@@ -181,7 +180,7 @@ function App() {
               <Route
                 path="/admin/subject-details"
                 element={
-                  <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+                  <ProtectedRoute allowedRoles={['admin']}>
                     <AdminSubjectDetailsPage />
                   </ProtectedRoute>
                 }

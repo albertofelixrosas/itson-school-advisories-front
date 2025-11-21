@@ -105,13 +105,16 @@ export function VenueManagementTable() {
 
   // Fetch all venues
   const {
-    data: venues = [],
+    data: venuesData,
     isLoading,
     error,
   } = useQuery({
     queryKey: ['admin-venues'],
     queryFn: getAllVenues,
   });
+
+  // Ensure venues is always an array
+  const venues = Array.isArray(venuesData) ? venuesData : [];
 
   // Create mutation
   const createMutation = useMutation({
