@@ -62,6 +62,8 @@ import { getAllUsers } from '@/api/endpoints/users';
 export function SubjectDetailsManager() {
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [assignmentToDelete, setAssignmentToDelete] = useState<number | null>(null);
   const [formData, setFormData] = useState<CreateSubjectDetailDto>({
     subject_id: 0,
     professor_id: 0,
@@ -193,9 +195,21 @@ export function SubjectDetailsManager() {
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm('¿Está seguro de eliminar esta asignación?')) {
-      deleteMutation.mutate(id);
+    setAssignmentToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (assignmentToDelete !== null) {
+      deleteMutation.mutate(assignmentToDelete);
+      setDeleteDialogOpen(false);
+      setAssignmentToDelete(null);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteDialogOpen(false);
+    setAssignmentToDelete(null);
   };
 
   if (isLoading) {
@@ -267,7 +281,7 @@ export function SubjectDetailsManager() {
               key={assignment.subject_detail_id}
               title={`${assignment.professor?.name || ''} ${assignment.professor?.last_name || ''}`}
               subtitle={assignment.professor?.email || ''}
-              info={`Materia: ${assignment.subject?.name || ''}`}
+              info={`Materia: ${assignment.subject?.subject || ''}`}
               chips={[
                 {
                   label: assignment.is_active ? 'Activo' : 'Inactivo',
@@ -318,10 +332,7 @@ export function SubjectDetailsManager() {
                   <TableCell>{assignment.subject_detail_id}</TableCell>
                   <TableCell>
                     <Typography variant="body2" fontWeight="medium">
-                      {assignment.subject?.name || 'N/A'}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {assignment.subject?.code || ''}
+                      {assignment.subject?.subject || 'N/A'}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -513,6 +524,47 @@ export function SubjectDetailsManager() {
             }
           >
             {createMutation.isPending ? 'Creando...' : 'Crear Asignación'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleCancelDelete}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Confirmar eliminación</DialogTitle>
+        <DialogContent>
+          <Alert severity="warning" sx={{ mb: 2 }}>
+            Esta acción no se puede deshacer
+          </Alert>
+          <Typography>
+            ¿Está seguro de que desea eliminar esta asignación de profesor-materia?
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            Se perderán todos los horarios asociados a esta asignación.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <Button onClick={handleCancelDelete} variant="outlined">
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            variant="contained"
+            color="error"
+            disabled={deleteMutation.isPending}
+            startIcon={
+              deleteMutation.isPending ? (
+                <CircularProgress size={20} color="inherit" />
+              ) : (
+                <DeleteIcon />
+              )
+            }
+          >
+            {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
           </Button>
         </DialogActions>
       </Dialog>

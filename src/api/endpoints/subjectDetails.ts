@@ -19,20 +19,21 @@ export interface SubjectDetail {
   updated_at: string;
   subject: {
     subject_id: number;
-    name: string;
-    code: string;
-    description: string;
+    subject: string;
   };
   professor: {
     user_id: number;
     name: string;
     last_name: string;
     email: string;
+    photo_url: string | null;
   };
   schedules?: Array<{
+    subject_schedule_id: number;
     day: string;
     start_time: string;
     end_time: string;
+    subject_details_id: number;
   }>;
 }
 
