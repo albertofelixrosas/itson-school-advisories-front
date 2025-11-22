@@ -422,10 +422,12 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
               '& .MuiDrawer-paper': {
                 width: DRAWER_WIDTH,
                 boxSizing: 'border-box',
-                transition: theme.transitions.create('width', {
+                transform: sidebarOpen ? 'translateX(0)' : `translateX(-${DRAWER_WIDTH}px)`,
+                transition: theme.transitions.create(['transform', 'width'], {
                   easing: theme.transitions.easing.sharp,
                   duration: theme.transitions.duration.enteringScreen,
                 }),
+                overflowX: 'hidden',
               },
             }}
           >
