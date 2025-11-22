@@ -22,6 +22,9 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
+  Stack,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -45,7 +48,7 @@ import {
   toggleVenueStatus,
 } from '@/api/endpoints/venues';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
-import { ConfirmDialog } from '@/components/common/ConfirmDialog';
+import { ConfirmDialog, ResponsiveCard } from '@/components/common';
 import type { Venue, CreateVenueDto, UpdateVenueDto } from '@/api/types';
 
 /**
@@ -88,6 +91,8 @@ export function VenueManagementTable() {
   const [searchTerm, setSearchTerm] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const {
     control,
@@ -374,20 +379,78 @@ export function VenueManagementTable() {
         </Alert>
       )}
 
-      {/* Data Grid */}
-      <Box sx={{ height: 600, width: '100%' }}>
-        <DataGrid
-          rows={filteredVenues}
-          columns={columns}
-          getRowId={(row) => row.venue_id}
-          loading={isLoading}
-          pageSizeOptions={[10, 25, 50]}
-          initialState={{
-            pagination: { paginationModel: { pageSize: 25 } },
-          }}
-          disableRowSelectionOnClick
-        />
-      </Box>
+      {/* Data Grid / Mobile Cards */}
+      {isMobile ? (
+        <Stack spacing={2}>
+          {isLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : filteredVenues.length === 0 ? (
+            <Alert severity="info">No se encontraron sedes</Alert>
+          ) : (
+            filteredVenues.map((venue) => (
+              <ResponsiveCard
+                key={venue.venue_id}
+                title={venue.name}
+                subtitle={venue.location}
+                info={`Capacidad: ${venue.capacity} personas`}
+                chips={[
+                  {
+                    label: venue.is_active ? 'Activa' : 'Inactiva',
+                    color: venue.is_active ? 'success' : 'default',
+                  },
+                ]}
+                actions={
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Tooltip title="Editar">
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => handleEdit(venue)}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title={venue.is_active ? 'Desactivar' : 'Activar'}>
+                      <IconButton
+                        size="small"
+                        color={venue.is_active ? 'warning' : 'success'}
+                        onClick={() => handleToggleStatus(venue)}
+                      >
+                        <PowerIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Eliminar">
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleDelete(venue)}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                }
+              />
+            ))
+          )}
+        </Stack>
+      ) : (
+        <Box sx={{ height: 600, width: '100%' }}>
+          <DataGrid
+            rows={filteredVenues}
+            columns={columns}
+            getRowId={(row) => row.venue_id}
+            loading={isLoading}
+            pageSizeOptions={[10, 25, 50]}
+            initialState={{
+              pagination: { paginationModel: { pageSize: 25 } },
+            }}
+            disableRowSelectionOnClick
+          />
+        </Box>
+      )}
 
       {/* Create/Edit Dialog */}
       <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="sm" fullWidth>

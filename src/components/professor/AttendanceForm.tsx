@@ -25,6 +25,11 @@ import {
   Chip,
   CircularProgress,
   Stack,
+  useTheme,
+  useMediaQuery,
+  Card,
+  CardContent,
+  Divider,
 } from '@mui/material';
 import {
   CheckCircle as PresentIcon,
@@ -70,6 +75,8 @@ export function AttendanceForm({
 }: AttendanceFormProps) {
   const queryClient = useQueryClient();
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   // Initialize attendance records
   useEffect(() => {
@@ -178,6 +185,96 @@ export function AttendanceForm({
         <Alert severity="info">
           No hay estudiantes inscritos en esta sesión
         </Alert>
+      ) : isMobile ? (
+        <>
+          <Stack spacing={2}>
+            {students.map((student, index) => {
+              const record = attendanceRecords.find((r) => r.student_id === student.user_id);
+              
+              return (
+                <Card key={student.user_id} variant="outlined">
+                  <CardContent>
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="body2" color="text.secondary" gutterBottom>
+                        Estudiante #{index + 1}
+                      </Typography>
+                      <Typography variant="h6" fontWeight="bold">
+                        {student.name} {student.last_name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {student.email}
+                      </Typography>
+                    </Box>
+                    
+                    <Divider sx={{ my: 2 }} />
+                    
+                    <Box sx={{ mb: 2 }}>
+                      <Typography variant="body2" fontWeight="medium" gutterBottom>
+                        Estado de Asistencia
+                      </Typography>
+                      <ToggleButtonGroup
+                        value={record?.attendance_status}
+                        exclusive
+                        onChange={(_e, value) => handleStatusChange(student.user_id, value)}
+                        size="small"
+                        fullWidth
+                        orientation="vertical"
+                      >
+                        <ToggleButton value="PRESENT" color="success">
+                          <PresentIcon sx={{ mr: 1 }} />
+                          Presente
+                        </ToggleButton>
+                        <ToggleButton value="LATE" color="warning">
+                          <LateIcon sx={{ mr: 1 }} />
+                          Tarde
+                        </ToggleButton>
+                        <ToggleButton value="ABSENT" color="error">
+                          <AbsentIcon sx={{ mr: 1 }} />
+                          Ausente
+                        </ToggleButton>
+                      </ToggleButtonGroup>
+                    </Box>
+                    
+                    <Box>
+                      <Typography variant="body2" fontWeight="medium" gutterBottom>
+                        Notas
+                      </Typography>
+                      <TextField
+                        size="small"
+                        placeholder="Notas opcionales..."
+                        value={record?.notes || ''}
+                        onChange={(e) => handleNotesChange(student.user_id, e.target.value)}
+                        fullWidth
+                        multiline
+                        rows={2}
+                      />
+                    </Box>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </Stack>
+
+          {/* Save Button */}
+          <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
+            <Button
+              variant="contained"
+              size="large"
+              fullWidth
+              startIcon={
+                saveMutation.isPending ? (
+                  <CircularProgress size={20} color="inherit" />
+                ) : (
+                  <SaveIcon />
+                )
+              }
+              onClick={() => saveMutation.mutate()}
+              disabled={saveMutation.isPending}
+            >
+              {saveMutation.isPending ? 'Guardando...' : 'Guardar Asistencia'}
+            </Button>
+          </Box>
+        </>
       ) : (
         <>
           <TableContainer>

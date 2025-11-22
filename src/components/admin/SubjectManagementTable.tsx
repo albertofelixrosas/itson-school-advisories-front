@@ -21,6 +21,9 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
+  Stack,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -42,7 +45,7 @@ import {
   deleteSubject,
 } from '@/api/endpoints/subjects';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
-import { ConfirmDialog } from '@/components/common/ConfirmDialog';
+import { ConfirmDialog, ResponsiveCard } from '@/components/common';
 import type { Subject, CreateSubjectDto, UpdateSubjectDto } from '@/api/types';
 
 /**
@@ -72,6 +75,8 @@ export function SubjectManagementTable() {
   const [searchTerm, setSearchTerm] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const {
     control,
@@ -284,20 +289,62 @@ export function SubjectManagementTable() {
         </Alert>
       )}
 
-      {/* Data Grid */}
-      <Box sx={{ height: 600, width: '100%' }}>
-        <DataGrid
-          rows={filteredSubjects}
-          columns={columns}
-          getRowId={(row) => row.subject_id}
-          loading={isLoading}
-          pageSizeOptions={[10, 25, 50]}
-          initialState={{
-            pagination: { paginationModel: { pageSize: 25 } },
-          }}
-          disableRowSelectionOnClick
-        />
-      </Box>
+      {/* Data Grid / Mobile Cards */}
+      {isMobile ? (
+        <Stack spacing={2}>
+          {isLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <CircularProgress />
+            </Box>
+          ) : filteredSubjects.length === 0 ? (
+            <Alert severity="info">No se encontraron materias</Alert>
+          ) : (
+            filteredSubjects.map((subject) => (
+              <ResponsiveCard
+                key={subject.subject_id}
+                title={subject.subject}
+                info={`ID: ${subject.subject_id}`}
+                actions={
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Tooltip title="Editar">
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => handleEdit(subject)}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Eliminar">
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleDelete(subject)}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                }
+              />
+            ))
+          )}
+        </Stack>
+      ) : (
+        <Box sx={{ height: 600, width: '100%' }}>
+          <DataGrid
+            rows={filteredSubjects}
+            columns={columns}
+            getRowId={(row) => row.subject_id}
+            loading={isLoading}
+            pageSizeOptions={[10, 25, 50]}
+            initialState={{
+              pagination: { paginationModel: { pageSize: 25 } },
+            }}
+            disableRowSelectionOnClick
+          />
+        </Box>
+      )}
 
       {/* Create/Edit Dialog */}
       <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="sm" fullWidth>

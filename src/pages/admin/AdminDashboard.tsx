@@ -137,7 +137,7 @@ export function AdminDashboard() {
           <Typography variant="h6" gutterBottom fontWeight="bold" sx={{ mb: 2 }}>
             Usuarios
           </Typography>
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, md: 3 }}>
             <Grid item xs={12} sm={6} md={3}>
               <StatCard
                 title="Total Usuarios"
@@ -179,7 +179,7 @@ export function AdminDashboard() {
           <Typography variant="h6" gutterBottom fontWeight="bold" sx={{ mb: 2 }}>
             Asesorías y Sesiones
           </Typography>
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, md: 3 }}>
             <Grid item xs={12} sm={6} md={4}>
               <StatCard
                 title="Asesorías Activas"
@@ -215,7 +215,7 @@ export function AdminDashboard() {
           <Typography variant="h6" gutterBottom fontWeight="bold" sx={{ mb: 2 }}>
             Solicitudes y Asistencia
           </Typography>
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, md: 3 }}>
             <Grid item xs={12} sm={6} md={3}>
               <StatCard
                 title="Solicitudes Pendientes"
@@ -255,7 +255,7 @@ export function AdminDashboard() {
         </Box>
 
         {/* Top Lists */}
-        <Grid container spacing={3}>
+        <Grid container spacing={{ xs: 2, md: 3 }}>
           {/* Top Subjects */}
           <Grid item xs={12} md={6}>
             <Card>

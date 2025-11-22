@@ -17,6 +17,9 @@ import {
   InputAdornment,
   Alert,
   Tooltip,
+  Stack,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -31,7 +34,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { getAllUsers, deleteUser, toggleUserStatus } from '@/api/endpoints/users';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
-import { ConfirmDialog } from '@/components/common/ConfirmDialog';
+import { ConfirmDialog, ResponsiveCard } from '@/components/common';
 import type { User, UserRole } from '@/api/types';
 
 /**
@@ -83,6 +86,8 @@ export function UserManagementTable({ onCreateUser, onEditUser }: UserManagement
   const queryClient = useQueryClient();
   const confirmDialog = useConfirmDialog();
   const [searchTerm, setSearchTerm] = useState('');
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   // Fetch all users
   const {
@@ -308,25 +313,86 @@ export function UserManagementTable({ onCreateUser, onEditUser }: UserManagement
         </Alert>
       )}
 
-      {/* Data Grid */}
-      <Box sx={{ height: 600, width: '100%' }}>
-        <DataGrid
-          rows={filteredUsers}
-          columns={columns}
-          getRowId={(row) => row.user_id}
-          loading={isLoading}
-          pageSizeOptions={[10, 25, 50, 100]}
-          initialState={{
-            pagination: { paginationModel: { pageSize: 25 } },
-          }}
-          disableRowSelectionOnClick
-          sx={{
-            '& .MuiDataGrid-cell:focus': {
-              outline: 'none',
-            },
-          }}
-        />
-      </Box>
+      {/* Responsive Content */}
+      {isMobile ? (
+        /* Mobile View: Cards */
+        <Stack spacing={2}>
+          {filteredUsers.length === 0 ? (
+            <Alert severity="info">No se encontraron usuarios.</Alert>
+          ) : (
+            filteredUsers.map((user) => (
+              <ResponsiveCard
+                key={user.user_id}
+                title={`${user.name} ${user.last_name}`}
+                subtitle={user.email}
+                info={`${user.username} • ${user.student_id || user.employee_id || `ID: ${user.user_id}`}`}
+                chips={[
+                  {
+                    label: getRoleLabel(user.role),
+                    color: getRoleColor(user.role),
+                  },
+                  {
+                    label: user.is_active ? 'Activo' : 'Inactivo',
+                    color: user.is_active ? 'success' : 'default',
+                    variant: 'outlined',
+                  },
+                ]}
+                actions={
+                  <>
+                    <Tooltip title="Editar">
+                      <IconButton
+                        size="small"
+                        color="primary"
+                        onClick={() => onEditUser?.(user)}
+                      >
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title={user.is_active ? 'Desactivar' : 'Activar'}>
+                      <IconButton
+                        size="small"
+                        color={user.is_active ? 'warning' : 'success'}
+                        onClick={() => handleToggleStatus(user)}
+                      >
+                        <PowerIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Eliminar">
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleDeleteClick(user)}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </>
+                }
+              />
+            ))
+          )}
+        </Stack>
+      ) : (
+        /* Desktop View: DataGrid */
+        <Box sx={{ height: 600, width: '100%' }}>
+          <DataGrid
+            rows={filteredUsers}
+            columns={columns}
+            getRowId={(row) => row.user_id}
+            loading={isLoading}
+            pageSizeOptions={[10, 25, 50, 100]}
+            initialState={{
+              pagination: { paginationModel: { pageSize: 25 } },
+            }}
+            disableRowSelectionOnClick
+            sx={{
+              '& .MuiDataGrid-cell:focus': {
+                outline: 'none',
+              },
+            }}
+          />
+        </Box>
+      )}
 
       {/* Confirm Dialog */}
       <ConfirmDialog

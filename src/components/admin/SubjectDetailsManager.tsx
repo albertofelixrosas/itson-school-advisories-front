@@ -30,6 +30,8 @@ import {
   CircularProgress,
   Tooltip,
   Stack,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -39,6 +41,7 @@ import {
   Refresh as RefreshIcon,
 } from '@mui/icons-material';
 import toast from 'react-hot-toast';
+import { ResponsiveCard } from '@/components/common';
 import {
   getAllSubjectDetails,
   createSubjectDetail,
@@ -59,6 +62,8 @@ export function SubjectDetailsManager() {
     subject_id: 0,
     professor_id: 0,
   });
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   // Fetch assignments
   const { data: assignments = [], isLoading, refetch } = useQuery({
@@ -201,11 +206,50 @@ export function SubjectDetailsManager() {
         />
       </Stack>
 
-      {/* Table */}
+      {/* Table / Mobile Cards */}
       {assignments.length === 0 ? (
         <Alert severity="info">
           No hay asignaciones registradas. Crea una nueva para comenzar.
         </Alert>
+      ) : isMobile ? (
+        <Stack spacing={2}>
+          {assignments.map((assignment) => (
+            <ResponsiveCard
+              key={assignment.subject_detail_id}
+              title={`${assignment.professor.name} ${assignment.professor.last_name}`}
+              subtitle={assignment.professor.email}
+              info={`Materia: ${assignment.subject.name}`}
+              chips={[
+                {
+                  label: assignment.is_active ? 'Activo' : 'Inactivo',
+                  color: assignment.is_active ? 'success' : 'default',
+                },
+              ]}
+              actions={
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Tooltip title={assignment.is_active ? 'Desactivar' : 'Activar'}>
+                    <IconButton
+                      size="small"
+                      onClick={() => toggleMutation.mutate(assignment.subject_detail_id)}
+                      color={assignment.is_active ? 'warning' : 'success'}
+                    >
+                      {assignment.is_active ? <ToggleOffIcon /> : <ToggleOnIcon />}
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Eliminar">
+                    <IconButton
+                      size="small"
+                      onClick={() => handleDelete(assignment.subject_detail_id)}
+                      color="error"
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+              }
+            />
+          ))}
+        </Stack>
       ) : (
         <TableContainer component={Paper}>
           <Table>

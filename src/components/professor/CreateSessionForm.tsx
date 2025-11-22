@@ -21,6 +21,8 @@ import {
   Alert,
   Paper,
   Typography,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
@@ -119,6 +121,8 @@ interface CreateSessionFormProps {
  */
 export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProps) {
   const queryClient = useQueryClient();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const {
     control,
@@ -204,7 +208,7 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
   };
 
   return (
-    <Paper elevation={2} sx={{ p: 4 }}>
+    <Paper elevation={2} sx={{ p: isMobile ? 2 : 4 }}>
       <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ mb: 3 }}>
         Crear Sesión de Asesoría Directa
       </Typography>
@@ -436,13 +440,20 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
         </Box>
 
         {/* Action Buttons */}
-        <Box sx={{ mt: 4, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+        <Box sx={{ 
+          mt: 4, 
+          display: 'flex', 
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: 2, 
+          justifyContent: 'flex-end' 
+        }}>
           {onCancel && (
             <Button
               variant="outlined"
               onClick={onCancel}
               disabled={isSubmitting || createMutation.isPending}
               size="large"
+              fullWidth={isMobile}
             >
               Cancelar
             </Button>
@@ -451,6 +462,7 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
             type="submit"
             variant="contained"
             size="large"
+            fullWidth={isMobile}
             startIcon={
               isSubmitting || createMutation.isPending ? (
                 <CircularProgress size={20} color="inherit" />

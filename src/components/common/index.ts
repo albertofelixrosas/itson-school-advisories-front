@@ -11,6 +11,8 @@ export { ErrorBoundary } from './ErrorBoundary';
 export { Layout } from './Layout';
 export { ConfirmDialog } from './ConfirmDialog';
 export { DataTable } from './DataTable';
+export { ResponsiveCard } from './ResponsiveCard';
 
 export type { ConfirmDialogProps, ConfirmDialogSeverity } from './ConfirmDialog';
 export type { DataTableProps } from './DataTable';
+export type { ResponsiveCardChip } from './ResponsiveCard';

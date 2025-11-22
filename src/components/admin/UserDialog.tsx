@@ -23,6 +23,8 @@ import {
   MenuItem,
   FormHelperText,
   CircularProgress,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
@@ -142,6 +144,8 @@ interface UserDialogProps {
 export function UserDialog({ open, user, onClose }: UserDialogProps) {
   const queryClient = useQueryClient();
   const isEditMode = !!user;
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const {
     control,
@@ -276,7 +280,7 @@ export function UserDialog({ open, user, onClose }: UserDialogProps) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth fullScreen={isMobile}>
       {/* @ts-expect-error - Yup resolver type mismatch with conditional schema */}
       <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
         <DialogTitle>

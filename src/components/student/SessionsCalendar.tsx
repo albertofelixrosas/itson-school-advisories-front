@@ -291,39 +291,63 @@ function SessionCard({ session, onViewDetails }: SessionCardProps) {
     <Card variant="outlined" sx={{ opacity: isUpcoming ? 1 : 0.7 }}>
       <CardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="h6" gutterBottom>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography variant="h6" gutterBottom noWrap>
               {session.topic}
             </Typography>
             
             <Stack spacing={1} sx={{ mt: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <EventIcon fontSize="small" color="action" />
-                <Typography variant="body2" color="text.secondary">
+                <Typography variant="body2" color="text.secondary" noWrap>
                   {format(sessionDate, "EEEE, d 'de' MMMM, yyyy", { locale: es })}
                 </Typography>
               </Box>
               
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <LocationIcon fontSize="small" color="action" />
-                <Typography variant="body2" color="text.secondary">
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+                <LocationIcon fontSize="small" color="action" sx={{ flexShrink: 0 }} />
+                <Typography 
+                  variant="body2" 
+                  color="text.secondary"
+                  sx={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
                   {session.venue?.name} - {session.venue?.location}
                 </Typography>
               </Box>
 
               {session.advisory?.subject_detail && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <SchoolIcon fontSize="small" color="action" />
-                  <Typography variant="body2" color="text.secondary">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+                  <SchoolIcon fontSize="small" color="action" sx={{ flexShrink: 0 }} />
+                  <Typography 
+                    variant="body2" 
+                    color="text.secondary"
+                    sx={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
                     {session.advisory.subject_detail.subject.subject}
                   </Typography>
                 </Box>
               )}
 
               {session.advisory?.professor && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <PersonIcon fontSize="small" color="action" />
-                  <Typography variant="body2" color="text.secondary">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+                  <PersonIcon fontSize="small" color="action" sx={{ flexShrink: 0 }} />
+                  <Typography 
+                    variant="body2" 
+                    color="text.secondary"
+                    sx={{
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
                     Prof. {session.advisory.professor.name} {session.advisory.professor.last_name}
                   </Typography>
                 </Box>
@@ -335,6 +359,7 @@ function SessionCard({ session, onViewDetails }: SessionCardProps) {
             label={isUpcoming ? 'Próxima' : 'Pasada'}
             color={isUpcoming ? 'success' : 'default'}
             size="small"
+            sx={{ flexShrink: 0 }}
           />
         </Box>
 
@@ -348,7 +373,7 @@ function SessionCard({ session, onViewDetails }: SessionCardProps) {
 
         <Divider sx={{ my: 2 }} />
 
-        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
           <Button
             size="small"
             onClick={() => onViewDetails(session)}
