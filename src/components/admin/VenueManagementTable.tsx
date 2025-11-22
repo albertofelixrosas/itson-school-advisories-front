@@ -25,13 +25,13 @@ import {
   Stack,
   useTheme,
   useMediaQuery,
+  MenuItem,
 } from '@mui/material';
 import {
   Add as AddIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
   Search as SearchIcon,
-  PowerSettingsNew as PowerIcon,
 } from '@mui/icons-material';
 import { DataGrid } from '@mui/x-data-grid';
 import type { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
@@ -45,7 +45,6 @@ import {
   createVenue,
   updateVenue,
   deleteVenue,
-  toggleVenueStatus,
 } from '@/api/endpoints/venues';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { ConfirmDialog, ResponsiveCard } from '@/components/common';
@@ -56,8 +55,10 @@ import type { Venue, CreateVenueDto, UpdateVenueDto } from '@/api/types';
  */
 interface VenueFormData {
   name: string;
-  location: string;
-  capacity: number;
+  type: 'classroom' | 'office' | 'virtual';
+  url?: string;
+  building?: string;
+  floor?: string;
 }
 
 /**
@@ -69,17 +70,32 @@ const validationSchema = yup.object().shape({
     .required('El nombre es requerido')
     .min(3, 'Mínimo 3 caracteres')
     .max(100, 'Máximo 100 caracteres'),
-  location: yup
+  type: yup
     .string()
-    .required('La ubicación es requerida')
-    .min(3, 'Mínimo 3 caracteres')
-    .max(200, 'Máximo 200 caracteres'),
-  capacity: yup
-    .number()
-    .required('La capacidad es requerida')
-    .min(1, 'Mínimo 1 persona')
-    .max(500, 'Máximo 500 personas')
-    .typeError('Debe ser un número'),
+    .required('El tipo es requerido')
+    .oneOf(['classroom', 'office', 'virtual'], 'Tipo inválido')
+    .typeError('Debe seleccionar un tipo'),
+  url: yup
+    .string()
+    .when('type', {
+      is: 'virtual',
+      then: (schema) => schema.required('La URL es obligatoria para ubicaciones virtuales'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+  building: yup
+    .string()
+    .when('type', {
+      is: (val: string) => val === 'classroom' || val === 'office',
+      then: (schema) => schema.required('El edificio es obligatorio para aulas y oficinas'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+  floor: yup
+    .string()
+    .when('type', {
+      is: (val: string) => val === 'classroom' || val === 'office',
+      then: (schema) => schema.required('El piso es obligatorio para aulas y oficinas'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
 });
 
 /**
@@ -99,14 +115,20 @@ export function VenueManagementTable() {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    watch,
   } = useForm<VenueFormData>({
     resolver: yupResolver(validationSchema) as never,
     defaultValues: {
       name: '',
-      location: '',
-      capacity: 20,
+      type: 'classroom',
+      url: '',
+      building: '',
+      floor: '',
     },
   });
+
+  // Watch type field to show/hide conditional fields
+  const venueType = watch('type');
 
   // Fetch all venues
   const {
@@ -166,26 +188,18 @@ export function VenueManagementTable() {
     },
   });
 
-  // Toggle status mutation
-  const toggleStatusMutation = useMutation({
-    mutationFn: (id: number) => toggleVenueStatus(id),
-    onSuccess: () => {
-      toast.success('Estado actualizado exitosamente');
-      queryClient.invalidateQueries({ queryKey: ['admin-venues'] });
-      queryClient.invalidateQueries({ queryKey: ['active-venues'] });
-    },
-    onError: (error: Error) => {
-      const apiError = error as { response?: { data?: { message?: string } } };
-      toast.error(apiError.response?.data?.message || 'Error al actualizar estado');
-    },
-  });
-
   /**
    * Handle create button
    */
   const handleCreate = () => {
     setSelectedVenue(null);
-    reset({ name: '', location: '', capacity: 20 });
+    reset({ 
+      name: '', 
+      type: 'classroom',
+      url: '',
+      building: '',
+      floor: '',
+    });
     setDialogOpen(true);
   };
 
@@ -196,8 +210,10 @@ export function VenueManagementTable() {
     setSelectedVenue(venue);
     reset({
       name: venue.name,
-      location: venue.location,
-      capacity: venue.capacity,
+      type: venue.type,
+      url: venue.url || '',
+      building: venue.building || '',
+      floor: venue.floor || '',
     });
     setDialogOpen(true);
   };
@@ -208,20 +224,39 @@ export function VenueManagementTable() {
   const handleCloseDialog = () => {
     setDialogOpen(false);
     setSelectedVenue(null);
-    reset({ name: '', location: '', capacity: 20 });
+    reset({ 
+      name: '', 
+      type: 'classroom',
+      url: '',
+      building: '',
+      floor: '',
+    });
   };
 
   /**
    * Handle form submit
    */
   const onSubmit = (data: VenueFormData) => {
+    // Prepare data according to venue type
+    const venueData: CreateVenueDto = {
+      name: data.name,
+      type: data.type,
+    };
+
+    if (data.type === 'virtual') {
+      venueData.url = data.url;
+    } else {
+      venueData.building = data.building;
+      venueData.floor = data.floor;
+    }
+
     if (selectedVenue) {
       updateMutation.mutate({
         id: selectedVenue.venue_id,
-        updateData: data,
+        updateData: venueData,
       });
     } else {
-      createMutation.mutate(data);
+      createMutation.mutate(venueData);
     }
   };
 
@@ -241,28 +276,10 @@ export function VenueManagementTable() {
   };
 
   /**
-   * Handle toggle status
-   */
-  const handleToggleStatus = (venue: Venue) => {
-    const action = venue.is_active ? 'desactivar' : 'activar';
-    confirmDialog.showDialog({
-      title: `${action.charAt(0).toUpperCase() + action.slice(1)} Sede`,
-      message: `¿Está seguro que desea ${action} la sede "${venue.name}"?`,
-      confirmText: action.charAt(0).toUpperCase() + action.slice(1),
-      severity: venue.is_active ? 'warning' : 'info',
-      onConfirm: async () => {
-        toggleStatusMutation.mutate(venue.venue_id);
-      },
-    });
-  };
-
-  /**
    * Filter venues
    */
-  const filteredVenues = venues.filter(
-    (venue) =>
-      venue.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      venue.location.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredVenues = venues.filter((venue) =>
+    venue.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   /**
@@ -281,33 +298,37 @@ export function VenueManagementTable() {
       minWidth: 200,
     },
     {
-      field: 'location',
-      headerName: 'Ubicación',
+      field: 'type',
+      headerName: 'Tipo',
+      width: 150,
+      valueGetter: (value) => {
+        switch (value) {
+          case 'classroom': return 'Salón de Clases';
+          case 'office': return 'Oficina';
+          case 'virtual': return 'Virtual';
+          default: return value;
+        }
+      },
+    },
+    {
+      field: 'location_info',
+      headerName: 'Ubicación / URL',
       flex: 1,
       minWidth: 250,
-    },
-    {
-      field: 'capacity',
-      headerName: 'Capacidad',
-      width: 120,
-      valueFormatter: (value) => `${value} personas`,
-    },
-    {
-      field: 'is_active',
-      headerName: 'Estado',
-      width: 120,
-      renderCell: (params: GridRenderCellParams) => (
-        <Chip
-          label={params.value ? 'Activa' : 'Inactiva'}
-          color={params.value ? 'success' : 'default'}
-          size="small"
-        />
-      ),
+      valueGetter: (value, row) => {
+        if (row.type === 'virtual') {
+          return row.url || 'N/A';
+        } else {
+          const building = row.building || '';
+          const floor = row.floor || '';
+          return building && floor ? `${building} - ${floor}` : 'N/A';
+        }
+      },
     },
     {
       field: 'actions',
       headerName: 'Acciones',
-      width: 180,
+      width: 150,
       sortable: false,
       renderCell: (params: GridRenderCellParams) => (
         <Box sx={{ display: 'flex', gap: 1 }}>
@@ -318,15 +339,6 @@ export function VenueManagementTable() {
               onClick={() => handleEdit(params.row as Venue)}
             >
               <EditIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title={params.row.is_active ? 'Desactivar' : 'Activar'}>
-            <IconButton
-              size="small"
-              color={params.row.is_active ? 'warning' : 'success'}
-              onClick={() => handleToggleStatus(params.row as Venue)}
-            >
-              <PowerIcon fontSize="small" />
             </IconButton>
           </Tooltip>
           <Tooltip title="Eliminar">
@@ -359,7 +371,7 @@ export function VenueManagementTable() {
       <Box sx={{ mb: 3 }}>
         <TextField
           fullWidth
-          placeholder="Buscar por nombre o ubicación..."
+          placeholder="Buscar por nombre..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
@@ -389,51 +401,48 @@ export function VenueManagementTable() {
           ) : filteredVenues.length === 0 ? (
             <Alert severity="info">No se encontraron sedes</Alert>
           ) : (
-            filteredVenues.map((venue) => (
-              <ResponsiveCard
-                key={venue.venue_id}
-                title={venue.name}
-                subtitle={venue.location}
-                info={`Capacidad: ${venue.capacity} personas`}
-                chips={[
-                  {
-                    label: venue.is_active ? 'Activa' : 'Inactiva',
-                    color: venue.is_active ? 'success' : 'default',
-                  },
-                ]}
-                actions={
-                  <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Tooltip title="Editar">
-                      <IconButton
-                        size="small"
-                        color="primary"
-                        onClick={() => handleEdit(venue)}
-                      >
-                        <EditIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title={venue.is_active ? 'Desactivar' : 'Activar'}>
-                      <IconButton
-                        size="small"
-                        color={venue.is_active ? 'warning' : 'success'}
-                        onClick={() => handleToggleStatus(venue)}
-                      >
-                        <PowerIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Eliminar">
-                      <IconButton
-                        size="small"
-                        color="error"
-                        onClick={() => handleDelete(venue)}
-                      >
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-                }
-              />
-            ))
+            filteredVenues.map((venue) => {
+              const typeLabel = venue.type === 'classroom' ? 'Salón de Clases' 
+                : venue.type === 'office' ? 'Oficina' 
+                : 'Virtual';
+              
+              const locationInfo = venue.type === 'virtual'
+                ? venue.url || 'Sin URL'
+                : venue.building && venue.floor
+                ? `${venue.building} - ${venue.floor}`
+                : 'Sin ubicación';
+              
+              return (
+                <ResponsiveCard
+                  key={venue.venue_id}
+                  title={venue.name}
+                  subtitle={typeLabel}
+                  info={locationInfo}
+                  actions={
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Tooltip title="Editar">
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          onClick={() => handleEdit(venue)}
+                        >
+                          <EditIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Eliminar">
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={() => handleDelete(venue)}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  }
+                />
+              );
+            })
           )}
         </Stack>
       ) : (
@@ -473,7 +482,7 @@ export function VenueManagementTable() {
                   {...field}
                   fullWidth
                   label="Nombre"
-                  placeholder="Ej: Sala 101"
+                  placeholder="Ej: Sala 101, Cubículo 12, Google Meet"
                   error={!!errors.name}
                   helperText={errors.name?.message}
                   disabled={isSubmitting}
@@ -483,40 +492,80 @@ export function VenueManagementTable() {
             />
 
             <Controller
-              name="location"
+              name="type"
               control={control}
               render={({ field }) => (
                 <TextField
                   {...field}
+                  select
                   fullWidth
-                  label="Ubicación"
-                  placeholder="Ej: Edificio A, Piso 2"
-                  error={!!errors.location}
-                  helperText={errors.location?.message}
+                  label="Tipo de Sede"
+                  error={!!errors.type}
+                  helperText={errors.type?.message || 'Seleccione el tipo de sede'}
                   disabled={isSubmitting}
                   required
-                />
+                >
+                  <MenuItem value="classroom">Salón de Clases</MenuItem>
+                  <MenuItem value="office">Oficina</MenuItem>
+                  <MenuItem value="virtual">Virtual</MenuItem>
+                </TextField>
               )}
             />
 
-            <Controller
-              name="capacity"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  type="number"
-                  label="Capacidad"
-                  placeholder="20"
-                  error={!!errors.capacity}
-                  helperText={errors.capacity?.message || 'Número máximo de personas'}
-                  disabled={isSubmitting}
-                  required
-                  inputProps={{ min: 1, max: 500 }}
+            {/* Conditional fields based on venue type */}
+            {venueType === 'virtual' ? (
+              <Controller
+                name="url"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    label="URL"
+                    placeholder="https://meet.google.com/abc-defg-hij"
+                    error={!!errors.url}
+                    helperText={errors.url?.message || 'URL de la plataforma virtual'}
+                    disabled={isSubmitting}
+                    required
+                  />
+                )}
+              />
+            ) : (
+              <>
+                <Controller
+                  name="building"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      label="Edificio"
+                      placeholder="Ej: Edificio A, Torre Norte"
+                      error={!!errors.building}
+                      helperText={errors.building?.message || 'Edificio donde se ubica'}
+                      disabled={isSubmitting}
+                      required
+                    />
+                  )}
                 />
-              )}
-            />
+                <Controller
+                  name="floor"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      fullWidth
+                      label="Piso"
+                      placeholder="Ej: Planta Baja, Primer Piso, PB"
+                      error={!!errors.floor}
+                      helperText={errors.floor?.message || 'Piso o nivel'}
+                      disabled={isSubmitting}
+                      required
+                    />
+                  )}
+                />
+              </>
+            )}
           </Box>
         </DialogContent>
         <DialogActions>

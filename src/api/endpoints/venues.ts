@@ -7,11 +7,21 @@ import { apiClient } from '../client';
 import type { Venue, CreateVenueDto, UpdateVenueDto } from '../types';
 
 /**
+ * Paginated Response from backend
+ */
+interface PaginatedVenues {
+  data: Venue[];
+  total: number;
+  page: number;
+  lastPage: number;
+}
+
+/**
  * Get all venues
  */
 export async function getAllVenues(): Promise<Venue[]> {
-  const response = await apiClient.get<Venue[]>('/venues');
-  return response.data;
+  const response = await apiClient.get<PaginatedVenues>('/venues');
+  return response.data.data; // Extract the 'data' array from paginated response
 }
 
 /**

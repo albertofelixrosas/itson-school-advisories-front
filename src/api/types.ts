@@ -100,11 +100,10 @@ export interface SubjectSchedule {
 export interface Venue {
   venue_id: number;
   name: string;
-  location: string;
-  capacity: number;
-  venue_type: string;
-  equipment: string | null;
-  is_active: boolean;
+  type: 'classroom' | 'office' | 'virtual';
+  url?: string;
+  building?: string;
+  floor?: string;
 }
 
 // ===== ADVISORY SYSTEM =====
@@ -331,15 +330,18 @@ export interface UpdateSubjectDto {
 // Venue Management DTOs (Admin)
 export interface CreateVenueDto {
   name: string;
-  location: string;
-  capacity: number;
+  type: 'classroom' | 'office' | 'virtual';
+  url?: string;        // Obligatorio solo para 'virtual'
+  building?: string;   // Obligatorio solo para 'classroom' y 'office'
+  floor?: string;      // Obligatorio solo para 'classroom' y 'office'
 }
 
 export interface UpdateVenueDto {
   name?: string;
-  location?: string;
-  capacity?: number;
-  is_active?: boolean;
+  type?: 'classroom' | 'office' | 'virtual';
+  url?: string;
+  building?: string;
+  floor?: string;
 }
 
 export interface DashboardDataDto {
