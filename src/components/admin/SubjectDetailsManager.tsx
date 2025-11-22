@@ -32,6 +32,9 @@ import {
   Stack,
   useTheme,
   useMediaQuery,
+  Divider,
+  Card,
+  CardContent,
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -39,6 +42,7 @@ import {
   ToggleOn as ToggleOnIcon,
   ToggleOff as ToggleOffIcon,
   Refresh as RefreshIcon,
+  Remove as RemoveIcon,
 } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 import { ResponsiveCard } from '@/components/common';
@@ -61,6 +65,7 @@ export function SubjectDetailsManager() {
   const [formData, setFormData] = useState<CreateSubjectDetailDto>({
     subject_id: 0,
     professor_id: 0,
+    schedules: [],
   });
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -127,7 +132,17 @@ export function SubjectDetailsManager() {
   });
 
   const handleOpenDialog = () => {
-    setFormData({ subject_id: 0, professor_id: 0 });
+    setFormData({ 
+      subject_id: 0, 
+      professor_id: 0,
+      schedules: [
+        {
+          day: 'MONDAY',
+          start_time: '08:00',
+          end_time: '10:00',
+        },
+      ],
+    });
     setDialogOpen(true);
   };
 
@@ -140,7 +155,41 @@ export function SubjectDetailsManager() {
       toast.error('Debe seleccionar materia y profesor');
       return;
     }
+    if (!formData.schedules || formData.schedules.length === 0) {
+      toast.error('Debe agregar al menos un horario');
+      return;
+    }
     createMutation.mutate(formData);
+  };
+
+  const handleAddSchedule = () => {
+    const newSchedule = {
+      day: 'MONDAY' as const,
+      start_time: '08:00',
+      end_time: '10:00',
+    };
+    setFormData({
+      ...formData,
+      schedules: [...(formData.schedules || []), newSchedule],
+    });
+  };
+
+  const handleRemoveSchedule = (index: number) => {
+    const updatedSchedules = formData.schedules?.filter((_, i) => i !== index) || [];
+    setFormData({ ...formData, schedules: updatedSchedules });
+  };
+
+  const handleScheduleChange = (
+    index: number,
+    field: 'day' | 'start_time' | 'end_time',
+    value: string
+  ) => {
+    const updatedSchedules = [...(formData.schedules || [])];
+    updatedSchedules[index] = {
+      ...updatedSchedules[index],
+      [field]: value,
+    };
+    setFormData({ ...formData, schedules: updatedSchedules });
   };
 
   const handleDelete = (id: number) => {
@@ -216,9 +265,9 @@ export function SubjectDetailsManager() {
           {assignments.map((assignment) => (
             <ResponsiveCard
               key={assignment.subject_detail_id}
-              title={`${assignment.professor.name} ${assignment.professor.last_name}`}
-              subtitle={assignment.professor.email}
-              info={`Materia: ${assignment.subject.name}`}
+              title={`${assignment.professor?.name || ''} ${assignment.professor?.last_name || ''}`}
+              subtitle={assignment.professor?.email || ''}
+              info={`Materia: ${assignment.subject?.name || ''}`}
               chips={[
                 {
                   label: assignment.is_active ? 'Activo' : 'Inactivo',
@@ -269,18 +318,18 @@ export function SubjectDetailsManager() {
                   <TableCell>{assignment.subject_detail_id}</TableCell>
                   <TableCell>
                     <Typography variant="body2" fontWeight="medium">
-                      {assignment.subject.name}
+                      {assignment.subject?.name || 'N/A'}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      {assignment.subject.code}
+                      {assignment.subject?.code || ''}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    {assignment.professor.name} {assignment.professor.last_name}
+                    {assignment.professor?.name || ''} {assignment.professor?.last_name || ''}
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" color="text.secondary">
-                      {assignment.professor.email}
+                      {assignment.professor?.email || ''}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -318,7 +367,7 @@ export function SubjectDetailsManager() {
       )}
 
       {/* Create Dialog */}
-      <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+      <Dialog open={dialogOpen} onClose={handleCloseDialog} maxWidth="md" fullWidth>
         <DialogTitle>Nueva Asignación Profesor-Materia</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -358,8 +407,94 @@ export function SubjectDetailsManager() {
               ))}
             </TextField>
 
+            <Divider sx={{ my: 1 }} />
+
+            {/* Schedules Section */}
+            <Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="subtitle1" fontWeight="bold">
+                  Horarios
+                </Typography>
+                <Button
+                  size="small"
+                  startIcon={<AddIcon />}
+                  onClick={handleAddSchedule}
+                  variant="outlined"
+                >
+                  Agregar Horario
+                </Button>
+              </Box>
+
+              {formData.schedules && formData.schedules.length === 0 && (
+                <Alert severity="warning" sx={{ mb: 2 }}>
+                  Debe agregar al menos un horario para la materia
+                </Alert>
+              )}
+
+              <Stack spacing={2}>
+                {formData.schedules?.map((schedule, index) => (
+                  <Card key={index} variant="outlined">
+                    <CardContent>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Typography variant="subtitle2" color="primary">
+                          Horario {index + 1}
+                        </Typography>
+                        {formData.schedules && formData.schedules.length > 1 && (
+                          <IconButton
+                            size="small"
+                            color="error"
+                            onClick={() => handleRemoveSchedule(index)}
+                          >
+                            <RemoveIcon />
+                          </IconButton>
+                        )}
+                      </Box>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <TextField
+                          select
+                          label="Día de la semana"
+                          value={schedule.day}
+                          onChange={(e) => handleScheduleChange(index, 'day', e.target.value)}
+                          fullWidth
+                          size="small"
+                        >
+                          <MenuItem value="MONDAY">Lunes</MenuItem>
+                          <MenuItem value="TUESDAY">Martes</MenuItem>
+                          <MenuItem value="WEDNESDAY">Miércoles</MenuItem>
+                          <MenuItem value="THURSDAY">Jueves</MenuItem>
+                          <MenuItem value="FRIDAY">Viernes</MenuItem>
+                          <MenuItem value="SATURDAY">Sábado</MenuItem>
+                          <MenuItem value="SUNDAY">Domingo</MenuItem>
+                        </TextField>
+                        <Box sx={{ display: 'flex', gap: 2 }}>
+                          <TextField
+                            label="Hora de inicio"
+                            type="time"
+                            value={schedule.start_time}
+                            onChange={(e) => handleScheduleChange(index, 'start_time', e.target.value)}
+                            fullWidth
+                            size="small"
+                            InputLabelProps={{ shrink: true }}
+                          />
+                          <TextField
+                            label="Hora de fin"
+                            type="time"
+                            value={schedule.end_time}
+                            onChange={(e) => handleScheduleChange(index, 'end_time', e.target.value)}
+                            fullWidth
+                            size="small"
+                            InputLabelProps={{ shrink: true }}
+                          />
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                ))}
+              </Stack>
+            </Box>
+
             <Alert severity="info">
-              Esta asignación permitirá al profesor crear asesorías para la materia seleccionada.
+              Esta asignación permitirá al profesor crear asesorías para la materia seleccionada en los horarios especificados.
             </Alert>
           </Box>
         </DialogContent>
