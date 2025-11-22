@@ -5,7 +5,7 @@
  * Dialog form for creating or editing users (Admin)
  */
 
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -170,37 +170,40 @@ export function UserDialog({ open, user, onClose }: UserDialogProps) {
     },
   });
 
-  // Reset form when user changes
+  // Reset form when user changes (deferred to avoid blocking)
   useEffect(() => {
-    if (user) {
-      reset({
-        username: user.username,
-        email: user.email,
-        password: '',
-        name: user.name,
-        last_name: user.last_name,
-        phone_number: user.phone_number,
-        school_id: user.school_id || '',
-        student_id: user.student_id || '',
-        employee_id: user.employee_id || '',
-        role: user.role,
-        photo_url: user.photo_url || '',
-      });
-    } else {
-      reset({
-        username: '',
-        email: '',
-        password: '',
-        name: '',
-        last_name: '',
-        phone_number: '',
-        school_id: '',
-        student_id: '',
-        employee_id: '',
-        role: 'student',
-        photo_url: '',
-      });
-    }
+    const timer = setTimeout(() => {
+      if (user) {
+        reset({
+          username: user.username,
+          email: user.email,
+          password: '',
+          name: user.name,
+          last_name: user.last_name,
+          phone_number: user.phone_number,
+          school_id: user.school_id || '',
+          student_id: user.student_id || '',
+          employee_id: user.employee_id || '',
+          role: user.role,
+          photo_url: user.photo_url || '',
+        });
+      } else {
+        reset({
+          username: '',
+          email: '',
+          password: '',
+          name: '',
+          last_name: '',
+          phone_number: '',
+          school_id: '',
+          student_id: '',
+          employee_id: '',
+          role: 'student',
+          photo_url: '',
+        });
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, [user, reset]);
 
   // Create user mutation
@@ -237,7 +240,7 @@ export function UserDialog({ open, user, onClose }: UserDialogProps) {
   /**
    * Form submit handler
    */
-  const onSubmit = (data: UserFormData) => {
+  const onSubmit = useCallback((data: UserFormData) => {
     if (isEditMode && user) {
       // Edit mode
       const updateData: UpdateUserDto = {
@@ -277,7 +280,7 @@ export function UserDialog({ open, user, onClose }: UserDialogProps) {
 
       createMutation.mutate(createData);
     }
-  };
+  }, [isEditMode, user, updateMutation, createMutation]);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth fullScreen={isMobile}>

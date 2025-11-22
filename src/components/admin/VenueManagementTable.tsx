@@ -5,7 +5,7 @@
  * Admin component for managing venues
  */
 
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   Box,
   Paper,
@@ -62,7 +62,7 @@ interface VenueFormData {
 }
 
 /**
- * Validation Schema
+ * Validation Schema - Defined outside component to avoid recreation on each render
  */
 const validationSchema = yup.object().shape({
   name: yup
@@ -77,24 +77,24 @@ const validationSchema = yup.object().shape({
     .typeError('Debe seleccionar un tipo'),
   url: yup
     .string()
-    .when('type', {
-      is: 'virtual',
-      then: (schema) => schema.required('La URL es obligatoria para ubicaciones virtuales'),
-      otherwise: (schema) => schema.notRequired(),
+    .when('type', ([type], schema) => {
+      return type === 'virtual' 
+        ? schema.required('La URL es obligatoria para ubicaciones virtuales')
+        : schema.notRequired();
     }),
   building: yup
     .string()
-    .when('type', {
-      is: (val: string) => val === 'classroom' || val === 'office',
-      then: (schema) => schema.required('El edificio es obligatorio para aulas y oficinas'),
-      otherwise: (schema) => schema.notRequired(),
+    .when('type', ([type], schema) => {
+      return type === 'classroom' || type === 'office'
+        ? schema.required('El edificio es obligatorio para aulas y oficinas')
+        : schema.notRequired();
     }),
   floor: yup
     .string()
-    .when('type', {
-      is: (val: string) => val === 'classroom' || val === 'office',
-      then: (schema) => schema.required('El piso es obligatorio para aulas y oficinas'),
-      otherwise: (schema) => schema.notRequired(),
+    .when('type', ([type], schema) => {
+      return type === 'classroom' || type === 'office'
+        ? schema.required('El piso es obligatorio para aulas y oficinas')
+        : schema.notRequired();
     }),
 });
 
@@ -191,52 +191,61 @@ export function VenueManagementTable() {
   /**
    * Handle create button
    */
-  const handleCreate = () => {
+  const handleCreate = useCallback(() => {
     setSelectedVenue(null);
-    reset({ 
-      name: '', 
-      type: 'classroom',
-      url: '',
-      building: '',
-      floor: '',
-    });
     setDialogOpen(true);
-  };
+    // Reset form asynchronously to avoid blocking
+    setTimeout(() => {
+      reset({ 
+        name: '', 
+        type: 'classroom',
+        url: '',
+        building: '',
+        floor: '',
+      });
+    }, 0);
+  }, [reset]);
 
   /**
    * Handle edit button
    */
-  const handleEdit = (venue: Venue) => {
+  const handleEdit = useCallback((venue: Venue) => {
     setSelectedVenue(venue);
-    reset({
-      name: venue.name,
-      type: venue.type,
-      url: venue.url || '',
-      building: venue.building || '',
-      floor: venue.floor || '',
-    });
     setDialogOpen(true);
-  };
+    // Reset form asynchronously to avoid blocking
+    setTimeout(() => {
+      reset({
+        name: venue.name,
+        type: venue.type,
+        url: venue.url || '',
+        building: venue.building || '',
+        floor: venue.floor || '',
+      });
+    }, 0);
+  }, [reset]);
 
   /**
    * Handle close dialog
    */
-  const handleCloseDialog = () => {
+  const handleCloseDialog = useCallback(() => {
     setDialogOpen(false);
-    setSelectedVenue(null);
-    reset({ 
-      name: '', 
-      type: 'classroom',
-      url: '',
-      building: '',
-      floor: '',
-    });
-  };
+    // Defer state updates to avoid blocking the close animation
+    setTimeout(() => {
+      setSelectedVenue(null);
+      reset({ 
+        name: '', 
+        type: 'classroom',
+        url: '',
+        building: '',
+        floor: '',
+      });
+    }, 100);
+  }, [reset]);
 
   /**
    * Handle form submit
    */
-  const onSubmit = (data: VenueFormData) => {
+  const onSubmit = useCallback((data: VenueFormData) => {
     // Prepare data according to venue type
     const venueData: CreateVenueDto = {
       name: data.name,
@@ -258,12 +267,12 @@ export function VenueManagementTable() {
     } else {
       createMutation.mutate(venueData);
     }
-  };
+  }, [selectedVenue, createMutation, updateMutation]);
 
   /**
    * Handle delete
    */
-  const handleDelete = (venue: Venue) => {
+  const handleDelete = useCallback((venue: Venue) => {
     confirmDialog.showDialog({
       title: 'Eliminar Sede',
       message: `¿Está seguro que desea eliminar la sede "${venue.name}"?`,
@@ -273,13 +282,16 @@ export function VenueManagementTable() {
         deleteMutation.mutate(venue.venue_id);
       },
     });
-  };
+  }, [confirmDialog, deleteMutation]);
 
   /**
    * Filter venues
    */
-  const filteredVenues = venues.filter((venue) =>
-    venue.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredVenues = useMemo(
+    () => venues.filter((venue) =>
+      venue.name.toLowerCase().includes(searchTerm.toLowerCase())
+    ),
+    [venues, searchTerm]
   );
 
   /**
@@ -472,123 +484,125 @@ export function VenueManagementTable() {
         <DialogTitle>
           {selectedVenue ? 'Editar Sede' : 'Crear Nueva Sede'}
         </DialogTitle>
-        <DialogContent dividers>
-          <Box sx={{ display: 'grid', gap: 2, pt: 1 }}>
-            <Controller
-              name="name"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  label="Nombre"
-                  placeholder="Ej: Sala 101, Cubículo 12, Google Meet"
-                  error={!!errors.name}
-                  helperText={errors.name?.message}
-                  disabled={isSubmitting}
-                  required
-                />
-              )}
-            />
-
-            <Controller
-              name="type"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  select
-                  fullWidth
-                  label="Tipo de Sede"
-                  error={!!errors.type}
-                  helperText={errors.type?.message || 'Seleccione el tipo de sede'}
-                  disabled={isSubmitting}
-                  required
-                >
-                  <MenuItem value="classroom">Salón de Clases</MenuItem>
-                  <MenuItem value="office">Oficina</MenuItem>
-                  <MenuItem value="virtual">Virtual</MenuItem>
-                </TextField>
-              )}
-            />
-
-            {/* Conditional fields based on venue type */}
-            {venueType === 'virtual' ? (
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <DialogContent dividers>
+            <Box sx={{ display: 'grid', gap: 2, pt: 1 }}>
               <Controller
-                name="url"
+                name="name"
                 control={control}
                 render={({ field }) => (
                   <TextField
                     {...field}
                     fullWidth
-                    label="URL"
-                    placeholder="https://meet.google.com/abc-defg-hij"
-                    error={!!errors.url}
-                    helperText={errors.url?.message || 'URL de la plataforma virtual'}
+                    label="Nombre"
+                    placeholder="Ej: Sala 101, Cubículo 12, Google Meet"
+                    error={!!errors.name}
+                    helperText={errors.name?.message}
                     disabled={isSubmitting}
                     required
                   />
                 )}
               />
-            ) : (
-              <>
+
+              <Controller
+                name="type"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    select
+                    fullWidth
+                    label="Tipo de Sede"
+                    error={!!errors.type}
+                    helperText={errors.type?.message || 'Seleccione el tipo de sede'}
+                    disabled={isSubmitting}
+                    required
+                  >
+                    <MenuItem value="classroom">Salón de Clases</MenuItem>
+                    <MenuItem value="office">Oficina</MenuItem>
+                    <MenuItem value="virtual">Virtual</MenuItem>
+                  </TextField>
+                )}
+              />
+
+              {/* Conditional fields based on venue type */}
+              {venueType === 'virtual' ? (
                 <Controller
-                  name="building"
+                  name="url"
                   control={control}
                   render={({ field }) => (
                     <TextField
                       {...field}
                       fullWidth
-                      label="Edificio"
-                      placeholder="Ej: Edificio A, Torre Norte"
-                      error={!!errors.building}
-                      helperText={errors.building?.message || 'Edificio donde se ubica'}
+                      label="URL"
+                      placeholder="https://meet.google.com/abc-defg-hij"
+                      error={!!errors.url}
+                      helperText={errors.url?.message || 'URL de la plataforma virtual'}
                       disabled={isSubmitting}
                       required
                     />
                   )}
                 />
-                <Controller
-                  name="floor"
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      fullWidth
-                      label="Piso"
-                      placeholder="Ej: Planta Baja, Primer Piso, PB"
-                      error={!!errors.floor}
-                      helperText={errors.floor?.message || 'Piso o nivel'}
-                      disabled={isSubmitting}
-                      required
-                    />
-                  )}
-                />
-              </>
-            )}
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} disabled={isSubmitting}>
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleSubmit(onSubmit)}
-            variant="contained"
-            disabled={isSubmitting || createMutation.isPending || updateMutation.isPending}
-            startIcon={
-              isSubmitting || createMutation.isPending || updateMutation.isPending ? (
-                <CircularProgress size={20} color="inherit" />
-              ) : undefined
-            }
-          >
-            {isSubmitting || createMutation.isPending || updateMutation.isPending
-              ? 'Guardando...'
-              : selectedVenue
-              ? 'Actualizar'
-              : 'Crear'}
-          </Button>
-        </DialogActions>
+              ) : (
+                <>
+                  <Controller
+                    name="building"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        fullWidth
+                        label="Edificio"
+                        placeholder="Ej: Edificio A, Torre Norte"
+                        error={!!errors.building}
+                        helperText={errors.building?.message || 'Edificio donde se ubica'}
+                        disabled={isSubmitting}
+                        required
+                      />
+                    )}
+                  />
+                  <Controller
+                    name="floor"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        fullWidth
+                        label="Piso"
+                        placeholder="Ej: Planta Baja, Primer Piso, PB"
+                        error={!!errors.floor}
+                        helperText={errors.floor?.message || 'Piso o nivel'}
+                        disabled={isSubmitting}
+                        required
+                      />
+                    )}
+                  />
+                </>
+              )}
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialog} disabled={isSubmitting} type="button">
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isSubmitting || createMutation.isPending || updateMutation.isPending}
+              startIcon={
+                isSubmitting || createMutation.isPending || updateMutation.isPending ? (
+                  <CircularProgress size={20} color="inherit" />
+                ) : undefined
+              }
+            >
+              {isSubmitting || createMutation.isPending || updateMutation.isPending
+                ? 'Guardando...'
+                : selectedVenue
+                ? 'Actualizar'
+                : 'Crear'}
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
 
       {/* Confirm Dialog */}

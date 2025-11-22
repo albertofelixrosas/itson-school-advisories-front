@@ -5,7 +5,7 @@
  * Admin component for managing subjects
  */
 
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import {
   Box,
   Paper,
@@ -56,7 +56,7 @@ interface SubjectFormData {
 }
 
 /**
- * Validation Schema
+ * Validation Schema - Defined outside component
  */
 const validationSchema = yup.object().shape({
   subject: yup
@@ -148,34 +148,36 @@ export function SubjectManagementTable() {
   /**
    * Handle create button
    */
-  const handleCreate = () => {
+  const handleCreate = useCallback(() => {
     setSelectedSubject(null);
-    reset({ subject: '' });
     setDialogOpen(true);
-  };
+    setTimeout(() => reset({ subject: '' }), 0);
+  }, [reset]);
 
   /**
    * Handle edit button
    */
-  const handleEdit = (subject: Subject) => {
+  const handleEdit = useCallback((subject: Subject) => {
     setSelectedSubject(subject);
-    reset({ subject: subject.subject });
     setDialogOpen(true);
-  };
+    setTimeout(() => reset({ subject: subject.subject }), 0);
+  }, [reset]);
 
   /**
    * Handle close dialog
    */
-  const handleCloseDialog = () => {
+  const handleCloseDialog = useCallback(() => {
     setDialogOpen(false);
-    setSelectedSubject(null);
-    reset({ subject: '' });
-  };
+    setTimeout(() => {
+      setSelectedSubject(null);
+      reset({ subject: '' });
+    }, 100);
+  }, [reset]);
 
   /**
    * Handle form submit
    */
-  const onSubmit = (data: SubjectFormData) => {
+  const onSubmit = useCallback((data: SubjectFormData) => {
     if (selectedSubject) {
       updateMutation.mutate({
         id: selectedSubject.subject_id,
@@ -184,12 +186,12 @@ export function SubjectManagementTable() {
     } else {
       createMutation.mutate({ subject: data.subject });
     }
-  };
+  }, [selectedSubject, updateMutation, createMutation]);
 
   /**
    * Handle delete
    */
-  const handleDelete = (subject: Subject) => {
+  const handleDelete = useCallback((subject: Subject) => {
     confirmDialog.showDialog({
       title: 'Eliminar Materia',
       message: `¿Está seguro que desea eliminar la materia "${subject.subject}"?`,
@@ -199,13 +201,16 @@ export function SubjectManagementTable() {
         deleteMutation.mutate(subject.subject_id);
       },
     });
-  };
+  }, [confirmDialog, deleteMutation]);
 
   /**
    * Filter subjects
    */
-  const filteredSubjects = subjects.filter((subject) =>
-    subject.subject.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredSubjects = useMemo(
+    () => subjects.filter((subject) =>
+      subject.subject.toLowerCase().includes(searchTerm.toLowerCase())
+    ),
+    [subjects, searchTerm]
   );
 
   /**
@@ -357,46 +362,48 @@ export function SubjectManagementTable() {
         <DialogTitle>
           {selectedSubject ? 'Editar Materia' : 'Crear Nueva Materia'}
         </DialogTitle>
-        <DialogContent dividers>
-          <Controller
-            name="subject"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                {...field}
-                fullWidth
-                label="Nombre de la Materia"
-                placeholder="Ej: Cálculo Diferencial"
-                error={!!errors.subject}
-                helperText={errors.subject?.message}
-                disabled={isSubmitting}
-                required
-                sx={{ mt: 1 }}
-              />
-            )}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} disabled={isSubmitting}>
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleSubmit(onSubmit)}
-            variant="contained"
-            disabled={isSubmitting || createMutation.isPending || updateMutation.isPending}
-            startIcon={
-              isSubmitting || createMutation.isPending || updateMutation.isPending ? (
-                <CircularProgress size={20} color="inherit" />
-              ) : undefined
-            }
-          >
-            {isSubmitting || createMutation.isPending || updateMutation.isPending
-              ? 'Guardando...'
-              : selectedSubject
-              ? 'Actualizar'
-              : 'Crear'}
-          </Button>
-        </DialogActions>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <DialogContent dividers>
+            <Controller
+              name="subject"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  fullWidth
+                  label="Nombre de la Materia"
+                  placeholder="Ej: Cálculo Diferencial"
+                  error={!!errors.subject}
+                  helperText={errors.subject?.message}
+                  disabled={isSubmitting}
+                  required
+                  sx={{ mt: 1 }}
+                />
+              )}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialog} disabled={isSubmitting} type="button">
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isSubmitting || createMutation.isPending || updateMutation.isPending}
+              startIcon={
+                isSubmitting || createMutation.isPending || updateMutation.isPending ? (
+                  <CircularProgress size={20} color="inherit" />
+                ) : undefined
+              }
+            >
+              {isSubmitting || createMutation.isPending || updateMutation.isPending
+                ? 'Guardando...'
+                : selectedSubject
+                ? 'Actualizar'
+                : 'Crear'}
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
 
       {/* Confirm Dialog */}

@@ -5,7 +5,7 @@
  * Application layout with AppBar, Sidebar, and content area
  */
 
-import { useState, type ReactNode } from 'react';
+import { useState, useCallback, useMemo, type ReactNode } from 'react';
 import {
   Box,
   AppBar,
@@ -92,59 +92,59 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
   /**
    * Toggle mobile drawer
    */
-  const handleDrawerToggle = () => {
+  const handleDrawerToggle = useCallback(() => {
     if (isMobile) {
-      setMobileOpen(!mobileOpen);
+      setMobileOpen(prev => !prev);
     } else {
-      setSidebarOpen(!sidebarOpen);
+      setSidebarOpen(prev => !prev);
     }
-  };
+  }, [isMobile]);
 
   /**
    * Open user menu
    */
-  const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+  const handleUserMenuOpen = useCallback((event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-  };
+  }, []);
 
   /**
    * Close user menu
    */
-  const handleUserMenuClose = () => {
+  const handleUserMenuClose = useCallback(() => {
     setAnchorEl(null);
-  };
+  }, []);
 
   /**
    * Navigate to profile
    */
-  const handleProfile = () => {
+  const handleProfile = useCallback(() => {
     navigate('/profile');
     handleUserMenuClose();
-  };
+  }, [navigate, handleUserMenuClose]);
 
   /**
    * Handle logout
    */
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     logout();
     navigate('/login');
     handleUserMenuClose();
-  };
+  }, [logout, navigate, handleUserMenuClose]);
 
   /**
    * Navigate to route
    */
-  const handleNavigate = (path: string) => {
+  const handleNavigate = useCallback((path: string) => {
     navigate(path);
     if (isMobile) {
       setMobileOpen(false);
     }
-  };
+  }, [navigate, isMobile]);
 
   /**
-   * Get navigation items based on user role
+   * Get navigation items based on user role - Memoized to prevent recreation
    */
-  const getNavigationItems = () => {
+  const navigationItems = useMemo(() => {
     const baseItems = [
       {
         text: 'Dashboard',
@@ -240,14 +240,12 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
 
     const allItems = [...baseItems, ...studentItems, ...professorItems, ...adminItems];
     return allItems.filter((item) => item.roles.includes(role!));
-  };
-
-  const navigationItems = getNavigationItems();
+  }, [role]);
 
   /**
-   * Sidebar content
+   * Sidebar content - Memoized to prevent unnecessary recreation
    */
-  const drawer = (
+  const drawer = useMemo(() => (
     <Box>
       {/* Sidebar Header */}
       <Box
@@ -310,7 +308,24 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
         })}
       </List>
     </Box>
-  );
+  ), [navigationItems, location.pathname, handleNavigate, isMobile, sidebarOpen, handleDrawerToggle]);
+
+  /**
+   * Memoized AppBar styles to prevent recalculation
+   */
+  const appBarStyles = useMemo(() => ({
+    zIndex: theme.zIndex.drawer + 1,
+    width: showSidebar && !isMobile && sidebarOpen
+      ? `calc(100% - ${DRAWER_WIDTH}px)`
+      : '100%',
+    ml: showSidebar && !isMobile && sidebarOpen ? `${DRAWER_WIDTH}px` : 0,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    maxWidth: '100vw',
+    overflow: 'hidden',
+  }), [theme, showSidebar, isMobile, sidebarOpen]);
 
   return (
     <Box sx={{ 
@@ -323,19 +338,7 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
       {/* AppBar */}
       <AppBar
         position="fixed"
-        sx={{
-          zIndex: theme.zIndex.drawer + 1,
-          width: showSidebar && !isMobile && sidebarOpen
-            ? `calc(100% - ${DRAWER_WIDTH}px)`
-            : '100%',
-          ml: showSidebar && !isMobile && sidebarOpen ? `${DRAWER_WIDTH}px` : 0,
-          transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-          }),
-          maxWidth: '100vw',
-          overflow: 'hidden',
-        }}
+        sx={appBarStyles}
       >
         <Toolbar sx={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
           {/* Menu Button */}
