@@ -297,11 +297,11 @@ export interface CreateUserDto {
   name: string;
   last_name: string;
   phone_number: string;
-  school_id?: string;
+  school_id?: number;  // Backend expects number, not string
   student_id?: string;
   employee_id?: string;
   role: UserRole;
-  photo_url?: string;
+  photo_url?: string;  // Optional field
 }
 
 export interface UpdateUserDto {
@@ -310,11 +310,11 @@ export interface UpdateUserDto {
   name?: string;
   last_name?: string;
   phone_number?: string;
-  school_id?: string;
+  school_id?: number;  // Backend expects number, not string
   student_id?: string;
   employee_id?: string;
   role?: UserRole;
-  photo_url?: string;
+  photo_url?: string;  // Optional field
   is_active?: boolean;
 }
 

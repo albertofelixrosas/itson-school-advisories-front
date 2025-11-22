@@ -32,9 +32,10 @@ export const getUserById = async (userId: number): Promise<User> => {
 
 /**
  * Create new user (Admin only)
+ * Uses /users/register endpoint for user registration
  */
 export const createUser = async (data: CreateUserDto): Promise<User> => {
-  const response = await apiClient.post<User>('/users', data);
+  const response = await apiClient.post<User>('/users/register', data);
   return response.data;
 };
 
