@@ -344,7 +344,7 @@ export function VenueManagementTable() {
   ];
 
   return (
-    <Paper elevation={2} sx={{ p: 3 }}>
+    <Paper elevation={2} sx={{ p: 3, overflow: 'hidden' }}>
       {/* Header */}
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h5" fontWeight="bold">
@@ -437,7 +437,7 @@ export function VenueManagementTable() {
           )}
         </Stack>
       ) : (
-        <Box sx={{ height: 600, width: '100%' }}>
+        <Box sx={{ height: 600, width: '100%', overflow: 'auto' }}>
           <DataGrid
             rows={filteredVenues}
             columns={columns}
@@ -448,6 +448,12 @@ export function VenueManagementTable() {
               pagination: { paginationModel: { pageSize: 25 } },
             }}
             disableRowSelectionOnClick
+            sx={{
+              '& .MuiDataGrid-root': {
+                width: '100%',
+                maxWidth: '100%',
+              },
+            }}
           />
         </Box>
       )}

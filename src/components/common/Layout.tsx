@@ -313,7 +313,13 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
   );
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+    <Box sx={{ 
+      display: 'flex', 
+      minHeight: '100vh', 
+      overflow: 'hidden',
+      width: '100%',
+      maxWidth: '100vw',
+    }}>
       {/* AppBar */}
       <AppBar
         position="fixed"
@@ -327,9 +333,11 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
           }),
+          maxWidth: '100vw',
+          overflow: 'hidden',
         }}
       >
-        <Toolbar>
+        <Toolbar sx={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
           {/* Menu Button */}
           {showSidebar && (
             <IconButton
@@ -444,13 +452,14 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
           width: '100%',
           minHeight: '100vh',
           bgcolor: 'background.default',
+          overflowX: 'hidden',
         }}
       >
         {/* Toolbar spacer */}
         <Toolbar />
 
         {/* Page Content */}
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 3, maxWidth: '100%' }}>
           {children}
         </Box>
       </Box>

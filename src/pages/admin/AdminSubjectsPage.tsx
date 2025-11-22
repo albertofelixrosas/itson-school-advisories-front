@@ -19,7 +19,7 @@ export function AdminSubjectsPage() {
 
   return (
     <Layout>
-      <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
+      <Box sx={{ maxWidth: 1400, mx: 'auto', overflow: 'hidden', width: '100%' }}>
         {/* Header */}
         <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
           <IconButton onClick={() => navigate('/admin/dashboard')} color="primary">
