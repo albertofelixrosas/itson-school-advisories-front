@@ -5,13 +5,14 @@
  * Page for managing professor-subject assignments
  */
 
-import { Container, Typography, Box } from '@mui/material';
+import { Typography, Box } from '@mui/material';
+import { Layout } from '@/components/common/Layout';
 import { SubjectDetailsManager } from '../../components/admin';
 
 export default function AdminSubjectDetailsPage() {
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ py: 4 }}>
+    <Layout>
+      <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Asignaciones de Profesores
         </Typography>
@@ -20,6 +21,6 @@ export default function AdminSubjectDetailsPage() {
         </Typography>
         <SubjectDetailsManager />
       </Box>
-    </Container>
+    </Layout>
   );
 }
