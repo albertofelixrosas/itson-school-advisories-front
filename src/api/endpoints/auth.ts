@@ -10,6 +10,7 @@
 
 import apiClient from '@/api/client';
 import type { LoginDto, LoginResponse, User } from '@/api/types';
+import type { ProfileResponse } from '@/api/types/profile.types';
 
 /**
  * Re-export LoginResponse from backend types
@@ -63,17 +64,20 @@ export async function refreshAccessToken(refreshToken: string): Promise<RefreshT
 
 /**
  * Get current user profile
+ * Returns different data structure based on user role
  * 
- * @returns User profile data
+ * @returns Profile data (varies by role: student, professor, admin)
  * 
  * @example
  * ```tsx
- * const user = await getProfile();
- * console.log(user.email, user.role);
+ * const profile = await getProfile();
+ * if (profile.user_info.role === 'student') {
+ *   console.log(profile.student_profile.career);
+ * }
  * ```
  */
-export async function getProfile(): Promise<User> {
-  const response = await apiClient.get<User>('/users/profile');
+export async function getProfile(): Promise<ProfileResponse> {
+  const response = await apiClient.get<ProfileResponse>('/auth/profile');
   return response.data;
 }
 

@@ -17,6 +17,7 @@ import "./App.css";
 const LoginPage = lazy(() => import("@/pages/auth/LoginPage"));
 const UnauthorizedPage = lazy(() => import("@/pages/auth/UnauthorizedPage"));
 const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
+const ProfilePage = lazy(() => import("@/pages/ProfilePage"));
 
 // Student pages
 const StudentDashboard = lazy(() => import("@/pages/student/StudentDashboard"));
@@ -59,6 +60,16 @@ function App() {
               {/* Public Routes */}
               <Route path="/login" element={<LoginPage />} />
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
+
+              {/* Profile Route - Available to all authenticated users */}
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute allowedRoles={['student', 'professor', 'admin']}>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Protected Routes - Student */}
               <Route
