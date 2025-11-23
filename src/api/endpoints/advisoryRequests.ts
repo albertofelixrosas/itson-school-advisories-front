@@ -1,118 +1,150 @@
 /**
  * Advisory Requests API Endpoints
- * School Advisories System
+ * API methods for managing advisory requests between students and professors
  */
 
 import { apiClient } from '../client';
 import type {
-  AdvisoryRequestResponseDto,
+  AdvisoryRequest,
   CreateAdvisoryRequestDto,
-  PaginatedResponse,
-} from '../types';
+  ApproveRequestDto,
+  RejectRequestDto,
+  AvailableSchedulesResponse,
+} from '../types/advisoryRequests.types';
 
 /**
- * Create a new advisory request (Student)
+ * Create a new advisory request (STUDENT role required)
+ * 
  * Endpoint: POST /advisory-requests
+ * 
+ * @param data - Request data with subject_detail_id and optional message
+ * @returns Promise with created advisory request
+ * @throws {Error} If user already has a pending request for this subject
  */
 export async function createAdvisoryRequest(
   data: CreateAdvisoryRequestDto
-): Promise<AdvisoryRequestResponseDto> {
-  const response = await apiClient.post<AdvisoryRequestResponseDto>('/advisory-requests', data);
+): Promise<AdvisoryRequest> {
+  const response = await apiClient.post<AdvisoryRequest>(
+    '/advisory-requests',
+    data
+  );
   return response.data;
 }
 
 /**
- * Get all my requests (Student)
+ * Get all requests for the authenticated student
+ * 
  * Endpoint: GET /advisory-requests/my-requests
+ * 
+ * @returns Promise with array of student's advisory requests
  */
-export async function getMyRequests(
-  page = 1,
-  limit = 10
-): Promise<PaginatedResponse<AdvisoryRequestResponseDto>> {
-  const response = await apiClient.get<PaginatedResponse<AdvisoryRequestResponseDto>>(
-    '/advisory-requests/my-requests',
-    {
-      params: { page, limit },
-    }
+export async function getMyRequests(): Promise<AdvisoryRequest[]> {
+  const response = await apiClient.get<AdvisoryRequest[]>(
+    '/advisory-requests/my-requests'
   );
   return response.data;
 }
 
 /**
- * Get request by ID
- * Endpoint: GET /advisory-requests/:id
- */
-export async function getAdvisoryRequestById(id: number): Promise<AdvisoryRequestResponseDto> {
-  const response = await apiClient.get<AdvisoryRequestResponseDto>(`/advisory-requests/${id}`);
-  return response.data;
-}
-
-/**
- * Cancel advisory request (Student)
- * Endpoint: PATCH /advisory-requests/:id/cancel
- */
-export async function cancelAdvisoryRequest(
-  id: number,
-  cancellation_reason?: string
-): Promise<AdvisoryRequestResponseDto> {
-  const response = await apiClient.patch<AdvisoryRequestResponseDto>(
-    `/advisory-requests/${id}/cancel`,
-    { cancellation_reason }
-  );
-  return response.data;
-}
-
-/**
- * Delete advisory request (Student - if pending)
- * Endpoint: DELETE /advisory-requests/:id
- */
-export async function deleteAdvisoryRequest(id: number): Promise<void> {
-  await apiClient.delete(`/advisory-requests/${id}`);
-}
-
-/**
- * Get pending requests for a professor (Professor)
+ * Get all pending requests for the authenticated professor
+ * 
  * Endpoint: GET /advisory-requests/pending
+ * WARNING: Use /pending NOT /professor/pending
+ * 
+ * @returns Promise with array of pending advisory requests
  */
-export async function getPendingRequests(
-  page = 1,
-  limit = 10
-): Promise<PaginatedResponse<AdvisoryRequestResponseDto>> {
-  const response = await apiClient.get<PaginatedResponse<AdvisoryRequestResponseDto>>(
-    '/advisory-requests/pending',
-    {
-      params: { page, limit },
-    }
+export async function getPendingRequests(): Promise<AdvisoryRequest[]> {
+  const response = await apiClient.get<AdvisoryRequest[]>(
+    '/advisory-requests/pending'
   );
   return response.data;
 }
 
 /**
- * Approve advisory request (Professor)
- * Endpoint: POST /advisory-requests/:id/approve
+ * Approve an advisory request (PROFESSOR role required)
+ * 
+ * Endpoint: PATCH /advisory-requests/:id/approve
+ * 
+ * @param requestId - ID of the request to approve
+ * @param data - Approval data with professor response and optional proposed date
+ * @returns Promise with updated advisory request
+ * @throws {Error} If request is not in pending status or professor doesn't own it
  */
-export async function approveAdvisoryRequest(
-  id: number,
-  professor_response?: string
-): Promise<AdvisoryRequestResponseDto> {
-  const response = await apiClient.post<AdvisoryRequestResponseDto>(
-    `/advisory-requests/${id}/approve`,
-    { professor_response }
+export async function approveRequest(
+  requestId: number,
+  data: ApproveRequestDto
+): Promise<AdvisoryRequest> {
+  const response = await apiClient.patch<AdvisoryRequest>(
+    `/advisory-requests/${requestId}/approve`,
+    data
   );
   return response.data;
 }
 
 /**
- * Reject advisory request (Professor)
- * Endpoint: POST /advisory-requests/:id/reject
+ * Reject an advisory request (PROFESSOR role required)
+ * 
+ * Endpoint: PATCH /advisory-requests/:id/reject
+ * 
+ * @param requestId - ID of the request to reject
+ * @param data - Rejection data with professor response explaining reason
+ * @returns Promise with updated advisory request
+ * @throws {Error} If request is not in pending status or professor doesn't own it
  */
-export async function rejectAdvisoryRequest(
-  id: number,
-  rejection_reason: string
-): Promise<AdvisoryRequestResponseDto> {
-  const response = await apiClient.post<AdvisoryRequestResponseDto>(
-    `/advisory-requests/${id}/reject`,
-    { rejection_reason }
+export async function rejectRequest(
+  requestId: number,
+  data: RejectRequestDto
+): Promise<AdvisoryRequest> {
+  const response = await apiClient.patch<AdvisoryRequest>(
+    `/advisory-requests/${requestId}/reject`,
+    data
   );
+  return response.data;
+}
+
+/**
+ * Cancel an advisory request (STUDENT or PROFESSOR can cancel)
+ * 
+ * Endpoint: DELETE /advisory-requests/:id/cancel
+ * Can only cancel requests with status PENDING or APPROVED
+ * 
+ * @param requestId - ID of the request to cancel
+ * @returns Promise with cancelled advisory request
+ * @throws {Error} If request cannot be cancelled in current status
+ */
+export async function cancelRequest(
+  requestId: number
+): Promise<AdvisoryRequest> {
+  const response = await apiClient.delete<AdvisoryRequest>(
+    `/advisory-requests/${requestId}/cancel`
+  );
+  return response.data;
+}
+
+/**
+ * Get available schedules for a subject detail (STUDENT role required)
+ * 
+ * Endpoint: GET /advisory-requests/available-schedules/:subjectDetailId
+ * 
+ * @param subjectDetailId - ID of the subject detail
+ * @param dateFrom - Optional start date filter (YYYY-MM-DD)
+ * @param dateTo - Optional end date filter (YYYY-MM-DD)
+ * @returns Promise with available schedules grouped by date
+ */
+export async function getAvailableSchedules(
+  subjectDetailId: number,
+  dateFrom?: string,
+  dateTo?: string
+): Promise<AvailableSchedulesResponse> {
+  const params = new URLSearchParams();
+  if (dateFrom) params.append('dateFrom', dateFrom);
+  if (dateTo) params.append('dateTo', dateTo);
+
+  const queryString = params.toString();
+  const url = `/advisory-requests/available-schedules/${subjectDetailId}${
+    queryString ? `?${queryString}` : ''
+  }`;
+
+  const response = await apiClient.get<AvailableSchedulesResponse>(url);
   return response.data;
 }
