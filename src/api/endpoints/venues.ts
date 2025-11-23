@@ -25,11 +25,14 @@ export async function getAllVenues(): Promise<Venue[]> {
 }
 
 /**
- * Get active venues only
+ * Get all venues (using high limit to get all for selection)
+ * Uses the documented /venues endpoint instead of non-existent /venues/active
  */
 export async function getActiveVenues(): Promise<Venue[]> {
-  const response = await apiClient.get<Venue[]>('/venues/active');
-  return response.data;
+  const response = await apiClient.get<PaginatedVenues>('/venues', {
+    params: { limit: 100 } // Get many venues for selector
+  });
+  return response.data.data; // Extract venues array from paginated response
 }
 
 /**

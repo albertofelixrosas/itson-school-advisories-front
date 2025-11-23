@@ -154,13 +154,13 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
     queryFn: getAllSubjectDetails,
   });
 
-  // Fetch active venues
+  // Fetch all venues (limited to 100 for selection)
   const {
     data: venues = [],
     isLoading: loadingVenues,
     error: venuesError,
   } = useQuery({
-    queryKey: ['active-venues'],
+    queryKey: ['venues', 'all'],
     queryFn: getActiveVenues,
   });
 
