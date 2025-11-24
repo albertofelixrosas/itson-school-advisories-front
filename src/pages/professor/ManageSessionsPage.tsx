@@ -32,34 +32,42 @@ import {
 } from '@mui/icons-material';
 import { format, parseISO, isFuture, isPast } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { getMyAdvisories } from '@/api/endpoints/advisories';
+import { getAdvisoriesWithSessions } from '@/api/endpoints/advisories';
 import { getSessionStudents } from '@/api/endpoints/attendance';
 import { InviteStudentsModal } from '@/components/professor/InviteStudentsModal';
 import { AttendanceForm } from '@/components/professor/AttendanceForm';
 import { SessionCompletionModal } from '@/components/professor/SessionCompletionModal';
-import type { Advisory, AdvisoryDate, User } from '@/types';
+import { useAuth } from '@/contexts/AuthContext';
+import type { AdvisoryWithSessions, AdvisoryDateInfo, User } from '@/types';
 
 /**
  * Manage Sessions Page
  */
 export function ManageSessionsPage() {
-  const [selectedSession, setSelectedSession] = useState<AdvisoryDate | null>(null);
+  const { user } = useAuth();
+  const [selectedSession, setSelectedSession] = useState<AdvisoryDateInfo | null>(null);
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [attendanceView, setAttendanceView] = useState(false);
   const [completionModalOpen, setCompletionModalOpen] = useState(false);
 
-  // Fetch professor's advisories
+  // Fetch professor's advisories WITH sessions included
   const { data: advisories = [], isLoading, error } = useQuery({
-    queryKey: ['my-advisories'],
-    queryFn: getMyAdvisories,
+    queryKey: ['advisories', 'with-sessions', user?.user_id],
+    queryFn: () => {
+      if (!user?.user_id) {
+        throw new Error('No user ID available');
+      }
+      return getAdvisoriesWithSessions(user.user_id);
+    },
+    enabled: !!user?.user_id,
   });
 
   /**
    * Get all sessions from advisories
    */
-  const getAllSessions = (): AdvisoryDate[] => {
-    const sessions: AdvisoryDate[] = [];
-    advisories.forEach((advisory: Advisory) => {
+  const getAllSessions = (): AdvisoryDateInfo[] => {
+    const sessions: AdvisoryDateInfo[] = []; [];
+    advisories.forEach((advisory: AdvisoryWithSessions) => {
       if (advisory.advisory_dates) {
         sessions.push(...advisory.advisory_dates);
       }
@@ -74,7 +82,7 @@ export function ManageSessionsPage() {
   /**
    * Handle invite students
    */
-  const handleInviteStudents = (session: AdvisoryDate) => {
+  const handleInviteStudents = (session: AdvisoryDateInfo) => {
     setSelectedSession(session);
     setInviteModalOpen(true);
   };
@@ -82,7 +90,7 @@ export function ManageSessionsPage() {
   /**
    * Handle register attendance
    */
-  const handleRegisterAttendance = (session: AdvisoryDate) => {
+  const handleRegisterAttendance = (session: AdvisoryDateInfo) => {
     setSelectedSession(session);
     setAttendanceView(true);
   };
@@ -90,7 +98,7 @@ export function ManageSessionsPage() {
   /**
    * Handle complete session
    */
-  const handleCompleteSession = (session: AdvisoryDate) => {
+  const handleCompleteSession = (session: AdvisoryDateInfo) => {
     setSelectedSession(session);
     setCompletionModalOpen(true);
   };
@@ -236,7 +244,7 @@ export function ManageSessionsPage() {
  * Session Card Component
  */
 interface SessionCardProps {
-  session: AdvisoryDate;
+  session: AdvisoryDateInfo;
   onInviteStudents: () => void;
   onRegisterAttendance: () => void;
   onCompleteSession: () => void;
@@ -273,7 +281,9 @@ function SessionCard({
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <LocationIcon fontSize="small" color="action" />
                   <Typography variant="body2">
-                    {session.venue.name} - {session.venue.location}
+                    {session.venue.name}
+                    {session.venue.building && ` - ${session.venue.building}`}
+                    {session.venue.floor && ` (${session.venue.floor})`}
                   </Typography>
                 </Box>
               )}

@@ -4,7 +4,7 @@
  */
 
 import { apiClient } from '../client';
-import type { Advisory, AdvisoryDate, CreateDirectSessionDto } from '../types';
+import type { Advisory, AdvisoryDate, AdvisoryWithSessions, CreateDirectSessionDto } from '../types';
 
 /**
  * Get my advisory sessions as student
@@ -43,10 +43,11 @@ export async function createDirectSession(data: CreateDirectSessionDto): Promise
 }
 
 /**
- * Get my advisory sessions as professor
- * Endpoint: GET /advisories/my-advisories
+ * Get advisories WITH sessions included
+ * Endpoint: GET /advisories/professor/:professorId/with-sessions
+ * ⚠️ IMPORTANT: Use this endpoint for ManageSessionsPage
  */
-export async function getMyAdvisories(): Promise<Advisory[]> {
-  const response = await apiClient.get<Advisory[]>('/advisories/my-advisories');
+export async function getAdvisoriesWithSessions(professorId: number): Promise<AdvisoryWithSessions[]> {
+  const response = await apiClient.get<AdvisoryWithSessions[]>(`/advisories/professor/${professorId}/with-sessions`);
   return response.data;
 }

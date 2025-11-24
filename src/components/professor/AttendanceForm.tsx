@@ -99,7 +99,8 @@ export function AttendanceForm({
     onSuccess: () => {
       toast.success('Asistencia registrada exitosamente');
       queryClient.invalidateQueries({ queryKey: ['session-attendance', sessionId] });
-      queryClient.invalidateQueries({ queryKey: ['my-advisories'] });
+      queryClient.invalidateQueries({ queryKey: ['advisories', 'with-sessions'] });
+      queryClient.invalidateQueries({ queryKey: ['session-students', sessionId] });
       onSuccess?.();
     },
     onError: (error: Error) => {

@@ -169,7 +169,7 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
     mutationFn: (data: CreateDirectSessionDto) => createDirectSession(data),
     onSuccess: () => {
       toast.success('Sesión de asesoría creada exitosamente');
-      queryClient.invalidateQueries({ queryKey: ['my-advisories'] });
+      queryClient.invalidateQueries({ queryKey: ['advisories', 'with-sessions'] });
       queryClient.invalidateQueries({ queryKey: ['professor-dashboard'] });
       reset();
       onSuccess?.();

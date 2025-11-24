@@ -86,7 +86,7 @@ export function InviteStudentsModal({
     },
     onSuccess: () => {
       toast.success('Invitaciones enviadas exitosamente');
-      queryClient.invalidateQueries({ queryKey: ['my-advisories'] });
+      queryClient.invalidateQueries({ queryKey: ['advisories', 'with-sessions'] });
       queryClient.invalidateQueries({ queryKey: ['professor-dashboard'] });
       handleClose();
     },

@@ -148,6 +148,66 @@ export interface Advisory {
   advisory_dates?: AdvisoryDate[];
 }
 
+// ===== ADVISORIES API RESPONSE TYPES =====
+
+/**
+ * Advisory date info with venue and attendance counts
+ * Used in /professor/:id/with-sessions endpoint
+ */
+export interface AdvisoryDateInfo {
+  advisory_date_id: number;
+  topic: string;
+  date: string;
+  notes: string | null;
+  session_link: string | null;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+  venue: {
+    venue_id: number;
+    name: string;
+    building: string | null;
+    floor: string | null;
+    type: string;
+    url: string | null;
+  } | null;
+  attendances_count: number;
+  attended_count: number;
+}
+
+/**
+ * Advisory response WITH sessions included
+ * From GET /advisories/professor/:id/with-sessions
+ */
+export interface AdvisoryWithSessions {
+  advisory_id: number;
+  max_students: number;
+  professor: {
+    user_id: number;
+    school_id: string;
+    name: string;
+    last_name: string;
+    email: string;
+    photo_url: string | null;
+  };
+  subject_detail: {
+    subject_detail_id: number;
+    subject_name: string;
+    schedules: Array<{
+      day: string;
+      start_time: string;
+      end_time: string;
+    }>;
+  };
+  schedules: Array<{
+    advisory_schedule_id: number;
+    day: string;
+    begin_time: string;
+    end_time: string;
+  }>;
+  advisory_dates: AdvisoryDateInfo[];
+}
+
 export interface AdvisoryDate {
   advisory_date_id: number;
   advisory_id: number;

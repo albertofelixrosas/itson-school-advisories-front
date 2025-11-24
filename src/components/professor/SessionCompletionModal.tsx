@@ -102,9 +102,10 @@ export function SessionCompletionModal({
     },
     onSuccess: () => {
       toast.success('Sesión completada exitosamente');
-      queryClient.invalidateQueries({ queryKey: ['my-advisories'] });
+      queryClient.invalidateQueries({ queryKey: ['advisories', 'with-sessions'] });
       queryClient.invalidateQueries({ queryKey: ['professor-dashboard'] });
       queryClient.invalidateQueries({ queryKey: ['session-attendance', sessionId] });
+      queryClient.invalidateQueries({ queryKey: ['session-students', sessionId] });
       handleClose();
       onSuccess?.();
     },
