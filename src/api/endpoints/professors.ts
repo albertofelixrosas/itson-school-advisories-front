@@ -81,52 +81,58 @@ export async function reviewRequest(
 
 /**
  * Get professor's availability schedules
- * Endpoint: GET /professor-availability
+ * Endpoint: GET /professor-availability/my-availability
  */
 export async function getMyAvailability(): Promise<ProfessorAvailability[]> {
-  const response = await apiClient.get<ProfessorAvailability[]>('/professor-availability');
+  const response = await apiClient.get<ProfessorAvailability[]>('/professor-availability/my-availability');
   return response.data;
 }
 
 /**
  * Create new availability slot
- * Endpoint: POST /professor-availability
+ * Endpoint: POST /professor-availability/slots
  */
 export interface CreateAvailabilityDto {
-  subject_detail_id: number;
+  subject_detail_id?: number;
   day_of_week: string; // 'MONDAY' | 'TUESDAY' | etc.
   start_time: string; // "HH:MM"
   end_time: string; // "HH:MM"
   max_students_per_slot: number;
+  slot_duration_minutes: number;
   is_recurring: boolean;
+  effective_from?: string;
+  effective_until?: string;
+  notes?: string;
 }
 
 export async function createAvailability(
   data: CreateAvailabilityDto
 ): Promise<ProfessorAvailability> {
-  const response = await apiClient.post<ProfessorAvailability>('/professor-availability', data);
+  const response = await apiClient.post<ProfessorAvailability>('/professor-availability/slots', data);
   return response.data;
 }
 
 /**
  * Update availability slot
- * Endpoint: PATCH /professor-availability/:id
+ * Endpoint: PUT /professor-availability/slots/:id
  */
 export interface UpdateAvailabilityDto {
   day_of_week?: string;
   start_time?: string;
   end_time?: string;
   max_students_per_slot?: number;
+  slot_duration_minutes?: number;
   is_recurring?: boolean;
   is_active?: boolean;
+  notes?: string;
 }
 
 export async function updateAvailability(
   availabilityId: number,
   data: UpdateAvailabilityDto
 ): Promise<ProfessorAvailability> {
-  const response = await apiClient.patch<ProfessorAvailability>(
-    `/professor-availability/${availabilityId}`,
+  const response = await apiClient.put<ProfessorAvailability>(
+    `/professor-availability/slots/${availabilityId}`,
     data
   );
   return response.data;
@@ -134,8 +140,8 @@ export async function updateAvailability(
 
 /**
  * Delete availability slot
- * Endpoint: DELETE /professor-availability/:id
+ * Endpoint: DELETE /professor-availability/slots/:id
  */
 export async function deleteAvailability(availabilityId: number): Promise<void> {
-  await apiClient.delete(`/professor-availability/${availabilityId}`);
+  await apiClient.delete(`/professor-availability/slots/${availabilityId}`);
 }

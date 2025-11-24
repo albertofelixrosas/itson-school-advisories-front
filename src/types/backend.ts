@@ -273,18 +273,35 @@ export interface StudentInvitation {
 export interface ProfessorAvailability {
   availability_id: number;
   professor_id: number;
-  subject_detail_id: number;
+  subject_detail_id?: number; // Opcional: para disponibilidad específica de materia
   day_of_week: WeekDay;
   start_time: string; // "HH:MM"
   end_time: string; // "HH:MM"
   max_students_per_slot: number;
-  is_recurring: boolean;
+  slot_duration_minutes: number; // Duración de cada slot (15-180 minutos)
   is_active: boolean;
+  is_recurring: boolean;
+  effective_from?: string; // Fecha desde cuando aplica
+  effective_until?: string; // Fecha hasta cuando aplica
+  notes?: string;
   created_at: string;
+  updated_at: string;
 
   // Relations
-  professor?: User;
-  subject_detail?: SubjectDetails;
+  professor?: {
+    user_id: number;
+    name: string;
+    last_name: string;
+    email: string;
+  };
+  subject_detail?: {
+    subject_detail_id: number;
+    subject_name: string;
+  };
+
+  // Estadísticas calculadas
+  current_bookings?: number; // Reservas actuales
+  available_spots?: number; // Espacios disponibles
 }
 
 // ===== NOTIFICATIONS =====
