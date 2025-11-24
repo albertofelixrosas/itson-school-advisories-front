@@ -208,8 +208,17 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
   };
 
   return (
-    <Paper elevation={2} sx={{ p: isMobile ? 2 : 4 }}>
-      <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ mb: 3 }}>
+    <Paper elevation={2} sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+      <Typography 
+        variant="h5" 
+        gutterBottom 
+        fontWeight="bold" 
+        sx={{ 
+          mb: 3,
+          fontSize: { xs: '1.25rem', sm: '1.5rem', md: '1.75rem' },
+          wordBreak: 'break-word'
+        }}
+      >
         Crear Sesión de Asesoría Directa
       </Typography>
 
@@ -220,14 +229,13 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
       )}
 
       <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
-        <Box sx={{ display: 'grid', gap: 3 }}>
+        <Box sx={{ display: 'grid', gap: { xs: 2, sm: 2.5, md: 3 } }}>
           {/* Subject Detail Select */}
-          <Box>
-            <Controller
-              name="subjectDetailId"
-              control={control}
-              render={({ field }) => (
-                <FormControl fullWidth error={!!errors.subjectDetailId}>
+          <Controller
+            name="subjectDetailId"
+            control={control}
+            render={({ field }) => (
+              <FormControl fullWidth error={!!errors.subjectDetailId}>
                   <InputLabel id="subject-detail-label">Materia</InputLabel>
                   <Select
                     {...field}
@@ -244,17 +252,15 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
                       </MenuItem>
                     ))}
                   </Select>
-                  {errors.subjectDetailId && (
-                    <FormHelperText>{errors.subjectDetailId.message}</FormHelperText>
-                  )}
-                </FormControl>
-              )}
-            />
-          </Box>
+                {errors.subjectDetailId && (
+                  <FormHelperText>{errors.subjectDetailId.message}</FormHelperText>
+                )}
+              </FormControl>
+            )}
+          />
 
-          {/* Venue Select */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 3 }}>
-            <Box>
+          {/* Venue Select and Max Students */}
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: { xs: 2, sm: 2.5, md: 3 } }}>
             <Controller
               name="venueId"
               control={control}
@@ -281,16 +287,14 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
                       </MenuItem>
                     ))}
                   </Select>
-                  {errors.venueId && (
-                    <FormHelperText>{errors.venueId.message}</FormHelperText>
-                  )}
-                </FormControl>
-              )}
+                {errors.venueId && (
+                  <FormHelperText>{errors.venueId.message}</FormHelperText>
+                )}
+              </FormControl>
+            )}
             />
-            </Box>
 
             {/* Max Students */}
-            <Box>
             <Controller
               name="maxStudents"
               control={control}
@@ -307,12 +311,10 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
                 />
               )}
             />
-            </Box>
           </Box>
 
-          {/* Session Date */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3 }}>
-            <Box>
+          {/* Session Date and Time */}
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: { xs: 2, sm: 2.5, md: 3 } }}>
             <Controller
               name="sessionDate"
               control={control}
@@ -332,10 +334,8 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
                 />
               )}
             />
-            </Box>
 
             {/* Start Time */}
-            <Box>
             <Controller
               name="startTime"
               control={control}
@@ -354,10 +354,8 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
                 />
               )}
             />
-            </Box>
 
             {/* End Time */}
-            <Box>
             <Controller
               name="endTime"
               control={control}
@@ -376,13 +374,11 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
                 />
               )}
             />
-            </Box>
           </Box>
 
           {/* Topic */}
-          <Box>
-            <Controller
-              name="topic"
+          <Controller
+            name="topic"
               control={control}
               render={({ field }) => (
                 <TextField
@@ -396,12 +392,10 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
                 />
               )}
             />
-          </Box>
 
           {/* Session Link */}
-          <Box>
-            <Controller
-              name="sessionLink"
+          <Controller
+            name="sessionLink"
               control={control}
               render={({ field }) => (
                 <TextField
@@ -415,12 +409,10 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
                 />
               )}
             />
-          </Box>
 
           {/* Notes */}
-          <Box>
-            <Controller
-              name="notes"
+          <Controller
+            name="notes"
               control={control}
               render={({ field }) => (
                 <TextField
@@ -436,14 +428,13 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
                 />
               )}
             />
-          </Box>
         </Box>
 
         {/* Action Buttons */}
         <Box sx={{ 
-          mt: 4, 
+          mt: { xs: 3, sm: 4 }, 
           display: 'flex', 
-          flexDirection: isMobile ? 'column' : 'row',
+          flexDirection: { xs: 'column', sm: 'row' },
           gap: 2, 
           justifyContent: 'flex-end' 
         }}>
@@ -453,7 +444,7 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
               onClick={onCancel}
               disabled={isSubmitting || createMutation.isPending}
               size="large"
-              fullWidth={isMobile}
+              sx={{ minWidth: { sm: 120 } }}
             >
               Cancelar
             </Button>
@@ -462,7 +453,7 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
             type="submit"
             variant="contained"
             size="large"
-            fullWidth={isMobile}
+            sx={{ minWidth: { sm: 140 } }}
             startIcon={
               isSubmitting || createMutation.isPending ? (
                 <CircularProgress size={20} color="inherit" />
