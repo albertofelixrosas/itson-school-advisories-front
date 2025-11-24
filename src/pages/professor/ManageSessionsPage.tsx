@@ -106,7 +106,9 @@ export function ManageSessionsPage() {
   if (isLoading) {
     return (
       <Layout title="Gestionar Sesiones">
-        <LoadingSpinner message="Cargando sesiones..." />
+        <Box sx={{ maxWidth: 1400, mx: 'auto', width: '100%' }}>
+          <LoadingSpinner message="Cargando sesiones..." />
+        </Box>
       </Layout>
     );
   }
@@ -114,9 +116,11 @@ export function ManageSessionsPage() {
   if (error) {
     return (
       <Layout title="Gestionar Sesiones">
-        <Alert severity="error">
-          Error al cargar las sesiones. Por favor, intente de nuevo.
-        </Alert>
+        <Box sx={{ maxWidth: 1400, mx: 'auto', width: '100%' }}>
+          <Alert severity="error">
+            Error al cargar las sesiones. Por favor, intente de nuevo.
+          </Alert>
+        </Box>
       </Layout>
     );
   }
@@ -125,22 +129,24 @@ export function ManageSessionsPage() {
   if (attendanceView && selectedSession) {
     return (
       <Layout title="Registro de Asistencia">
-        <AttendanceViewWrapper
-          sessionId={selectedSession.advisory_date_id}
-          onBack={() => {
-            setAttendanceView(false);
-            setSelectedSession(null);
-          }}
-        />
+        <Box sx={{ maxWidth: 1400, mx: 'auto', width: '100%' }}>
+          <AttendanceViewWrapper
+            sessionId={selectedSession.advisory_date_id}
+            onBack={() => {
+              setAttendanceView(false);
+              setSelectedSession(null);
+            }}
+          />
+        </Box>
       </Layout>
     );
   }
 
   return (
     <Layout title="Gestionar Sesiones">
-      <Box>
+      <Box sx={{ maxWidth: 1400, mx: 'auto', width: '100%' }}>
         {/* Header */}
-        <Box sx={{ mb: 4 }}>
+        <Box sx={{ mb: 3 }}>
           <Typography variant="h4" gutterBottom fontWeight="bold">
             Gestionar Sesiones
           </Typography>
@@ -149,67 +155,74 @@ export function ManageSessionsPage() {
           </Typography>
         </Box>
 
-        {/* Statistics */}
-        <Stack direction="row" spacing={2} sx={{ mb: 4 }}>
-          <Chip
-            icon={<EventIcon />}
-            label={`Próximas: ${upcomingSessions.length}`}
-            color="primary"
-            variant="outlined"
-          />
-          <Chip
-            icon={<EventIcon />}
-            label={`Pasadas: ${pastSessions.length}`}
-            color="default"
-            variant="outlined"
-          />
-        </Stack>
-
-        {/* Upcoming Sessions */}
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h5" gutterBottom fontWeight="bold">
-            Sesiones Próximas
-          </Typography>
-          {upcomingSessions.length === 0 ? (
-            <Alert severity="info">No tienes sesiones próximas programadas.</Alert>
-          ) : (
-            <Stack spacing={2}>
-              {upcomingSessions.map((session) => (
-                <SessionCard
-                  key={session.advisory_date_id}
-                  session={session}
-                  onInviteStudents={() => handleInviteStudents(session)}
-                  onRegisterAttendance={() => handleRegisterAttendance(session)}
-                  onCompleteSession={() => handleCompleteSession(session)}
-                  isUpcoming
-                />
-              ))}
+        {/* Main Content Card */}
+        <Card>
+          <CardContent sx={{ p: 3 }}>
+            {/* Statistics */}
+            <Stack direction="row" spacing={2} sx={{ mb: 4 }}>
+              <Chip
+                icon={<EventIcon />}
+                label={`Próximas: ${upcomingSessions.length}`}
+                color="primary"
+                variant="outlined"
+              />
+              <Chip
+                icon={<EventIcon />}
+                label={`Pasadas: ${pastSessions.length}`}
+                color="default"
+                variant="outlined"
+              />
             </Stack>
-          )}
-        </Box>
 
-        {/* Past Sessions */}
-        <Box>
-          <Typography variant="h5" gutterBottom fontWeight="bold">
-            Sesiones Pasadas
-          </Typography>
-          {pastSessions.length === 0 ? (
-            <Alert severity="info">No tienes sesiones pasadas registradas.</Alert>
-          ) : (
-            <Stack spacing={2}>
-              {pastSessions.slice(0, 5).map((session) => (
-                <SessionCard
-                  key={session.advisory_date_id}
-                  session={session}
-                  onInviteStudents={() => handleInviteStudents(session)}
-                  onRegisterAttendance={() => handleRegisterAttendance(session)}
-                  onCompleteSession={() => handleCompleteSession(session)}
-                  isUpcoming={false}
-                />
-              ))}
-            </Stack>
-          )}
-        </Box>
+            {/* Upcoming Sessions */}
+            <Box sx={{ mb: 4 }}>
+              <Typography variant="h5" gutterBottom fontWeight="bold">
+                Sesiones Próximas
+              </Typography>
+              {upcomingSessions.length === 0 ? (
+                <Alert severity="info">No tienes sesiones próximas programadas.</Alert>
+              ) : (
+                <Stack spacing={2}>
+                  {upcomingSessions.map((session) => (
+                    <SessionCard
+                      key={session.advisory_date_id}
+                      session={session}
+                      onInviteStudents={() => handleInviteStudents(session)}
+                      onRegisterAttendance={() => handleRegisterAttendance(session)}
+                      onCompleteSession={() => handleCompleteSession(session)}
+                      isUpcoming
+                    />
+                  ))}
+                </Stack>
+              )}
+            </Box>
+
+            <Divider sx={{ my: 4 }} />
+
+            {/* Past Sessions */}
+            <Box>
+              <Typography variant="h5" gutterBottom fontWeight="bold">
+                Sesiones Pasadas
+              </Typography>
+              {pastSessions.length === 0 ? (
+                <Alert severity="info">No tienes sesiones pasadas registradas.</Alert>
+              ) : (
+                <Stack spacing={2}>
+                  {pastSessions.slice(0, 5).map((session) => (
+                    <SessionCard
+                      key={session.advisory_date_id}
+                      session={session}
+                      onInviteStudents={() => handleInviteStudents(session)}
+                      onRegisterAttendance={() => handleRegisterAttendance(session)}
+                      onCompleteSession={() => handleCompleteSession(session)}
+                      isUpcoming={false}
+                    />
+                  ))}
+                </Stack>
+              )}
+            </Box>
+          </CardContent>
+        </Card>
 
         {/* Modals */}
         {selectedSession && (
