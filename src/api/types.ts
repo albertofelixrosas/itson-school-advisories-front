@@ -440,6 +440,12 @@ export interface SubjectDetailDto {
 }
 
 // Advisory DTOs
+export interface SessionScheduleDto {
+  day: string;
+  begin_time: string; // "HH:MM"
+  end_time: string; // "HH:MM"
+}
+
 export interface CreateDirectSessionDto {
   subject_detail_id: number;
   venue_id: number;
@@ -447,7 +453,9 @@ export interface CreateDirectSessionDto {
   topic: string;
   notes?: string;
   session_link?: string;
-  max_students?: number;
+  max_students: number;
+  schedules: SessionScheduleDto[]; // Requerido por el backend
+  invited_student_ids?: number[];
 }
 
 export interface InviteStudentsDto {

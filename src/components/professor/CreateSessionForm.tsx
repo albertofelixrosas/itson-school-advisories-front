@@ -194,6 +194,17 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
     const sessionDateTime = new Date(data.sessionDate);
     sessionDateTime.setHours(data.startTime.getHours(), data.startTime.getMinutes(), 0, 0);
 
+    // Get day of week in uppercase (MONDAY, TUESDAY, etc.)
+    const daysOfWeek = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+    const dayOfWeek = daysOfWeek[data.sessionDate.getDay()];
+
+    // Format times as HH:MM
+    const formatTime = (date: Date): string => {
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      return `${hours}:${minutes}`;
+    };
+
     const requestData: CreateDirectSessionDto = {
       subject_detail_id: data.subjectDetailId,
       venue_id: data.venueId,
@@ -202,6 +213,14 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
       notes: data.notes || undefined,
       session_link: data.sessionLink || undefined,
       max_students: data.maxStudents,
+      schedules: [
+        {
+          day: dayOfWeek,
+          begin_time: formatTime(data.startTime),
+          end_time: formatTime(data.endTime),
+        },
+      ],
+      invited_student_ids: undefined,
     };
 
     createMutation.mutate(requestData);
