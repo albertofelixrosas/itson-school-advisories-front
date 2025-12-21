@@ -6,7 +6,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Layout, LoadingSpinner } from '@/components/common';
-import { Box, Typography, Paper, Button, Alert, Card, CardContent, Divider, Stack, Chip, Grid, Avatar } from '@mui/material';
+import { Box, Typography, Paper, Button, Alert, Card, CardContent, Divider, Stack, Chip, Avatar, Grid } from '@mui/material';
 import {
   Assignment as AssignmentIcon,
   Event as EventIcon,
@@ -17,8 +17,6 @@ import {
   MenuBook as SubjectIcon,
   AccessTime as TimeIcon,
   Person as PersonIcon,
-  LocationOn as LocationIcon,
-  VideoCall as VideoIcon,
 } from '@mui/icons-material';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -148,7 +146,7 @@ export function StudentDashboard() {
 
         {/* Overview Stats Grid */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper 
               sx={{ 
                 p: 3, 
@@ -171,7 +169,7 @@ export function StudentDashboard() {
             </Paper>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper 
               sx={{ 
                 p: 3, 
@@ -194,7 +192,7 @@ export function StudentDashboard() {
             </Paper>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper 
               sx={{ 
                 p: 3, 
@@ -218,7 +216,7 @@ export function StudentDashboard() {
             </Paper>
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper 
               sx={{ 
                 p: 3, 
@@ -248,7 +246,7 @@ export function StudentDashboard() {
               Estadísticas Generales
             </Typography>
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <CheckIcon sx={{ fontSize: 40, color: 'success.main' }} />
                   <Box>
@@ -262,7 +260,7 @@ export function StudentDashboard() {
                 </Box>
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <SubjectIcon sx={{ fontSize: 40, color: 'primary.main' }} />
                   <Box>
@@ -276,7 +274,7 @@ export function StudentDashboard() {
                 </Box>
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <TimeIcon sx={{ fontSize: 40, color: 'info.main' }} />
                   <Box>
@@ -290,7 +288,7 @@ export function StudentDashboard() {
                 </Box>
               </Grid>
 
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                   <TrendingIcon sx={{ fontSize: 40, color: 'success.main' }} />
                   <Box>
@@ -328,7 +326,7 @@ export function StudentDashboard() {
 
         <Grid container spacing={3}>
           {/* Recent Advisories */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card>
               <CardContent>
                 <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
@@ -387,7 +385,7 @@ export function StudentDashboard() {
           </Grid>
 
           {/* Available Professors */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Card>
               <CardContent>
                 <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
@@ -494,3 +492,4 @@ export function StudentDashboard() {
 }
 
 export default StudentDashboard;
+
