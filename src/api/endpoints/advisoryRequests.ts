@@ -11,6 +11,7 @@ import type {
   RejectRequestDto,
   AvailableSchedulesResponse,
 } from '../types/advisoryRequests.types';
+import type { AdvisoryRequestResponseDto } from '../types';
 
 /**
  * Create a new advisory request (STUDENT role required)
@@ -36,10 +37,10 @@ export async function createAdvisoryRequest(
  * 
  * Endpoint: GET /advisory-requests/my-requests
  * 
- * @returns Promise with array of student's advisory requests
+ * @returns Promise with array of student's advisory requests with populated relations
  */
-export async function getMyRequests(): Promise<AdvisoryRequest[]> {
-  const response = await apiClient.get<AdvisoryRequest[]>(
+export async function getMyRequests(): Promise<AdvisoryRequestResponseDto[]> {
+  const response = await apiClient.get<AdvisoryRequestResponseDto[]>(
     '/advisory-requests/my-requests'
   );
   return response.data;
@@ -51,10 +52,10 @@ export async function getMyRequests(): Promise<AdvisoryRequest[]> {
  * Endpoint: GET /advisory-requests/pending
  * WARNING: Use /pending NOT /professor/pending
  * 
- * @returns Promise with array of pending advisory requests
+ * @returns Promise with array of pending advisory requests with populated relations
  */
-export async function getPendingRequests(): Promise<AdvisoryRequest[]> {
-  const response = await apiClient.get<AdvisoryRequest[]>(
+export async function getPendingRequests(): Promise<AdvisoryRequestResponseDto[]> {
+  const response = await apiClient.get<AdvisoryRequestResponseDto[]>(
     '/advisory-requests/pending'
   );
   return response.data;
@@ -67,14 +68,14 @@ export async function getPendingRequests(): Promise<AdvisoryRequest[]> {
  * 
  * @param requestId - ID of the request to approve
  * @param data - Approval data with professor response and optional proposed date
- * @returns Promise with updated advisory request
+ * @returns Promise with updated advisory request with populated relations
  * @throws {Error} If request is not in pending status or professor doesn't own it
  */
 export async function approveRequest(
   requestId: number,
   data: ApproveRequestDto
-): Promise<AdvisoryRequest> {
-  const response = await apiClient.patch<AdvisoryRequest>(
+): Promise<AdvisoryRequestResponseDto> {
+  const response = await apiClient.patch<AdvisoryRequestResponseDto>(
     `/advisory-requests/${requestId}/approve`,
     data
   );
@@ -88,14 +89,14 @@ export async function approveRequest(
  * 
  * @param requestId - ID of the request to reject
  * @param data - Rejection data with professor response explaining reason
- * @returns Promise with updated advisory request
+ * @returns Promise with updated advisory request with populated relations
  * @throws {Error} If request is not in pending status or professor doesn't own it
  */
 export async function rejectRequest(
   requestId: number,
   data: RejectRequestDto
-): Promise<AdvisoryRequest> {
-  const response = await apiClient.patch<AdvisoryRequest>(
+): Promise<AdvisoryRequestResponseDto> {
+  const response = await apiClient.patch<AdvisoryRequestResponseDto>(
     `/advisory-requests/${requestId}/reject`,
     data
   );
@@ -109,13 +110,13 @@ export async function rejectRequest(
  * Can only cancel requests with status PENDING or APPROVED
  * 
  * @param requestId - ID of the request to cancel
- * @returns Promise with cancelled advisory request
+ * @returns Promise with cancelled advisory request with populated relations
  * @throws {Error} If request cannot be cancelled in current status
  */
 export async function cancelRequest(
   requestId: number
-): Promise<AdvisoryRequest> {
-  const response = await apiClient.delete<AdvisoryRequest>(
+): Promise<AdvisoryRequestResponseDto> {
+  const response = await apiClient.delete<AdvisoryRequestResponseDto>(
     `/advisory-requests/${requestId}/cancel`
   );
   return response.data;

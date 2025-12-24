@@ -32,7 +32,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { getMyRequests, cancelAdvisoryRequest } from '@/api/endpoints/advisoryRequests';
+import { getMyRequests, cancelRequest } from '@/api/endpoints/advisoryRequests';
 import { LoadingSpinner, ConfirmDialog } from '@/components/common';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import type { AdvisoryRequestResponseDto, RequestStatus } from '@/api/types';
@@ -95,12 +95,12 @@ export function MyRequestsList() {
   // Fetch requests
   const { data, isLoading, error } = useQuery({
     queryKey: ['my-requests'],
-    queryFn: () => getMyRequests(1, 50),
+    queryFn: getMyRequests,
   });
 
   // Cancel mutation
   const cancelMutation = useMutation({
-    mutationFn: (id: number) => cancelAdvisoryRequest(id, 'Cancelada por el estudiante'),
+    mutationFn: (id: number) => cancelRequest(id),
     onSuccess: () => {
       toast.success('Solicitud cancelada exitosamente');
       queryClient.invalidateQueries({ queryKey: ['my-requests'] });
@@ -147,7 +147,7 @@ export function MyRequestsList() {
     );
   }
 
-  const requests = data?.items || [];
+  const requests = data || [];
 
   if (requests.length === 0) {
     return (
