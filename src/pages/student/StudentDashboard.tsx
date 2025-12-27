@@ -55,23 +55,24 @@ export function StudentDashboard() {
     );
   }
 
-  const { overview, recent_activity, statistics } = dashboardData || {
-    overview: {
-      active_advisories: 0,
-      completed_advisories: 0,
-      pending_requests: 0,
-      next_advisory: null,
-    },
-    recent_activity: {
-      recent_advisories: [],
-      available_professors: [],
-    },
-    statistics: {
-      total_advisories_attended: 0,
-      subjects_covered: [],
-      total_hours_received: 0,
-      average_attendance_rate: 0,
-    },
+  // Destructure with safe defaults for all nested properties
+  const overview = dashboardData?.overview || {
+    active_advisories: 0,
+    completed_advisories: 0,
+    pending_requests: 0,
+    next_advisory: null,
+  };
+
+  const recent_activity = {
+    recent_advisories: dashboardData?.recent_activity?.recent_advisories || [],
+    available_professors: dashboardData?.recent_activity?.available_professors || [],
+  };
+
+  const statistics = {
+    total_advisories_attended: dashboardData?.statistics?.total_advisories_attended || 0,
+    subjects_covered: dashboardData?.statistics?.subjects_covered || [],
+    total_hours_received: dashboardData?.statistics?.total_hours_received || 0,
+    average_attendance_rate: dashboardData?.statistics?.average_attendance_rate || 0,
   };
 
   // Helper function to get status color
@@ -230,7 +231,7 @@ export function StudentDashboard() {
             >
               <TimeIcon sx={{ fontSize: 48, color: 'info.main', mb: 2 }} />
               <Typography variant="h4" fontWeight="bold">
-                {statistics.total_hours_received.toFixed(1)}h
+                {(statistics.total_hours_received || 0).toFixed(1)}h
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Horas Totales
@@ -279,7 +280,7 @@ export function StudentDashboard() {
                   <TimeIcon sx={{ fontSize: 40, color: 'info.main' }} />
                   <Box>
                     <Typography variant="h5" fontWeight="bold">
-                      {statistics.total_hours_received.toFixed(1)}h
+                      {(statistics.total_hours_received || 0).toFixed(1)}h
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       Horas Recibidas
@@ -293,7 +294,7 @@ export function StudentDashboard() {
                   <TrendingIcon sx={{ fontSize: 40, color: 'success.main' }} />
                   <Box>
                     <Typography variant="h5" fontWeight="bold">
-                      {statistics.average_attendance_rate.toFixed(0)}%
+                      {(statistics.average_attendance_rate || 0).toFixed(0)}%
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       Tasa de Asistencia
@@ -422,7 +423,7 @@ export function StudentDashboard() {
                               {professor.department}
                             </Typography>
                             
-                            {professor.subjects.length > 0 && (
+                            {professor.subjects && professor.subjects.length > 0 && (
                               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1 }}>
                                 {professor.subjects.slice(0, 3).map((subject, index) => (
                                   <Chip 
@@ -446,7 +447,7 @@ export function StudentDashboard() {
                               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                 <StarIcon sx={{ fontSize: 16, color: 'warning.main' }} />
                                 <Typography variant="body2">
-                                  {professor.average_rating.toFixed(1)}
+                                  {(professor.average_rating || 0).toFixed(1)}
                                 </Typography>
                               </Box>
                               <Typography variant="body2" color="text.secondary">
