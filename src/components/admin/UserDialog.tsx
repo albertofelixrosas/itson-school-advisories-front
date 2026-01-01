@@ -102,6 +102,7 @@ const editValidationSchema = yup.object().shape({
     .email('Email inválido'),
   password: yup
     .string()
+    .transform((value) => (value === '' ? undefined : value))
     .optional()
     .min(6, 'Mínimo 6 caracteres'),
   name: yup
@@ -256,8 +257,8 @@ export function UserDialog({ open, user, onClose }: UserDialogProps) {
         photo_url: data.photo_url || undefined,
       };
 
-      // Only include password if provided
-      if (data.password) {
+      // Only include password if provided and not empty
+      if (data.password && data.password.trim() !== '') {
         (updateData as CreateUserDto).password = data.password;
       }
 
