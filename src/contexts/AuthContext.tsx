@@ -162,15 +162,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const role = tokenUtils.getUserRole();
 
       if (user && role) {
-        setAuthState(prev => {
-          // Only update if not already authenticated with same user
-          if (prev.isAuthenticated && prev.user?.user_id === user.user_id) return prev;
-          return {
-            isAuthenticated: true,
-            isLoading: false,
-            user,
-            role,
-          };
+        // Always update state on login to ensure role is current
+        // This is important when switching between different user accounts
+        setAuthState({
+          isAuthenticated: true,
+          isLoading: false,
+          user,
+          role,
         });
       } else {
         throw new Error('Invalid token: unable to extract user data');

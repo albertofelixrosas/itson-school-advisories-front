@@ -5,7 +5,7 @@
  * Page shown when user tries to access a route without proper permissions
  */
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Container,
   Box,
@@ -28,7 +28,10 @@ import { useAuth } from '@/hooks/useAuth';
  */
 export function UnauthorizedPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, role } = useAuth();
+
+  const attemptedPath = location.pathname;
 
   const handleGoBack = () => {
     navigate(-1);
@@ -107,9 +110,30 @@ export function UnauthorizedPage() {
             No tienes permisos suficientes para acceder a esta página.
           </Typography>
 
+          {/* Attempted Path */}
+          <Box
+            sx={{
+              bgcolor: 'warning.light',
+              color: 'warning.dark',
+              p: 1.5,
+              borderRadius: 1,
+              mb: 3,
+              maxWidth: 500,
+              mx: 'auto',
+              wordBreak: 'break-all',
+            }}
+          >
+            <Typography variant="caption" sx={{ fontWeight: 'bold' }}>
+              Ruta intentada:
+            </Typography>
+            <Typography variant="caption" sx={{ display: 'block', fontFamily: 'monospace' }}>
+              {attemptedPath}
+            </Typography>
+          </Box>
+
           {user && (
             <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-              Usuario actual: <strong>{user.email}</strong> ({role})
+              Usuario actual: <strong>{user.email}</strong> (<strong>{role}</strong>)
             </Typography>
           )}
 

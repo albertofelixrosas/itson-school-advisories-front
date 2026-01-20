@@ -20,7 +20,7 @@ import toast from 'react-hot-toast';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { useAuth } from '@/hooks/useAuth';
 import { login as loginApi } from '@/api/endpoints/auth';
-import type { LoginDto } from '@/api/types';
+import type { LoginDto, UserRole } from '@/api/types';
 
 /**
  * Login Page Component
@@ -28,9 +28,22 @@ import type { LoginDto } from '@/api/types';
  * Handles user authentication with:
  * - Login form with validation
  * - Error handling and toast notifications
- * - Redirect to previous location after login
+ * - Role-based redirect after login
  * - Redirect to dashboard if already authenticated
  */
+
+/**
+ * Get redirect route based on user role
+ */
+function getRedirectPathByRole(role: UserRole): string {
+  const rolePathMap: Record<UserRole, string> = {
+    admin: '/admin/dashboard',
+    professor: '/professor/dashboard',
+    student: '/student/dashboard',
+  };
+  return rolePathMap[role] || '/student/dashboard';
+}
+
 export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,11 +53,11 @@ export function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Get the location user tried to access before login
-  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/student/dashboard';
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname;
 
   // Redirect if already authenticated
   if (isAuthenticated) {
-    return <Navigate to={from} replace />;
+    return <Navigate to={from || '/student/dashboard'} replace />;
   }
 
   /**
@@ -58,14 +71,23 @@ export function LoginPage() {
       // Call login API
       const response = await loginApi(credentials);
 
+      // Get user role from the API response before updating context
+      const userRole = response.user.role;
+
       // Store tokens and update auth state
       login(response.access_token, response.refresh_token);
 
       // Show success message
       toast.success(`¡Bienvenido, ${response.user.name || response.user.email}!`);
 
-      // Redirect to previous location or home
-      navigate(from, { replace: true });
+      // Determine redirect path based on user role from API response
+      const redirectPath = userRole ? getRedirectPathByRole(userRole) : '/student/dashboard';
+
+      // Use setTimeout with 0ms to ensure state updates complete before navigation
+      // This allows the AuthContext to update before ProtectedRoute checks permissions
+      setTimeout(() => {
+        navigate(redirectPath, { replace: true });
+      }, 0);
     } catch (err: unknown) {
       // Handle error
       const errorMessage = err instanceof Error 
