@@ -5,8 +5,8 @@
  * Authentication page with login form and redirect logic
  */
 
-import { useState } from 'react';
-import { useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Navigate } from 'react-router-dom';
 import {
   Container,
   Paper,
@@ -46,17 +46,21 @@ function getRedirectPathByRole(role: UserRole): string {
 
 export function LoginPage() {
   const navigate = useNavigate();
-  const location = useLocation();
   const { isAuthenticated, login } = useAuth();
   
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [redirectPath, setRedirectPath] = useState<string | null>(null);
 
-  // Get the location user tried to access before login
-  const from = (location.state as { from?: { pathname: string } })?.from?.pathname;
+  // Effect: Navigate when authentication is complete and redirect path is set
+  useEffect(() => {
+    if (isAuthenticated && redirectPath) {
+      navigate(redirectPath, { replace: true });
+    }
+  }, [isAuthenticated, redirectPath, navigate]);
 
-  // Redirect if already authenticated
-  if (isAuthenticated) {
+  // Redirect if already authenticated (initial check)
+  if (isAuthenticated && !redirectPath) {
     // Don't use 'from' after successful login - it may redirect to login page
     // Instead, use the default route which will be handled by ProtectedRoute
     return <Navigate to="/student/dashboard" replace />;
@@ -79,18 +83,15 @@ export function LoginPage() {
       // Show success message
       toast.success(`¡Bienvenido, ${response.user.name || response.user.email}!`);
 
-      // Determine redirect path based on user role BEFORE updating auth state
-      const redirectPath = userRole ? getRedirectPathByRole(userRole) : '/student/dashboard';
+      // Determine redirect path based on user role
+      const path = userRole ? getRedirectPathByRole(userRole) : '/student/dashboard';
 
       // Store tokens and update auth state
-      // This should be done AFTER determining the redirect path
-      login(response.access_token, response.refresh_token);
+      // The useEffect above will handle navigation when isAuthenticated changes
+      await login(response.access_token, response.refresh_token);
 
-      // Navigate to the appropriate dashboard for this user's role
-      // Use a short delay to ensure auth state is fully updated
-      setTimeout(() => {
-        navigate(redirectPath, { replace: true });
-      }, 100);
+      // Set the redirect path, which will trigger navigation in useEffect
+      setRedirectPath(path);
     } catch (err: unknown) {
       // Handle error
       const errorMessage = err instanceof Error 

@@ -28,7 +28,7 @@ interface AuthState {
  * Authentication context value interface
  */
 interface AuthContextValue extends AuthState {
-  login: (accessToken: string, refreshToken: string) => void;
+  login: (accessToken: string, refreshToken: string) => Promise<void>;
   logout: () => void;
   updateUser: (user: Partial<User>) => void;
   checkAuth: () => boolean;
@@ -148,35 +148,51 @@ export function AuthProvider({ children }: AuthProviderProps) {
   /**
    * Login function
    * Stores tokens and updates auth state
+   * Returns a promise that resolves when auth state is fully updated
    */
-  const login = useCallback((accessToken: string, refreshToken: string) => {
-    try {
-      // Store tokens
-      tokenUtils.setTokens(accessToken, refreshToken);
-      
-      // Set token in axios client
-      setAuthorizationToken(accessToken);
-      
-      // Extract user data from token
-      const user = tokenUtils.getUserFromToken();
-      const role = tokenUtils.getUserRole();
+  const login = useCallback((accessToken: string, refreshToken: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      try {
+        // Store tokens
+        tokenUtils.setTokens(accessToken, refreshToken);
+        
+        // Set token in axios client
+        setAuthorizationToken(accessToken);
+        
+        // Extract user data from token
+        const user = tokenUtils.getUserFromToken();
+        const role = tokenUtils.getUserRole();
 
-      if (user && role) {
-        // Always update state on login to ensure role is current
-        // This is important when switching between different user accounts
-        setAuthState({
-          isAuthenticated: true,
-          isLoading: false,
-          user,
-          role,
-        });
-      } else {
-        throw new Error('Invalid token: unable to extract user data');
+        if (user && role) {
+          // Use a flag to track if we've resolved
+          let resolved = false;
+          
+          // Set state with a callback pattern using setTimeout
+          // This ensures React has processed the state update
+          setAuthState({
+            isAuthenticated: true,
+            isLoading: false,
+            user,
+            role,
+          });
+          
+          // Schedule resolution for next microtask queue iteration
+          // This gives React time to process the state update
+          Promise.resolve().then(() => {
+            if (!resolved) {
+              resolved = true;
+              resolve();
+            }
+          });
+        } else {
+          throw new Error('Invalid token: unable to extract user data');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        reject(error);
+        logout();
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      logout();
-    }
+    });
   }, [logout]);
 
   /**
