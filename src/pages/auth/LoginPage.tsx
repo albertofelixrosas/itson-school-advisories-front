@@ -80,8 +80,14 @@ export function LoginPage() {
       // Get user role from the API response
       const userRole = response.user.role;
 
-      // Show success message
-      toast.success(`¡Bienvenido, ${response.user.name || response.user.email}!`);
+      // Show success notification
+      toast.success(`✅ ¡Bienvenido, ${response.user.name || response.user.email}!`, {
+        duration: 4000,
+        iconTheme: {
+          primary: '#4caf50',
+          secondary: '#fff',
+        },
+      });
 
       // Determine redirect path based on user role
       const path = userRole ? getRedirectPathByRole(userRole) : '/student/dashboard';
@@ -94,12 +100,27 @@ export function LoginPage() {
       setRedirectPath(path);
     } catch (err: unknown) {
       // Handle error
-      const errorMessage = err instanceof Error 
-        ? err.message 
-        : 'Error al iniciar sesión. Verifica tus credenciales.';
+      let errorMessage = 'Error al iniciar sesión. Verifica tus credenciales.';
+      
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      
+      console.error('Login error:', err, 'Message:', errorMessage);
       
       setError(errorMessage);
-      toast.error(errorMessage);
+      
+      // Show error notification with a clear message
+      // The toast should appear even if there's an error
+      setTimeout(() => {
+        toast.error(`❌ Inicio de sesión fallido: ${errorMessage}`, {
+          duration: 5000,
+          iconTheme: {
+            primary: '#f44336',
+            secondary: '#fff',
+          },
+        });
+      }, 100);
     } finally {
       setIsLoading(false);
     }

@@ -24,8 +24,13 @@ import {
   Email as EmailIcon,
   Lock as LockIcon,
 } from '@mui/icons-material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { LoginDto } from '@/api/types';
+
+/**
+ * Key for storing login credentials in sessionStorage
+ */
+const LOGIN_STORAGE_KEY = 'login_form_data';
 
 /**
  * Login form validation schema
@@ -50,6 +55,41 @@ interface LoginFormProps {
   onSubmit: (data: LoginDto) => Promise<void>;
   error?: string | null;
   isLoading?: boolean;
+  onSuccessfulLogin?: () => void;
+}
+
+/**
+ * Get saved login data from sessionStorage
+ */
+function getSavedLoginData(): Partial<LoginDto> | null {
+  try {
+    const saved = sessionStorage.getItem(LOGIN_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Save login data to sessionStorage
+ */
+function saveLoginData(data: Partial<LoginDto>): void {
+  try {
+    sessionStorage.setItem(LOGIN_STORAGE_KEY, JSON.stringify(data));
+  } catch {
+    // Fail silently if sessionStorage is unavailable
+  }
+}
+
+/**
+ * Clear saved login data from sessionStorage
+ */
+function clearSavedLoginData(): void {
+  try {
+    sessionStorage.removeItem(LOGIN_STORAGE_KEY);
+  } catch {
+    // Fail silently if sessionStorage is unavailable
+  }
 }
 
 /**
@@ -58,18 +98,34 @@ interface LoginFormProps {
  * @param onSubmit - Function to handle form submission
  * @param error - Error message to display
  * @param isLoading - Loading state
+ * @param onSuccessfulLogin - Callback when login is successful
  */
-export function LoginForm({ onSubmit, error, isLoading = false }: LoginFormProps) {
+export function LoginForm({ onSubmit, error, isLoading = false, onSuccessfulLogin }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
+
+  // Get saved login data for default values
+  const savedData = getSavedLoginData();
 
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<LoginDto>({
     resolver: yupResolver(loginSchema),
     mode: 'onBlur',
+    defaultValues: savedData || undefined,
   });
+
+  // Watch form values to save them when they change
+  const formValues = watch();
+
+  // Save form data whenever it changes
+  useEffect(() => {
+    if (formValues.email || formValues.password) {
+      saveLoginData(formValues);
+    }
+  }, [formValues]);
 
   const handleTogglePassword = () => {
     setShowPassword((prev) => !prev);
@@ -78,9 +134,13 @@ export function LoginForm({ onSubmit, error, isLoading = false }: LoginFormProps
   const handleFormSubmit = async (data: LoginDto) => {
     try {
       await onSubmit(data);
+      // Clear saved data on successful login
+      clearSavedLoginData();
+      onSuccessfulLogin?.();
     } catch (err) {
       // Error is handled by parent component
       console.error('Login form error:', err);
+      // Keep saved data on error so user doesn't lose it
     }
   };
 

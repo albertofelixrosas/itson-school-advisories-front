@@ -207,25 +207,35 @@ function App() {
 
           {/* Toast notifications */}
           <Toaster
-            position="top-right"
+            position="top-center"
             toastOptions={{
               duration: 4000,
               style: {
                 background: "#363636",
                 color: "#fff",
+                fontSize: "14px",
+                padding: "16px",
+                borderRadius: "8px",
+                boxShadow: "0 10px 25px rgba(0, 0, 0, 0.3)",
               },
               success: {
                 duration: 3000,
+                style: {
+                  background: "#4caf50",
+                },
                 iconTheme: {
-                  primary: "#4caf50",
-                  secondary: "#fff",
+                  primary: "#fff",
+                  secondary: "#4caf50",
                 },
               },
               error: {
                 duration: 5000,
+                style: {
+                  background: "#f44336",
+                },
                 iconTheme: {
-                  primary: "#f44336",
-                  secondary: "#fff",
+                  primary: "#fff",
+                  secondary: "#f44336",
                 },
               },
             }}
