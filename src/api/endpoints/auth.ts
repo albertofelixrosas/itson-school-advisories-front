@@ -9,7 +9,7 @@
  */
 
 import apiClient from '@/api/client';
-import type { LoginDto, LoginResponse, User } from '@/api/types';
+import type { LoginDto, LoginResponse } from '@/api/types';
 import type { ProfileResponse } from '@/api/types/profile.types';
 
 /**

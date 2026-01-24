@@ -16,21 +16,48 @@ import {
   Divider,
 } from '@mui/material';
 import { School as SchoolIcon } from '@mui/icons-material';
-import toast from 'react-hot-toast';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { useAuth } from '@/hooks/useAuth';
 import { login as loginApi } from '@/api/endpoints/auth';
 import type { LoginDto, UserRole } from '@/api/types';
 
 /**
- * Login Page Component
- * 
- * Handles user authentication with:
- * - Login form with validation
- * - Error handling and toast notifications
- * - Role-based redirect after login
- * - Redirect to dashboard if already authenticated
+ * SessionStorage keys for login error handling
  */
+const LOGIN_ERROR_KEY = 'login_error_message';
+
+/**
+ * Get saved login error from sessionStorage
+ */
+function getSavedLoginError(): string | null {
+  try {
+    return sessionStorage.getItem(LOGIN_ERROR_KEY);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Save login error to sessionStorage
+ */
+function saveLoginError(errorMessage: string): void {
+  try {
+    sessionStorage.setItem(LOGIN_ERROR_KEY, errorMessage);
+  } catch {
+    // Fail silently if sessionStorage is unavailable
+  }
+}
+
+/**
+ * Clear saved login error from sessionStorage
+ */
+function clearLoginError(): void {
+  try {
+    sessionStorage.removeItem(LOGIN_ERROR_KEY);
+  } catch {
+    // Fail silently if sessionStorage is unavailable
+  }
+}
 
 /**
  * Get redirect route based on user role
@@ -51,6 +78,16 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [redirectPath, setRedirectPath] = useState<string | null>(null);
+
+  // Effect: Load saved login error on mount
+  useEffect(() => {
+    const savedError = getSavedLoginError();
+    if (savedError) {
+      setError(savedError);
+      // Clear the error from sessionStorage so it doesn't show again
+      clearLoginError();
+    }
+  }, []);
 
   // Effect: Navigate when authentication is complete and redirect path is set
   useEffect(() => {
@@ -80,15 +117,6 @@ export function LoginPage() {
       // Get user role from the API response
       const userRole = response.user.role;
 
-      // Show success notification
-      toast.success(`✅ ¡Bienvenido, ${response.user.name || response.user.email}!`, {
-        duration: 4000,
-        iconTheme: {
-          primary: '#4caf50',
-          secondary: '#fff',
-        },
-      });
-
       // Determine redirect path based on user role
       const path = userRole ? getRedirectPathByRole(userRole) : '/student/dashboard';
 
@@ -99,28 +127,25 @@ export function LoginPage() {
       // Set the redirect path, which will trigger navigation in useEffect
       setRedirectPath(path);
     } catch (err: unknown) {
-      // Handle error
-      let errorMessage = 'Error al iniciar sesión. Verifica tus credenciales.';
+      // Handle error - extract message from different error types
+      let errorMessage = 'Credenciales inválidas. Por favor, intenta nuevamente.';
       
-      if (err instanceof Error) {
+      // Check if it's an axios error with response data
+      const axiosError = err as { response?: { data?: { message?: string | string[] } } };
+      if (axiosError?.response?.data?.message) {
+        const msg = axiosError.response.data.message;
+        errorMessage = Array.isArray(msg) ? msg[0] : msg;
+      } else if (err instanceof Error) {
         errorMessage = err.message;
       }
       
-      console.error('Login error:', err, 'Message:', errorMessage);
+      console.error('Login error:', errorMessage);
       
+      // Save error to sessionStorage so it persists across navigation
+      saveLoginError(errorMessage);
+      
+      // Set error in state to show immediately
       setError(errorMessage);
-      
-      // Show error notification with a clear message
-      // The toast should appear even if there's an error
-      setTimeout(() => {
-        toast.error(`❌ Inicio de sesión fallido: ${errorMessage}`, {
-          duration: 5000,
-          iconTheme: {
-            primary: '#f44336',
-            secondary: '#fff',
-          },
-        });
-      }, 100);
     } finally {
       setIsLoading(false);
     }
