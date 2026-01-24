@@ -57,7 +57,9 @@ export function LoginPage() {
 
   // Redirect if already authenticated
   if (isAuthenticated) {
-    return <Navigate to={from || '/student/dashboard'} replace />;
+    // Don't use 'from' after successful login - it may redirect to login page
+    // Instead, use the default route which will be handled by ProtectedRoute
+    return <Navigate to="/student/dashboard" replace />;
   }
 
   /**
@@ -71,23 +73,24 @@ export function LoginPage() {
       // Call login API
       const response = await loginApi(credentials);
 
-      // Get user role from the API response before updating context
+      // Get user role from the API response
       const userRole = response.user.role;
-
-      // Store tokens and update auth state
-      login(response.access_token, response.refresh_token);
 
       // Show success message
       toast.success(`¡Bienvenido, ${response.user.name || response.user.email}!`);
 
-      // Determine redirect path based on user role from API response
+      // Determine redirect path based on user role BEFORE updating auth state
       const redirectPath = userRole ? getRedirectPathByRole(userRole) : '/student/dashboard';
 
-      // Use setTimeout with 0ms to ensure state updates complete before navigation
-      // This allows the AuthContext to update before ProtectedRoute checks permissions
+      // Store tokens and update auth state
+      // This should be done AFTER determining the redirect path
+      login(response.access_token, response.refresh_token);
+
+      // Navigate to the appropriate dashboard for this user's role
+      // Use a short delay to ensure auth state is fully updated
       setTimeout(() => {
         navigate(redirectPath, { replace: true });
-      }, 0);
+      }, 100);
     } catch (err: unknown) {
       // Handle error
       const errorMessage = err instanceof Error 
