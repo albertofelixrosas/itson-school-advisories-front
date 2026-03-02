@@ -67,8 +67,6 @@ export interface User {
   phone_number: string;
   photo_url?: string | null;
   school_id?: string | null;
-  student_id?: string | null;
-  employee_id?: string | null;
   role: UserRole;
   is_active: boolean;
   created_at: string;
@@ -439,8 +437,6 @@ export interface CreateUserDto {
   phone_number: string;
   photo_url?: string;
   school_id?: string;
-  student_id?: string;
-  employee_id?: string;
   role: UserRole;
 }
 

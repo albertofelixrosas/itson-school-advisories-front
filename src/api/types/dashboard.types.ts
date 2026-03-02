@@ -13,7 +13,6 @@
 export interface ProfessorAdvisory {
   advisory_id: number;
   student_name: string;
-  student_id: string;
   subject: string;
   date: string; // ISO datetime
   start_time: string; // "HH:MM:SS"

@@ -214,9 +214,11 @@ export function ProfessorPendingRequests() {
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <BadgeIcon fontSize="small" color="action" />
                         <Box>
-                          <Typography variant="body2">{request.student?.student_id}</Typography>
+                          <Typography variant="body2">
+                            {request.student?.username || request.student?.email || '—'}
+                          </Typography>
                           <Typography variant="caption" color="text.secondary">
-                            Matrícula
+                            Usuario
                           </Typography>
                         </Box>
                       </Box>

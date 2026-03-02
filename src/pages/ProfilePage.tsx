@@ -120,10 +120,6 @@ export function ProfilePage() {
               <Typography variant="body2" color="text.secondary">Semestre</Typography>
               <Typography variant="body1">{studentProfile.student_profile.semester}</Typography>
             </Box>
-            <Box>
-              <Typography variant="body2" color="text.secondary">Matrícula</Typography>
-              <Typography variant="body1">{studentProfile.student_profile.student_id}</Typography>
-            </Box>
             
             <Divider />
             

@@ -42,8 +42,6 @@ interface UserFormData {
   last_name: string;
   phone_number: string;
   school_id: string;
-  student_id: string;
-  employee_id: string;
   role: UserRole;
   photo_url: string;
 }
@@ -78,8 +76,6 @@ const createValidationSchema = yup.object().shape({
     .required('El teléfono es requerido')
     .matches(/^\d{10}$/, 'Debe ser un número de 10 dígitos'),
   school_id: yup.string().optional(),
-  student_id: yup.string().optional(),
-  employee_id: yup.string().optional(),
   role: yup
     .string()
     .required('El rol es requerido')
@@ -118,8 +114,6 @@ const editValidationSchema = yup.object().shape({
     .required('El teléfono es requerido')
     .matches(/^\d{10}$/, 'Debe ser un número de 10 dígitos'),
   school_id: yup.string().optional(),
-  student_id: yup.string().optional(),
-  employee_id: yup.string().optional(),
   role: yup
     .string()
     .required('El rol es requerido')
@@ -164,8 +158,6 @@ export function UserDialog({ open, user, onClose }: UserDialogProps) {
       last_name: '',
       phone_number: '',
       school_id: '',
-      student_id: '',
-      employee_id: '',
       role: 'student',
       photo_url: '',
     },
@@ -183,8 +175,6 @@ export function UserDialog({ open, user, onClose }: UserDialogProps) {
           last_name: user.last_name,
           phone_number: user.phone_number,
           school_id: user.school_id || '',
-          student_id: user.student_id || '',
-          employee_id: user.employee_id || '',
           role: user.role,
           photo_url: user.photo_url || '',
         });
@@ -197,8 +187,6 @@ export function UserDialog({ open, user, onClose }: UserDialogProps) {
           last_name: '',
           phone_number: '',
           school_id: '',
-          student_id: '',
-          employee_id: '',
           role: 'student',
           photo_url: '',
         });
@@ -251,8 +239,6 @@ export function UserDialog({ open, user, onClose }: UserDialogProps) {
         last_name: data.last_name,
         phone_number: data.phone_number,
         school_id: data.school_id ? Number(data.school_id) : undefined,
-        student_id: data.student_id || undefined,
-        employee_id: data.employee_id || undefined,
         role: data.role,
         photo_url: data.photo_url || undefined,
       };
@@ -273,8 +259,6 @@ export function UserDialog({ open, user, onClose }: UserDialogProps) {
         last_name: data.last_name,
         phone_number: data.phone_number,
         school_id: data.school_id ? Number(data.school_id) : undefined,
-        student_id: data.student_id || undefined,
-        employee_id: data.employee_id || undefined,
         role: data.role,
         photo_url: data.photo_url || undefined,
       };
@@ -415,8 +399,8 @@ export function UserDialog({ open, user, onClose }: UserDialogProps) {
             )}
           />
 
-          {/* IDs */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2 }}>
+          {/* School ID */}
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 2 }}>
             <Controller
               name="school_id"
               control={control}
@@ -426,34 +410,6 @@ export function UserDialog({ open, user, onClose }: UserDialogProps) {
                   label="ID Escolar"
                   error={!!errors.school_id}
                   helperText={errors.school_id?.message}
-                  disabled={isSubmitting}
-                />
-              )}
-            />
-
-            <Controller
-              name="student_id"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="ID Estudiante"
-                  error={!!errors.student_id}
-                  helperText={errors.student_id?.message}
-                  disabled={isSubmitting}
-                />
-              )}
-            />
-
-            <Controller
-              name="employee_id"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="ID Empleado"
-                  error={!!errors.employee_id}
-                  helperText={errors.employee_id?.message}
                   disabled={isSubmitting}
                 />
               )}

@@ -67,8 +67,6 @@ export interface User {
   phone_number: string;
   photo_url?: string | null;
   school_id?: string | null;
-  student_id?: string | null;
-  employee_id?: string | null;
   role: UserRole;
   is_active: boolean;
   created_at: string;
@@ -298,8 +296,6 @@ export interface CreateUserDto {
   last_name: string;
   phone_number: string;
   school_id?: number;  // Backend expects number, not string
-  student_id?: string;
-  employee_id?: string;
   role: UserRole;
   photo_url?: string;  // Optional field
 }
@@ -311,8 +307,6 @@ export interface UpdateUserDto {
   last_name?: string;
   phone_number?: string;
   school_id?: number;  // Backend expects number, not string
-  student_id?: string;
-  employee_id?: string;
   role?: UserRole;
   photo_url?: string;  // Optional field
   is_active?: boolean;
@@ -416,8 +410,6 @@ export interface CreateUserDto {
   phone_number: string;
   photo_url?: string;
   school_id?: string;
-  student_id?: string;
-  employee_id?: string;
   role: UserRole;
 }
 

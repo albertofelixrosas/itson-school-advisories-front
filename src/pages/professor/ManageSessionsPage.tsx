@@ -409,7 +409,7 @@ function AttendanceViewWrapper({ sessionId, onBack }: AttendanceViewWrapperProps
   // Map backend students to User type
   const students: User[] = data.students.map(s => ({
     user_id: s.user_id,
-    username: s.student_id,
+    username: s.username || s.email,
     email: s.email,
     name: s.name,
     last_name: s.last_name,

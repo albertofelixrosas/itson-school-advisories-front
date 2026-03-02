@@ -21,8 +21,8 @@ import {
   Alert,
   Paper,
   Typography,
-  useTheme,
-  useMediaQuery,
+  // useTheme,
+  // useMediaQuery,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
@@ -121,8 +121,8 @@ interface CreateSessionFormProps {
  */
 export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProps) {
   const queryClient = useQueryClient();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  // const theme = useTheme();
+  // const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const {
     control,
@@ -169,7 +169,11 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
     mutationFn: (data: CreateDirectSessionDto) => createDirectSession(data),
     onSuccess: () => {
       toast.success('Sesión de asesoría creada exitosamente');
-      queryClient.invalidateQueries({ queryKey: ['advisories', 'with-sessions'] });
+      // Invalidate all queries that start with 'advisories' and 'with-sessions'
+      queryClient.invalidateQueries({ 
+        queryKey: ['advisories', 'with-sessions'],
+        exact: false 
+      });
       queryClient.invalidateQueries({ queryKey: ['professor-dashboard'] });
       reset();
       onSuccess?.();
@@ -297,12 +301,7 @@ export function CreateSessionForm({ onSuccess, onCancel }: CreateSessionFormProp
                     </MenuItem>
                     {venues.map((venue) => (
                       <MenuItem key={venue.venue_id} value={venue.venue_id}>
-                        <Box>
-                          <Typography variant="body1">{venue.name}</Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {venue.location} - Capacidad: {venue.capacity}
-                          </Typography>
-                        </Box>
+                        {venue.name}
                       </MenuItem>
                     ))}
                   </Select>

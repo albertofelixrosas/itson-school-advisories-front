@@ -25,10 +25,8 @@ export interface BaseUserInfo {
 // ===== TIPOS PARA ESTUDIANTE =====
 
 export interface StudentProfile {
-  student_id: string;
   career: string;
   semester: number;
-  student_code: string;
   enrollment_date: string;
   academic_status: 'active' | 'inactive' | 'suspended';
 }
@@ -67,10 +65,8 @@ export interface StudentProfileResponse {
 // ===== TIPOS PARA PROFESOR =====
 
 export interface ProfessorProfile {
-  employee_id: string;
   department: string;
   faculty: string;
-  employee_code: string;
   hire_date: string;
   academic_degree: string;
   specialties: string[];
@@ -124,12 +120,10 @@ export interface ProfessorProfileResponse {
 // ===== TIPOS PARA ADMINISTRADOR =====
 
 export interface AdminProfile {
-  employee_id: string;
   department: string;
   position: string;
   access_level: 'full' | 'partial' | 'read-only';
   permissions: string[];
-  employee_code: string;
 }
 
 export interface SystemInfo {

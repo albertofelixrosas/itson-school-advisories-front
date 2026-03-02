@@ -55,10 +55,10 @@ export interface RejectRequestDto {
  */
 export interface StudentInfo {
   user_id: number;
+  username: string;
   name: string;
   last_name: string;
   email: string;
-  student_id: string;
 }
 
 /**
@@ -66,10 +66,10 @@ export interface StudentInfo {
  */
 export interface ProfessorInfo {
   user_id: number;
+  username: string;
   name: string;
   last_name: string;
   email: string;
-  employee_id: string;
 }
 
 /**

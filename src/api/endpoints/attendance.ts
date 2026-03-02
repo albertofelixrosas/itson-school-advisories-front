@@ -39,7 +39,7 @@ export interface SessionStudentsResponse {
   };
   students: Array<{
     user_id: number;
-    student_id: string;
+    username?: string;
     name: string;
     last_name: string;
     email: string;

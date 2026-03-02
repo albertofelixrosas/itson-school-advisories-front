@@ -167,9 +167,7 @@ export function UserManagementTable({ onCreateUser, onEditUser }: UserManagement
       user.name.toLowerCase().includes(searchLower) ||
       user.last_name.toLowerCase().includes(searchLower) ||
       user.email.toLowerCase().includes(searchLower) ||
-      user.username.toLowerCase().includes(searchLower) ||
-      (user.student_id && user.student_id.toLowerCase().includes(searchLower)) ||
-      (user.employee_id && user.employee_id.toLowerCase().includes(searchLower))
+      user.username.toLowerCase().includes(searchLower)
     );
   });
 
@@ -209,18 +207,6 @@ export function UserManagementTable({ onCreateUser, onEditUser }: UserManagement
           size="small"
         />
       ),
-    },
-    {
-      field: 'student_id',
-      headerName: 'ID Estudiante',
-      width: 130,
-      valueGetter: (value) => value || '-',
-    },
-    {
-      field: 'employee_id',
-      headerName: 'ID Empleado',
-      width: 130,
-      valueGetter: (value) => value || '-',
     },
     {
       field: 'is_active',
@@ -325,7 +311,7 @@ export function UserManagementTable({ onCreateUser, onEditUser }: UserManagement
                 key={user.user_id}
                 title={`${user.name} ${user.last_name}`}
                 subtitle={user.email}
-                info={`${user.username} • ${user.student_id || user.employee_id || `ID: ${user.user_id}`}`}
+                info={`${user.username} • ID: ${user.user_id}`}
                 chips={[
                   {
                     label: getRoleLabel(user.role),
