@@ -12,7 +12,6 @@ import {
   Typography,
   Button,
   IconButton,
-  Chip,
   TextField,
   InputAdornment,
   Alert,
@@ -139,9 +138,6 @@ export function VenueManagementTable() {
     queryKey: ['admin-venues'],
     queryFn: getAllVenues,
   });
-
-  // Ensure venues is always an array
-  const venues = Array.isArray(venuesData) ? venuesData : [];
 
   // Create mutation
   const createMutation = useMutation({
@@ -288,10 +284,13 @@ export function VenueManagementTable() {
    * Filter venues
    */
   const filteredVenues = useMemo(
-    () => venues.filter((venue) =>
-      venue.name.toLowerCase().includes(searchTerm.toLowerCase())
-    ),
-    [venues, searchTerm]
+    () => {
+      const venues = Array.isArray(venuesData) ? venuesData : [];
+      return venues.filter((venue) =>
+        venue.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    },
+    [venuesData, searchTerm]
   );
 
   /**

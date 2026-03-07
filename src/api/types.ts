@@ -401,20 +401,6 @@ export interface PublicUserDto {
   role: UserRole;
 }
 
-export interface CreateUserDto {
-  username: string;
-  email: string;
-  password: string;
-  name: string;
-  last_name: string;
-  phone_number: string;
-  photo_url?: string;
-  school_id?: string;
-  role: UserRole;
-}
-
-export type UpdateUserDto = Partial<CreateUserDto>;
-
 // Subject DTOs
 export interface SubjectDetailDto {
   subject_detail_id: number;

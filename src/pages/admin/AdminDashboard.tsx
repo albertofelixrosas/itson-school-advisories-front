@@ -8,7 +8,6 @@ import { Layout, LoadingSpinner } from '@/components/common';
 import {
   Box,
   Typography,
-  Paper,
   Grid,
   Card,
   CardContent,

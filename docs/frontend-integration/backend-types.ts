@@ -361,7 +361,7 @@ export interface CreateUserDto {
   role: UserRole;
 }
 
-export interface UpdateUserDto extends Partial<CreateUserDto> {}
+export type UpdateUserDto = Partial<CreateUserDto>;
 
 // Subject DTOs
 export interface SubjectDetailDto {

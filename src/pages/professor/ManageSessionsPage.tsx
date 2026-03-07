@@ -37,7 +37,7 @@ import { getSessionStudents } from '@/api/endpoints/attendance';
 import { InviteStudentsModal } from '@/components/professor/InviteStudentsModal';
 import { AttendanceForm } from '@/components/professor/AttendanceForm';
 import { SessionCompletionModal } from '@/components/professor/SessionCompletionModal';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/useAuth';
 import type { AdvisoryWithSessions, AdvisoryDateInfo, User } from '@/types';
 
 /**
@@ -66,7 +66,7 @@ export function ManageSessionsPage() {
    * Get all sessions from advisories
    */
   const getAllSessions = (): AdvisoryDateInfo[] => {
-    const sessions: AdvisoryDateInfo[] = []; [];
+    const sessions: AdvisoryDateInfo[] = [];
     advisories.forEach((advisory: AdvisoryWithSessions) => {
       if (advisory.advisory_dates) {
         sessions.push(...advisory.advisory_dates);

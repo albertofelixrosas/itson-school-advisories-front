@@ -4,7 +4,7 @@
  */
 
 import { apiClient } from '../client';
-import type { BulkAttendanceDto, CompleteSessionDto, User } from '../types';
+import type { BulkAttendanceDto, CompleteSessionDto } from '../types';
 
 /**
  * Session Students Response Interface
@@ -81,7 +81,7 @@ export async function completeSession(
  * Get attendance records for a session
  * Endpoint: GET /advisory-attendance/session/:sessionId
  */
-export async function getSessionAttendance(sessionId: number): Promise<any> {
+export async function getSessionAttendance(sessionId: number): Promise<unknown> {
   const response = await apiClient.get(`/advisory-attendance/session/${sessionId}`);
   return response.data;
 }

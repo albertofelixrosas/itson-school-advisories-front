@@ -9,35 +9,12 @@
  * - Token refresh logic
  */
 
-import React, { createContext, useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import type { User } from '@/api/types';
+import { AuthContext } from './auth-context';
+import type { AuthContextValue, AuthState } from './auth-context';
 import * as tokenUtils from '@/utils/tokenUtils';
 import { setAuthorizationToken, clearAuthTokens } from '@/api/client';
-
-/**
- * Authentication state interface
- */
-interface AuthState {
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  user: Partial<User> | null;
-  role: User['role'] | null;
-}
-
-/**
- * Authentication context value interface
- */
-interface AuthContextValue extends AuthState {
-  login: (accessToken: string, refreshToken: string) => Promise<void>;
-  logout: () => void;
-  updateUser: (user: Partial<User>) => void;
-  checkAuth: () => boolean;
-}
-
-/**
- * Create the authentication context
- */
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 /**
  * Authentication Provider Props
@@ -255,22 +232,4 @@ export function AuthProvider({ children }: AuthProviderProps) {
   );
 }
 
-/**
- * Export context for advanced usage
- */
-export { AuthContext };
 export default AuthProvider;
-
-/**
- * Custom hook to use the Auth context
- * Throws an error if used outside of AuthProvider
- */
-export function useAuth(): AuthContextValue {
-  const context = React.useContext(AuthContext);
-  
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  
-  return context;
-}

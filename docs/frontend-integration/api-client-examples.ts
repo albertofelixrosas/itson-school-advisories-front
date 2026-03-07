@@ -606,13 +606,14 @@ export const getStoredUser = () => {
  *   handleApiError(error, 'Login failed');
  * }
  */
-export const handleApiError = (error: any, context: string = "API request") => {
+export const handleApiError = (error: unknown, context: string = "API request") => {
+  const errorMessage = error instanceof Error ? error.message : undefined;
   console.error(`${context}:`, error);
 
   // Handle specific error types
   if (
-    error.message?.includes("401") ||
-    error.message?.includes("Unauthorized")
+    errorMessage?.includes("401") ||
+    errorMessage?.includes("Unauthorized")
   ) {
     // Token expired, redirect to login
     logout();
@@ -620,7 +621,7 @@ export const handleApiError = (error: any, context: string = "API request") => {
   }
 
   // Return user-friendly message
-  return error.message || "Something went wrong. Please try again.";
+  return errorMessage || "Something went wrong. Please try again.";
 };
 
 // ===== EXAMPLE USAGE IN REACT COMPONENTS =====

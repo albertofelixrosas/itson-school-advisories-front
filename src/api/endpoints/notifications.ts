@@ -4,13 +4,18 @@
  */
 
 import { apiClient } from '../client';
-import type { UpdateNotificationPreferencesDto } from '../types';
+import type {
+  NotificationLogs,
+  NotificationPreferences,
+  PaginatedResponse,
+  UpdateNotificationPreferencesDto,
+} from '../types';
 
 /**
  * Get user's notification preferences
  * Endpoint: GET /notifications/preferences
  */
-export async function getNotificationPreferences(): Promise<any> {
+export async function getNotificationPreferences(): Promise<NotificationPreferences> {
   const response = await apiClient.get('/notifications/preferences');
   return response.data;
 }
@@ -21,7 +26,7 @@ export async function getNotificationPreferences(): Promise<any> {
  */
 export async function updateNotificationPreferences(
   data: UpdateNotificationPreferencesDto
-): Promise<any> {
+): Promise<NotificationPreferences> {
   const response = await apiClient.patch('/notifications/preferences', data);
   return response.data;
 }
@@ -33,7 +38,7 @@ export async function updateNotificationPreferences(
 export async function getNotificationHistory(
   page = 1,
   limit = 20
-): Promise<any> {
+): Promise<NotificationLogs[] | PaginatedResponse<NotificationLogs>> {
   const response = await apiClient.get('/notifications/history', {
     params: { page, limit },
   });
