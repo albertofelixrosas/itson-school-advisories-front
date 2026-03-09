@@ -67,6 +67,8 @@ export interface User {
   phone_number: string;
   photo_url?: string | null;
   school_id?: string | null;
+  student_id?: string | null;
+  employee_id?: string | null;
   role: UserRole;
   is_active: boolean;
   created_at: string;
@@ -82,6 +84,9 @@ export interface SubjectDetails {
   subject_detail_id: number;
   subject_id: number;
   professor_id: number;
+  is_active?: boolean;
+  created_at?: string;
+  updated_at?: string;
   subject: Subject;
   professor: User;
   schedules: SubjectSchedule[];
@@ -273,6 +278,7 @@ export interface EmailTemplate {
 // Authentication DTOs
 export interface LoginDto {
   email: string;
+  username?: string;
   password: string;
 }
 
@@ -431,8 +437,8 @@ export interface CreateDirectSessionDto {
   topic: string;
   notes?: string;
   session_link?: string;
-  max_students: number;
-  schedules: SessionScheduleDto[]; // Requerido por el backend
+  max_students?: number;
+  schedules?: SessionScheduleDto[];
   invited_student_ids?: number[];
 }
 
@@ -508,6 +514,215 @@ export interface CompleteSessionDto {
   session_notes: string;
   topics_covered?: string[];
   next_steps?: string;
+}
+
+// Admin dashboard DTO
+export interface AdminDashboardStatsDto {
+  users: {
+    total: number;
+    students: number;
+    professors: number;
+    admins: number;
+    recent_registrations: number;
+  };
+  advisories: {
+    total: number;
+    active: number;
+    completed: number;
+    avg_students_per_session: number;
+  };
+  sessions: {
+    total: number;
+    upcoming: number;
+    completed: number;
+    this_week: number;
+    this_month: number;
+  };
+  requests: {
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+    avg_response_time_hours: number;
+  };
+  attendance: {
+    total_records: number;
+    attended: number;
+    attendance_rate: number;
+  };
+  subjects: {
+    total: number;
+    with_professors: number;
+    active_advisories: number;
+  };
+  top_subjects: Array<{
+    subject_id: number;
+    subject_name: string;
+    sessions_count: number;
+    students_served: number;
+  }>;
+  top_professors: Array<{
+    user_id: number;
+    name: string;
+    last_name: string;
+    sessions_count: number;
+    students_served: number;
+    avg_rating: number;
+  }>;
+}
+
+export type SessionStudentJoinType = 'invitation' | 'request' | 'attendance';
+
+export interface SessionStudentsResponseDto {
+  session: {
+    advisory_date_id: number;
+    advisory_id: number;
+    topic: string;
+    date: string;
+    notes: string | null;
+    session_link?: string | null;
+    venue: {
+      venue_id: number;
+      building: string;
+      classroom: string;
+      capacity: number;
+    };
+    subject: {
+      subject_id: number;
+      subject_name: string;
+    };
+    professor: {
+      user_id: number;
+      name: string;
+      last_name: string;
+      email: string;
+      photo_url?: string | null;
+    };
+    max_students: number;
+    completed_at?: string | null;
+  };
+  students: Array<{
+    user_id: number;
+    username?: string;
+    student_id: string;
+    name: string;
+    last_name: string;
+    email: string;
+    photo_url?: string | null;
+    phone_number?: string | null;
+    attended: boolean;
+    attendance_notes?: string | null;
+    join_type: SessionStudentJoinType;
+  }>;
+  total_students: number;
+  attended_count: number;
+  absent_count: number;
+  attendance_rate: number;
+}
+
+export interface AdvisoryDateInfo {
+  advisory_date_id: number;
+  topic: string;
+  date: string;
+  notes: string | null;
+  session_link: string | null;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+  venue: {
+    venue_id: number;
+    name: string;
+    building: string | null;
+    floor: string | null;
+    type: string;
+    url: string | null;
+  } | null;
+  attendances_count: number;
+  attended_count: number;
+}
+
+export interface AdvisoryWithSessions {
+  advisory_id: number;
+  max_students: number;
+  professor: {
+    user_id: number;
+    school_id: string;
+    name: string;
+    last_name: string;
+    email: string;
+    photo_url: string | null;
+  };
+  subject_detail: {
+    subject_detail_id: number;
+    subject_name: string;
+    schedules: Array<{
+      day: string;
+      start_time: string;
+      end_time: string;
+    }>;
+  };
+  schedules: Array<{
+    advisory_schedule_id: number;
+    day: string;
+    begin_time: string;
+    end_time: string;
+  }>;
+  advisory_dates: AdvisoryDateInfo[];
+}
+
+export interface FullSessionDetailsDto {
+  advisory_date_id: number;
+  advisory_id: number;
+  topic: string;
+  date: string;
+  notes?: string | null;
+  session_link?: string | null;
+  completed_at?: string | null;
+  created_at: string;
+  updated_at: string;
+  venue: {
+    venue_id: number;
+    building: string;
+    classroom: string;
+    capacity: number;
+  };
+  subject: {
+    subject_id: number;
+    subject_name: string;
+    schedules: Array<{
+      day: string;
+      start_time: string;
+      end_time: string;
+    }>;
+  };
+  professor: {
+    user_id: number;
+    name: string;
+    last_name: string;
+    email: string;
+    photo_url?: string | null;
+    phone_number?: string | null;
+  };
+  max_students: number;
+  advisory_schedules: Array<{
+    advisory_schedule_id: number;
+    day: string;
+    begin_time: string;
+    end_time: string;
+  }>;
+  attendances: Array<{
+    student_id: number;
+    student_enrollment_id: string;
+    student_name: string;
+    student_last_name: string;
+    attended: boolean;
+    notes?: string | null;
+  }>;
+  registered_students_count: number;
+  attended_count: number;
+  attendance_rate: number;
+  is_completed: boolean;
+  is_upcoming: boolean;
 }
 
 // Notification DTOs
