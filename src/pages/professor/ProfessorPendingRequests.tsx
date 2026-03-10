@@ -215,7 +215,7 @@ export function ProfessorPendingRequests() {
                         <BadgeIcon fontSize="small" color="action" />
                         <Box>
                           <Typography variant="body2">
-                            {request.student?.username || request.student?.email || '—'}
+                            {request.student?.email || '—'}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
                             Usuario

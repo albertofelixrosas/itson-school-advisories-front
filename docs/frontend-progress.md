@@ -57,10 +57,36 @@ Estado: `DONE`
 - `DONE` Admin: gestion de usuarios, subject-details, dashboard y notificaciones/templates disponible en UI.
 - `DONE` Escenario cross-career validado en frontend: no existe filtro por carrera en creacion de solicitudes; se listan asignaciones activas profesor-materia independientemente de carrera.
 
+## Fase 5 - QA y estabilizacion
+
+Estado: `DONE_WITH_PARTIAL_BLOCKER`
+
+- `BLOCKED` Pruebas manuales guiadas con `docs/API_TESTING_GUIDE.md` no ejecutadas en entorno local por backend no disponible (`/api` inaccesible).
+- `DONE` Estados de carga/vacio/error revisados en pantallas criticas de student/professor/admin durante la migracion.
+- `DONE` Permisos por rol en rutas protegidas verificados en `App.tsx` y `ProtectedRoute`.
+- `DONE` Correcciones de regresiones de navegacion y contratos:
+  - colisiones de exports en `src/api/endpoints/index.ts`
+  - handler inexistente en `UserManagementTable`
+  - firma de `valueGetter` en `VenueManagementTable`
+  - estandarizacion de DTOs de advisory requests en student/professor
+  - compatibilidad de `Grid` en Admin Dashboard
+- `DONE` Validaciones tecnicas:
+  - `npm run lint`: `SUCCESS`
+  - `npm run build`: `SUCCESS`
+
 ## Validaciones
 
 - `npm run lint`: `SUCCESS` (exit code 0).
-- `npm run build`: `FAILED` por errores preexistentes fuera del alcance de Fase 0/3 (colisiones en barrel exports, errores de componentes admin y tipado MUI Grid del proyecto base).
+- `npm run build`: `SUCCESS`.
+
+## Fase 6 - Cierre
+
+Estado: `DONE_WITH_PARTIAL_EVIDENCE`
+
+- `DONE` Changelog frontend actualizado en `docs/frontend-changelog.md`.
+- `DONE` Resumen tecnico de PR con riesgos conocidos en `docs/frontend-pr-summary.md`.
+- `IN_PROGRESS` Evidencia multimedia (capturas/video) pendiente de ejecucion manual con backend activo.
+- `DONE` Evidencia tecnica consolidada en `docs/frontend-migration-evidence.md`.
 
 ## Notas
 
