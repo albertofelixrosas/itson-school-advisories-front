@@ -37,6 +37,7 @@ import {
   Event as EventIcon,
   People as PeopleIcon,
   CalendarToday as CalendarIcon,
+  Notifications as NotificationsIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -234,6 +235,12 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
         text: 'Asignaciones',
         icon: <AssignmentIcon />,
         path: '/admin/subject-details',
+        roles: ['admin'],
+      },
+      {
+        text: 'Notificaciones',
+        icon: <NotificationsIcon />,
+        path: '/admin/notifications',
         roles: ['admin'],
       },
     ];

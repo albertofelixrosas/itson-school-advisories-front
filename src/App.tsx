@@ -49,6 +49,7 @@ const AdminUsersPage = lazy(() => import("@/pages/admin/AdminUsersPage").then(m 
 const AdminSubjectsPage = lazy(() => import("@/pages/admin/AdminSubjectsPage").then(m => ({ default: m.AdminSubjectsPage })));
 const AdminVenuesPage = lazy(() => import("@/pages/admin/AdminVenuesPage").then(m => ({ default: m.AdminVenuesPage })));
 const AdminSubjectDetailsPage = lazy(() => import("@/pages/admin/AdminSubjectDetailsPage"));
+const AdminNotificationsPage = lazy(() => import("@/pages/admin/AdminNotificationsPage"));
 
 function App() {
   return (
@@ -193,6 +194,14 @@ function App() {
                 element={
                   <ProtectedRoute allowedRoles={['admin']}>
                     <AdminSubjectDetailsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/notifications"
+                element={
+                  <ProtectedRoute allowedRoles={['admin']}>
+                    <AdminNotificationsPage />
                   </ProtectedRoute>
                 }
               />

@@ -104,6 +104,7 @@ export interface Venue {
   venue_id: number;
   name: string;
   type: 'classroom' | 'office' | 'virtual';
+  location?: string | null;
   url?: string;
   building?: string;
   floor?: string;
@@ -733,6 +734,22 @@ export interface UpdateNotificationPreferencesDto {
   session_updates?: boolean;
   invitation_notifications?: boolean;
   request_updates?: boolean;
+}
+
+export interface CreateEmailTemplateDto {
+  template_name: string;
+  subject_template: string;
+  html_template: string;
+  text_template?: string;
+  template_variables?: string;
+}
+
+export interface UpdateEmailTemplateDto {
+  subject_template?: string;
+  html_template?: string;
+  text_template?: string;
+  template_variables?: string;
+  is_active?: boolean;
 }
 
 // Error Response DTO

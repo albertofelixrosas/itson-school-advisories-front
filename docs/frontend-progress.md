@@ -38,10 +38,20 @@ Estado: `DONE`
 - `DONE` Cliente para `PATCH /subject-details/:id/toggle-status` en `src/api/endpoints/subjectDetails.ts`.
 - `DONE` Validacion de manejo de errores HTTP 400/401/403/404 y priorizacion de mensajes de backend en `src/api/client.ts`.
 
+## Fase 3 - UI por modulos
+
+Estado: `DONE`
+
+- `DONE` Admin Dashboard conectado a stats reales con mapeo estable de payload.
+- `DONE` Session Details (professor): dialog de detalle completo conectado a `GET /advisories/sessions/:sessionId`.
+- `DONE` Session Students (professor): lista/conteos/asistencia operando con `GET /advisories/sessions/:sessionId/students`.
+- `DONE` Subject Details Admin: activacion/desactivacion en `SubjectDetailsManager` con `toggle-status`.
+- `DONE` Notificaciones admin: nueva pantalla `AdminNotificationsPage` con preferencias, historial y plantillas (toggle/create/delete).
+
 ## Validaciones
 
 - `npm run lint`: `SUCCESS` (exit code 0).
-- `npm run build`: `FAILED` por errores preexistentes fuera del alcance de Fase 0/2 (colisiones en barrel exports, errores de componentes admin/professor/student, y tipado MUI Grid).
+- `npm run build`: `FAILED` por errores preexistentes fuera del alcance de Fase 0/3 (colisiones en barrel exports, errores de componentes admin y tipado MUI Grid del proyecto base).
 
 ## Notas
 
