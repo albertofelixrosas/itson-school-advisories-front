@@ -22,16 +22,26 @@ Estado: `DONE`
   - `FullSessionDetailsDto`
 - `DONE` `SubjectDetails` actualizado con campos de estado/auditoria (`is_active`, `created_at`, `updated_at`) como opcionales para compatibilidad.
 - `DONE` Ajuste de contratos para nullables/optional:
-  - `LoginDto` ahora acepta `username` o `email`.
+  - `LoginDto` mantiene `email` requerido y permite `username` opcional para compatibilidad de payload.
   - `CreateDirectSessionDto` ajustado a campos opcionales compatibles con contrato documentado.
   - `SessionStudentJoinType` restringido a valores esperados.
 - `DONE` Normalizacion de payload de dashboard admin para compatibilidad UI (`sessions_count` -> `request_count` y `advisory_count`).
 - `DONE` Consolidacion de tipos para evitar drift: `src/types/backend.ts` ahora reexporta desde `src/api/types.ts`.
 
+## Fase 2 - Capa API (services/client)
+
+Estado: `DONE`
+
+- `DONE` Cliente para `GET /users/admin/dashboard/stats` en `src/api/endpoints/admin.ts`.
+- `DONE` Cliente para `GET /advisories/sessions/:sessionId/students` en `src/api/endpoints/attendance.ts`.
+- `DONE` Cliente para `GET /advisories/sessions/:sessionId` en `src/api/endpoints/advisories.ts` (`getSessionDetails`).
+- `DONE` Cliente para `PATCH /subject-details/:id/toggle-status` en `src/api/endpoints/subjectDetails.ts`.
+- `DONE` Validacion de manejo de errores HTTP 400/401/403/404 y priorizacion de mensajes de backend en `src/api/client.ts`.
+
 ## Validaciones
 
 - `npm run lint`: `SUCCESS` (exit code 0).
-- `npm run build`: `FAILED` por errores preexistentes fuera del alcance de Fase 0/1 (colisiones en barrel exports, errores de componentes admin/professor/student, y tipado MUI Grid).
+- `npm run build`: `FAILED` por errores preexistentes fuera del alcance de Fase 0/2 (colisiones en barrel exports, errores de componentes admin/professor/student, y tipado MUI Grid).
 
 ## Notas
 

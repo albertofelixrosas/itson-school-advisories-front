@@ -4,7 +4,13 @@
  */
 
 import { apiClient } from '../client';
-import type { Advisory, AdvisoryDate, AdvisoryWithSessions, CreateDirectSessionDto } from '../types';
+import type {
+  Advisory,
+  AdvisoryDate,
+  AdvisoryWithSessions,
+  CreateDirectSessionDto,
+  FullSessionDetailsDto,
+} from '../types';
 
 /**
  * Get my advisory sessions as student
@@ -49,5 +55,14 @@ export async function createDirectSession(data: CreateDirectSessionDto): Promise
  */
 export async function getAdvisoriesWithSessions(professorId: number): Promise<AdvisoryWithSessions[]> {
   const response = await apiClient.get<AdvisoryWithSessions[]>(`/advisories/professor/${professorId}/with-sessions`);
+  return response.data;
+}
+
+/**
+ * Get full session details by advisory date ID
+ * Endpoint: GET /advisories/sessions/:sessionId
+ */
+export async function getSessionDetails(sessionId: number): Promise<FullSessionDetailsDto> {
+  const response = await apiClient.get<FullSessionDetailsDto>(`/advisories/sessions/${sessionId}`);
   return response.data;
 }
