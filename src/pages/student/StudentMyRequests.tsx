@@ -37,8 +37,8 @@ import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Layout, LoadingSpinner } from '@/components/common';
 import { useMyRequests, useCancelRequest } from '@/hooks/useAdvisoryRequests';
-import { RequestStatus } from '@/api/types/advisoryRequests.types';
-import type { AdvisoryRequest } from '@/api/types/advisoryRequests.types';
+import { RequestStatus } from '@/api/types';
+import type { AdvisoryRequestResponseDto as AdvisoryRequest } from '@/api/types';
 
 /**
  * Student My Requests Page Component
@@ -306,10 +306,10 @@ export function StudentMyRequests() {
                         locale: es,
                       })}
                     </Typography>
-                    {request.processed_at && (
+                    {request.reviewed_at && (
                       <Typography variant="caption" color="text.secondary">
                         <strong>Procesada:</strong>{' '}
-                        {format(parseISO(request.processed_at), "d 'de' MMMM, yyyy HH:mm", {
+                        {format(parseISO(request.reviewed_at), "d 'de' MMMM, yyyy HH:mm", {
                           locale: es,
                         })}
                       </Typography>

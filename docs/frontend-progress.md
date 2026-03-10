@@ -48,6 +48,15 @@ Estado: `DONE`
 - `DONE` Subject Details Admin: activacion/desactivacion en `SubjectDetailsManager` con `toggle-status`.
 - `DONE` Notificaciones admin: nueva pantalla `AdminNotificationsPage` con preferencias, historial y plantillas (toggle/create/delete).
 
+## Fase 4 - Flujos funcionales por rol
+
+Estado: `DONE`
+
+- `DONE` Student: flujo de solicitud/seguimiento/invitaciones alineado con contratos backend (estatus y fechas de revision).
+- `DONE` Professor: flujo de revisar/aprobar/rechazar solicitudes corregido (`rejection_reason` en rechazo) y gestion de sesiones/asistencia activa.
+- `DONE` Admin: gestion de usuarios, subject-details, dashboard y notificaciones/templates disponible en UI.
+- `DONE` Escenario cross-career validado en frontend: no existe filtro por carrera en creacion de solicitudes; se listan asignaciones activas profesor-materia independientemente de carrera.
+
 ## Validaciones
 
 - `npm run lint`: `SUCCESS` (exit code 0).
