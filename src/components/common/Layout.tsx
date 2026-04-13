@@ -127,6 +127,11 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
    * Handle logout
    */
   const handleLogout = useCallback(() => {
+    try {
+      sessionStorage.removeItem('login_error_message');
+    } catch {
+      // Ignore storage errors during logout
+    }
     logout();
     navigate('/login');
     handleUserMenuClose();
