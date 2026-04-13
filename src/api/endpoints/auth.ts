@@ -26,21 +26,23 @@ export interface RefreshTokenResponse {
 }
 
 /**
- * Login with email and password
+ * Login with username and password.
+ * If a legacy caller sends email, it is mapped to username for backend compatibility.
  * 
- * @param credentials - User credentials (email and password)
+ * @param credentials - User credentials
  * @returns Login response with tokens and user data
- * 
- * @example
- * ```tsx
- * const { access_token, refresh_token, user } = await login({
- *   email: 'user@example.com',
- *   password: 'password123'
- * });
- * ```
  */
 export async function login(credentials: LoginDto): Promise<LoginResponse> {
-  const response = await apiClient.post<LoginResponse>('/auth/login', credentials);
+  const username = credentials.username || credentials.email;
+
+  if (!username) {
+    throw new Error('Username is required for login');
+  }
+
+  const response = await apiClient.post<LoginResponse>('/auth/login', {
+    username,
+    password: credentials.password,
+  });
   return response.data;
 }
 

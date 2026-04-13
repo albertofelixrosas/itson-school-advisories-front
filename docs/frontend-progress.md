@@ -5,11 +5,11 @@ Rama de trabajo: `feat/frontend-migration-phase0-1`
 
 ## Fase 0 - Preparacion
 
-Estado: `COMPLETED_WITH_BLOCKER`
+Estado: `DONE`
 
 - `DONE` Rama de migracion creada: `feat/frontend-migration-phase0-1`.
 - `DONE` `VITE_API_BASE_URL` verificada en `.env.development` y `.env.example` con `http://localhost:3000`.
-- `BLOCKED` Verificacion de Swagger `http://localhost:3000/api` no disponible (conexion rechazada en entorno local).
+- `DONE` Verificacion de Swagger `http://localhost:3000/api` disponible (status 200).
 - `DONE` Archivo de tracking creado: `docs/frontend-progress.md`.
 
 ## Fase 1 - Contratos y tipos
@@ -22,9 +22,10 @@ Estado: `DONE`
   - `FullSessionDetailsDto`
 - `DONE` `SubjectDetails` actualizado con campos de estado/auditoria (`is_active`, `created_at`, `updated_at`) como opcionales para compatibilidad.
 - `DONE` Ajuste de contratos para nullables/optional:
-  - `LoginDto` mantiene `email` requerido y permite `username` opcional para compatibilidad de payload.
+  - `LoginDto` usa `username` requerido y `email` opcional solo para compatibilidad legacy.
   - `CreateDirectSessionDto` ajustado a campos opcionales compatibles con contrato documentado.
   - `SessionStudentJoinType` restringido a valores esperados.
+- `DONE` Login frontend alineado al payload real del backend (`POST /auth/login` con `username` + `password`) sin romper compatibilidad de UI.
 - `DONE` Normalizacion de payload de dashboard admin para compatibilidad UI (`sessions_count` -> `request_count` y `advisory_count`).
 - `DONE` Consolidacion de tipos para evitar drift: `src/types/backend.ts` ahora reexporta desde `src/api/types.ts`.
 

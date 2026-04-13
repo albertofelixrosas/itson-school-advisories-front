@@ -21,7 +21,7 @@ import {
 import {
   Visibility,
   VisibilityOff,
-  Email as EmailIcon,
+  Person as PersonIcon,
   Lock as LockIcon,
 } from '@mui/icons-material';
 import { useState, useEffect } from 'react';
@@ -36,12 +36,10 @@ const LOGIN_STORAGE_KEY = 'login_form_data';
  * Login form validation schema
  */
 const loginSchema = yup.object({
-  email: yup
+  username: yup
     .string()
-    .required('El correo electrónico es requerido')
-    .email('Ingresa un correo electrónico válido')
-    .trim()
-    .lowercase(),
+    .required('El usuario o correo es requerido')
+    .trim(),
   password: yup
     .string()
     .required('La contraseña es requerida')
@@ -122,7 +120,7 @@ export function LoginForm({ onSubmit, error, isLoading = false, onSuccessfulLogi
 
   // Save form data whenever it changes
   useEffect(() => {
-    if (formValues.email || formValues.password) {
+    if (formValues.username || formValues.password) {
       saveLoginData(formValues);
     }
   }, [formValues]);
@@ -164,21 +162,21 @@ export function LoginForm({ onSubmit, error, isLoading = false, onSuccessfulLogi
         </Alert>
       )}
 
-      {/* Email Field */}
+      {/* Username Field */}
       <TextField
-        {...register('email')}
-        label="Correo electrónico"
-        type="email"
-        autoComplete="email"
+        {...register('username')}
+        label="Usuario o correo"
+        type="text"
+        autoComplete="username"
         autoFocus
         fullWidth
         disabled={isFormLoading}
-        error={!!errors.email}
-        helperText={errors.email?.message}
+        error={!!errors.username}
+        helperText={errors.username?.message}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <EmailIcon color={errors.email ? 'error' : 'action'} />
+              <PersonIcon color={errors.username ? 'error' : 'action'} />
             </InputAdornment>
           ),
         }}
@@ -255,7 +253,7 @@ export function LoginForm({ onSubmit, error, isLoading = false, onSuccessfulLogi
         align="center"
         sx={{ mt: 2 }}
       >
-        Ingresa con tu correo institucional
+        Ingresa con tu usuario institucional o correo
       </Typography>
     </Box>
   );

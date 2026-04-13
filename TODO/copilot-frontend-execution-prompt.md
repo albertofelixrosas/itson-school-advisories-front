@@ -9,7 +9,7 @@ Actua como un ingeniero senior de frontend especializado en React + TypeScript.
 Contexto:
 - Estoy migrando el frontend para alinearlo con cambios recientes del backend (NestJS).
 - Debes usar como fuentes de verdad estos archivos del backend:
-  - `../school-advisories-back/TODO/frontend-migration-checklist.md`
+  - `./TODO/frontend-migration-checklist.md`
   - `../school-advisories-back/docs/frontend-integration/backend-api-reference.md`
   - `../school-advisories-back/docs/frontend-integration/backend-types.ts`
   - `../school-advisories-back/IMPLEMENTATION_SUMMARY.md`

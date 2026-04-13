@@ -35,16 +35,16 @@ Actualizar el frontend de React para que quede alineado con los cambios reciente
 ## Plan por fases (checklist)
 
 ### Fase 0 - Preparacion
-- [ ] Crear rama de trabajo para migracion frontend.
-- [ ] Actualizar variable `API_BASE_URL` y entorno local.
-- [ ] Verificar acceso a Swagger (`/api`) y credenciales seed.
-- [ ] Crear archivo de tracking en el frontend (por ejemplo `docs/frontend-progress.md`).
+- [x] Crear rama de trabajo para migracion frontend.
+- [x] Actualizar variable `API_BASE_URL` y entorno local.
+- [x] Verificar acceso a Swagger (`/api`) y credenciales seed.
+- [x] Crear archivo de tracking en el frontend (por ejemplo `docs/frontend-progress.md`).
 
 ### Fase 1 - Contratos y tipos
-- [ ] Copiar/adaptar tipos desde `docs/frontend-integration/backend-types.ts` al frontend.
-- [ ] Corregir tipos de `SubjectDetails` (incluyendo `is_active`, `created_at`, `updated_at` si aplica en respuestas).
-- [ ] Ajustar enums de estado (`RequestStatus`, `InvitationStatus`, `AdvisoryStatus`, etc.).
-- [ ] Revisar normalizadores/parsers para campos opcionales o nullables.
+- [x] Copiar/adaptar tipos desde `docs/frontend-integration/backend-types.ts` al frontend.
+- [x] Corregir tipos de `SubjectDetails` (incluyendo `is_active`, `created_at`, `updated_at` si aplica en respuestas).
+- [x] Ajustar enums de estado (`RequestStatus`, `InvitationStatus`, `AdvisoryStatus`, etc.).
+- [x] Revisar normalizadores/parsers para campos opcionales o nullables.
 
 ### Fase 2 - Capa API (services/client)
 - [ ] Implementar cliente para `GET /users/admin/dashboard/stats`.
@@ -84,6 +84,8 @@ Usar esta tabla para llevar avance incremental.
 | Fecha | Fase | Tarea | Responsable | Estado | Notas |
 |---|---|---|---|---|---|
 | YYYY-MM-DD | Fase 0 | Inicio de migracion | TBD | TODO | |
+| 2026-04-13 | Fase 0 | Verificacion de entorno y Swagger | Copilot | DONE | Rama activa `feat/frontend-migration-phase0-1`, `VITE_API_BASE_URL` confirmado, Swagger `/api` status 200. |
+| 2026-04-13 | Fase 1 | Contratos y tipos alineados | Copilot | DONE | Tipos de endpoints prioritarios y login normalizado a `username` para compatibilidad con backend. |
 
 Estados sugeridos: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE`.
 
