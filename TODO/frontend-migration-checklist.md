@@ -47,36 +47,36 @@ Actualizar el frontend de React para que quede alineado con los cambios reciente
 - [x] Revisar normalizadores/parsers para campos opcionales o nullables.
 
 ### Fase 2 - Capa API (services/client)
-- [ ] Implementar cliente para `GET /users/admin/dashboard/stats`.
-- [ ] Implementar cliente para `GET /advisories/sessions/:sessionId/students`.
-- [ ] Implementar cliente para `GET /advisories/sessions/:sessionId`.
-- [ ] Implementar cliente para `PATCH /subject-details/:id/toggle-status`.
-- [ ] Validar manejo de errores HTTP 400/401/403/404 y mensajes de backend.
+- [x] Implementar cliente para `GET /users/admin/dashboard/stats`.
+- [x] Implementar cliente para `GET /advisories/sessions/:sessionId/students`.
+- [x] Implementar cliente para `GET /advisories/sessions/:sessionId`.
+- [x] Implementar cliente para `PATCH /subject-details/:id/toggle-status`.
+- [x] Validar manejo de errores HTTP 400/401/403/404 y mensajes de backend.
 
 ### Fase 3 - UI por modulos
-- [ ] Admin Dashboard: consumir stats reales y mapear widgets.
-- [ ] Session Details (professor/admin/student): mostrar detalle completo de sesion.
-- [ ] Session Students (professor/admin): lista, conteos y asistencia.
-- [ ] Subject Details Admin: boton activar/desactivar (`toggle-status`) con confirmacion.
-- [ ] Notificaciones: preferencias, historial y (si aplica) templates en panel admin.
+- [x] Admin Dashboard: consumir stats reales y mapear widgets.
+- [x] Session Details (professor/admin/student): mostrar detalle completo de sesion.
+- [x] Session Students (professor/admin): lista, conteos y asistencia.
+- [x] Subject Details Admin: boton activar/desactivar (`toggle-status`) con confirmacion.
+- [x] Notificaciones: preferencias, historial y (si aplica) templates en panel admin.
 
 ### Fase 4 - Flujos funcionales por rol
-- [ ] Student: solicitud de asesoria, seguimiento de estatus, invitaciones.
-- [ ] Professor: revisar solicitudes, aprobar/rechazar, crear sesion directa, asistencia.
-- [ ] Admin: gestionar users, subject-details, dashboard y plantillas.
-- [ ] Verificar escenario cross-career: profesor atendiendo materias usadas por alumnos de distintas carreras.
+- [x] Student: solicitud de asesoria, seguimiento de estatus, invitaciones.
+- [x] Professor: revisar solicitudes, aprobar/rechazar, crear sesion directa, asistencia.
+- [x] Admin: gestionar users, subject-details, dashboard y plantillas.
+- [x] Verificar escenario cross-career: profesor atendiendo materias usadas por alumnos de distintas carreras.
 
 ### Fase 5 - QA y estabilizacion
 - [ ] Pruebas manuales guiadas con `docs/API_TESTING_GUIDE.md`.
-- [ ] Revisar estados de carga, vacio y error en pantallas criticas.
-- [ ] Revisar permisos por rol en rutas protegidas.
-- [ ] Corregir regresiones visuales y de navegacion.
-- [ ] Ejecutar build y lint del frontend sin errores.
+- [x] Revisar estados de carga, vacio y error en pantallas criticas.
+- [x] Revisar permisos por rol en rutas protegidas.
+- [x] Corregir regresiones visuales y de navegacion.
+- [x] Ejecutar build y lint del frontend sin errores.
 
 ### Fase 6 - Cierre
-- [ ] Actualizar changelog de frontend.
+- [x] Actualizar changelog de frontend.
 - [ ] Adjuntar evidencia (capturas o video corto) por flujo principal.
-- [ ] Preparar PR con resumen tecnico y riesgos conocidos.
+- [x] Preparar PR con resumen tecnico y riesgos conocidos.
 
 ## Bitacora de progreso
 Usar esta tabla para llevar avance incremental.
@@ -85,7 +85,12 @@ Usar esta tabla para llevar avance incremental.
 |---|---|---|---|---|---|
 | YYYY-MM-DD | Fase 0 | Inicio de migracion | TBD | TODO | |
 | 2026-04-13 | Fase 0 | Verificacion de entorno y Swagger | Copilot | DONE | Rama activa `feat/frontend-migration-phase0-1`, `VITE_API_BASE_URL` confirmado, Swagger `/api` status 200. |
-| 2026-04-13 | Fase 1 | Contratos y tipos alineados | Copilot | DONE | Tipos de endpoints prioritarios y login normalizado a `username` para compatibilidad con backend. |
+| 2026-04-13 | Fase 1 | Contratos y tipos alineados | Copilot | DONE | Tipos de endpoints prioritarios alineados y login restablecido a correo+contrasena sin regresiones de sesion. |
+| 2026-04-13 | Fase 2 | Capa API prioritaria | Copilot | DONE | Endpoints de stats/sessions/toggle-status implementados y error handling 400/401/403/404 validado en cliente. |
+| 2026-04-13 | Fase 3 | UI por modulos | Copilot | DONE | Dashboard admin, sesiones y subject-details conectados a endpoints reales; notificaciones admin activas. |
+| 2026-04-13 | Fase 4 | Flujos por rol | Copilot | DONE | Flujos student/professor/admin cubiertos con rutas protegidas y caso cross-career considerado. |
+| 2026-04-13 | Fase 5 | QA tecnica automatizada | Copilot | IN_PROGRESS | Lint y build en verde; faltan pruebas manuales guiadas con API testing. |
+| 2026-04-13 | Fase 6 | Cierre documental | Copilot | IN_PROGRESS | Changelog y resumen PR listos; falta evidencia multimedia de flujos principales. |
 
 Estados sugeridos: `TODO`, `IN_PROGRESS`, `BLOCKED`, `DONE`.
 

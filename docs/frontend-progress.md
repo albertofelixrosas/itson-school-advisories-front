@@ -22,10 +22,10 @@ Estado: `DONE`
   - `FullSessionDetailsDto`
 - `DONE` `SubjectDetails` actualizado con campos de estado/auditoria (`is_active`, `created_at`, `updated_at`) como opcionales para compatibilidad.
 - `DONE` Ajuste de contratos para nullables/optional:
-  - `LoginDto` usa `username` requerido y `email` opcional solo para compatibilidad legacy.
+  - `LoginDto` mantiene `email` requerido y `username` opcional solo para compatibilidad legacy.
   - `CreateDirectSessionDto` ajustado a campos opcionales compatibles con contrato documentado.
   - `SessionStudentJoinType` restringido a valores esperados.
-- `DONE` Login frontend alineado al payload real del backend (`POST /auth/login` con `username` + `password`) sin romper compatibilidad de UI.
+- `DONE` Login frontend alineado al payload real del backend (`POST /auth/login` con `email` + `password`) y sin errores residuales al cerrar sesion.
 - `DONE` Normalizacion de payload de dashboard admin para compatibilidad UI (`sessions_count` -> `request_count` y `advisory_count`).
 - `DONE` Consolidacion de tipos para evitar drift: `src/types/backend.ts` ahora reexporta desde `src/api/types.ts`.
 
@@ -60,9 +60,9 @@ Estado: `DONE`
 
 ## Fase 5 - QA y estabilizacion
 
-Estado: `DONE_WITH_PARTIAL_BLOCKER`
+Estado: `IN_PROGRESS`
 
-- `BLOCKED` Pruebas manuales guiadas con `docs/API_TESTING_GUIDE.md` no ejecutadas en entorno local por backend no disponible (`/api` inaccesible).
+- `IN_PROGRESS` Pruebas manuales guiadas con `docs/API_TESTING_GUIDE.md` pendientes de ejecucion completa por rol con usuarios seed.
 - `DONE` Estados de carga/vacio/error revisados en pantallas criticas de student/professor/admin durante la migracion.
 - `DONE` Permisos por rol en rutas protegidas verificados en `App.tsx` y `ProtectedRoute`.
 - `DONE` Correcciones de regresiones de navegacion y contratos:
@@ -82,7 +82,7 @@ Estado: `DONE_WITH_PARTIAL_BLOCKER`
 
 ## Fase 6 - Cierre
 
-Estado: `DONE_WITH_PARTIAL_EVIDENCE`
+Estado: `IN_PROGRESS`
 
 - `DONE` Changelog frontend actualizado en `docs/frontend-changelog.md`.
 - `DONE` Resumen tecnico de PR con riesgos conocidos en `docs/frontend-pr-summary.md`.
