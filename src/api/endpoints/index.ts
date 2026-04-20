@@ -4,8 +4,26 @@
  */
 
 export * from './auth';
-export * from './professors';
-export * from './subjects';
+export {
+	getAllProfessors,
+	getProfessorById,
+	getProfessorSubjects,
+	getPendingRequests as getProfessorPendingRequests,
+	reviewRequest,
+	getMyAvailability,
+	createAvailability,
+	updateAvailability,
+	deleteAvailability,
+} from './professors';
+export {
+	getAllSubjects,
+	getAllSubjectDetails as getAllSubjectDetailsFromSubjects,
+	getSubjectById,
+	createSubject,
+	updateSubject,
+	deleteSubject,
+	toggleSubjectStatus,
+} from './subjects';
 export * from './advisoryRequests';
 export * from './invitations';
 export * from './advisories';

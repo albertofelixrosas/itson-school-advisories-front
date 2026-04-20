@@ -26,21 +26,23 @@ export interface RefreshTokenResponse {
 }
 
 /**
- * Login with email and password
+ * Login with email and password.
+ * Sends only the fields expected by backend validation.
  * 
- * @param credentials - User credentials (email and password)
+ * @param credentials - User credentials
  * @returns Login response with tokens and user data
- * 
- * @example
- * ```tsx
- * const { access_token, refresh_token, user } = await login({
- *   email: 'user@example.com',
- *   password: 'password123'
- * });
- * ```
  */
 export async function login(credentials: LoginDto): Promise<LoginResponse> {
-  const response = await apiClient.post<LoginResponse>('/auth/login', credentials);
+  const email = credentials.email || credentials.username;
+
+  if (!email) {
+    throw new Error('Email is required for login');
+  }
+
+  const response = await apiClient.post<LoginResponse>('/auth/login', {
+    email,
+    password: credentials.password,
+  });
   return response.data;
 }
 

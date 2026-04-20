@@ -8,7 +8,6 @@ import { Layout, LoadingSpinner } from '@/components/common';
 import {
   Box,
   Typography,
-  Grid,
   Card,
   CardContent,
   List,
@@ -19,6 +18,7 @@ import {
   Divider,
   Stack,
 } from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
 import {
   People as PeopleIcon,
   School as SchoolIcon,

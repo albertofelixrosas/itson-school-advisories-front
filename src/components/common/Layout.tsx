@@ -37,6 +37,7 @@ import {
   Event as EventIcon,
   People as PeopleIcon,
   CalendarToday as CalendarIcon,
+  Notifications as NotificationsIcon,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -126,6 +127,11 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
    * Handle logout
    */
   const handleLogout = useCallback(() => {
+    try {
+      sessionStorage.removeItem('login_error_message');
+    } catch {
+      // Ignore storage errors during logout
+    }
     logout();
     navigate('/login');
     handleUserMenuClose();
@@ -234,6 +240,12 @@ export function Layout({ children, title, showSidebar = true }: LayoutProps) {
         text: 'Asignaciones',
         icon: <AssignmentIcon />,
         path: '/admin/subject-details',
+        roles: ['admin'],
+      },
+      {
+        text: 'Notificaciones',
+        icon: <NotificationsIcon />,
+        path: '/admin/notifications',
         roles: ['admin'],
       },
     ];

@@ -326,7 +326,7 @@ export function VenueManagementTable() {
       headerName: 'Ubicación / URL',
       flex: 1,
       minWidth: 250,
-      valueGetter: (value, row) => {
+      valueGetter: (_value, row) => {
         if (row.type === 'virtual') {
           return row.url || 'N/A';
         } else {

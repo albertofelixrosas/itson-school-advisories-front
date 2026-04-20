@@ -200,7 +200,7 @@ export function SessionsCalendar() {
                     {selectedSession.venue?.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {selectedSession.venue?.location}
+                      {selectedSession.venue?.location || selectedSession.venue?.building || 'Sin ubicación detallada'}
                   </Typography>
                 </Box>
 
@@ -315,7 +315,12 @@ function SessionCard({ session, onViewDetails }: SessionCardProps) {
                     whiteSpace: 'nowrap',
                   }}
                 >
-                  {session.venue?.name} - {session.venue?.location}
+                  {session.venue?.name}
+                  {session.venue?.location
+                    ? ` - ${session.venue.location}`
+                    : session.venue?.building
+                      ? ` - ${session.venue.building}`
+                      : ''}
                 </Typography>
               </Box>
 

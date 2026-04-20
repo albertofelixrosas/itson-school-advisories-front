@@ -36,7 +36,7 @@ import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Layout, LoadingSpinner } from '@/components/common';
 import { usePendingRequests, useApproveRequest, useRejectRequest } from '@/hooks/useAdvisoryRequests';
-import type { AdvisoryRequest } from '@/api/types/advisoryRequests.types';
+import type { AdvisoryRequestResponseDto as AdvisoryRequest } from '@/api/types';
 
 type ActionType = 'approve' | 'reject';
 
@@ -78,7 +78,7 @@ export function ProfessorPendingRequests() {
       } else {
         await rejectMutation.mutateAsync({
           requestId: selectedRequest.request_id,
-          data: { professor_response: response },
+          data: { rejection_reason: response },
         });
       }
       handleCloseDialog();
@@ -215,7 +215,7 @@ export function ProfessorPendingRequests() {
                         <BadgeIcon fontSize="small" color="action" />
                         <Box>
                           <Typography variant="body2">
-                            {request.student?.username || request.student?.email || '—'}
+                            {request.student?.email || '—'}
                           </Typography>
                           <Typography variant="caption" color="text.secondary">
                             Usuario

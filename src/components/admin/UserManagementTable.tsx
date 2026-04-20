@@ -347,7 +347,7 @@ export function UserManagementTable({ onCreateUser, onEditUser }: UserManagement
                       <IconButton
                         size="small"
                         color="error"
-                        onClick={() => handleDeleteClick(user)}
+                        onClick={() => handleDelete(user)}
                       >
                         <DeleteIcon fontSize="small" />
                       </IconButton>

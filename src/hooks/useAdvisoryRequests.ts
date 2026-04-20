@@ -17,7 +17,7 @@ import type {
   CreateAdvisoryRequestDto,
   ApproveRequestDto,
   RejectRequestDto,
-} from '@/api/types/advisoryRequests.types';
+} from '@/api/types';
 
 // ============================================
 // QUERY KEYS

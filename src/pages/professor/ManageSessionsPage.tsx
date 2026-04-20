@@ -20,6 +20,10 @@ import {
   Divider,
   IconButton,
   Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import {
   Event as EventIcon,
@@ -32,13 +36,14 @@ import {
 } from '@mui/icons-material';
 import { format, parseISO, isFuture, isPast } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { getAdvisoriesWithSessions } from '@/api/endpoints/advisories';
+import { getAdvisoriesWithSessions, getSessionDetails } from '@/api/endpoints/advisories';
 import { getSessionStudents } from '@/api/endpoints/attendance';
 import { InviteStudentsModal } from '@/components/professor/InviteStudentsModal';
 import { AttendanceForm } from '@/components/professor/AttendanceForm';
 import { SessionCompletionModal } from '@/components/professor/SessionCompletionModal';
 import { useAuth } from '@/hooks/useAuth';
 import type { AdvisoryWithSessions, AdvisoryDateInfo, User } from '@/types';
+import type { FullSessionDetailsDto } from '@/api/types';
 
 /**
  * Manage Sessions Page
@@ -49,6 +54,7 @@ export function ManageSessionsPage() {
   const [inviteModalOpen, setInviteModalOpen] = useState(false);
   const [attendanceView, setAttendanceView] = useState(false);
   const [completionModalOpen, setCompletionModalOpen] = useState(false);
+  const [detailsSessionId, setDetailsSessionId] = useState<number | null>(null);
 
   // Fetch professor's advisories WITH sessions included
   const { data: advisories = [], isLoading, error } = useQuery({
@@ -60,6 +66,16 @@ export function ManageSessionsPage() {
       return getAdvisoriesWithSessions(user.user_id);
     },
     enabled: !!user?.user_id,
+  });
+
+  const {
+    data: sessionDetails,
+    isLoading: isLoadingSessionDetails,
+    error: sessionDetailsError,
+  } = useQuery({
+    queryKey: ['session-details', detailsSessionId],
+    queryFn: () => getSessionDetails(detailsSessionId as number),
+    enabled: detailsSessionId !== null,
   });
 
   /**
@@ -190,6 +206,7 @@ export function ManageSessionsPage() {
                       onInviteStudents={() => handleInviteStudents(session)}
                       onRegisterAttendance={() => handleRegisterAttendance(session)}
                       onCompleteSession={() => handleCompleteSession(session)}
+                      onViewDetails={() => setDetailsSessionId(session.advisory_date_id)}
                       isUpcoming
                     />
                   ))}
@@ -215,6 +232,7 @@ export function ManageSessionsPage() {
                       onInviteStudents={() => handleInviteStudents(session)}
                       onRegisterAttendance={() => handleRegisterAttendance(session)}
                       onCompleteSession={() => handleCompleteSession(session)}
+                      onViewDetails={() => setDetailsSessionId(session.advisory_date_id)}
                       isUpcoming={false}
                     />
                   ))}
@@ -248,6 +266,14 @@ export function ManageSessionsPage() {
             />
           </>
         )}
+
+        <SessionDetailsDialog
+          open={detailsSessionId !== null}
+          onClose={() => setDetailsSessionId(null)}
+          isLoading={isLoadingSessionDetails}
+          error={sessionDetailsError as Error | null}
+          details={sessionDetails}
+        />
       </Box>
     </Layout>
   );
@@ -261,6 +287,7 @@ interface SessionCardProps {
   onInviteStudents: () => void;
   onRegisterAttendance: () => void;
   onCompleteSession: () => void;
+  onViewDetails: () => void;
   isUpcoming: boolean;
 }
 
@@ -269,6 +296,7 @@ function SessionCard({
   onInviteStudents,
   onRegisterAttendance,
   onCompleteSession,
+  onViewDetails,
   isUpcoming,
 }: SessionCardProps) {
   const sessionDate = parseISO(session.date);
@@ -353,13 +381,61 @@ function SessionCard({
           )}
 
           <Tooltip title="Ver detalles">
-            <IconButton size="small">
+            <IconButton size="small" onClick={onViewDetails}>
               <ViewIcon />
             </IconButton>
           </Tooltip>
         </Stack>
       </CardContent>
     </Card>
+  );
+}
+
+interface SessionDetailsDialogProps {
+  open: boolean;
+  onClose: () => void;
+  isLoading: boolean;
+  error: Error | null;
+  details?: FullSessionDetailsDto;
+}
+
+function SessionDetailsDialog({ open, onClose, isLoading, error, details }: SessionDetailsDialogProps) {
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+      <DialogTitle>Detalle de sesión</DialogTitle>
+      <DialogContent dividers>
+        {isLoading && <LoadingSpinner message="Cargando detalle de sesión..." />}
+        {!isLoading && error && (
+          <Alert severity="error">No se pudo cargar el detalle completo de la sesión.</Alert>
+        )}
+        {!isLoading && !error && !details && (
+          <Alert severity="info">No hay detalle de sesión disponible.</Alert>
+        )}
+        {!isLoading && !error && details && (
+          <Stack spacing={1.5}>
+            <Typography variant="h6" fontWeight="bold">{details.topic}</Typography>
+            <Typography variant="body2" color="text.secondary">
+              {format(parseISO(details.date), "EEEE d 'de' MMMM, yyyy 'a las' HH:mm", { locale: es })}
+            </Typography>
+            <Typography variant="body2">Materia: {details.subject.subject_name}</Typography>
+            <Typography variant="body2">
+              Profesor: {details.professor.name} {details.professor.last_name}
+            </Typography>
+            <Typography variant="body2">
+              Lugar: {details.venue.building} - {details.venue.classroom}
+            </Typography>
+            <Typography variant="body2">
+              Estudiantes: {details.registered_students_count} registrados, {details.attended_count} asistieron
+            </Typography>
+            {details.notes && <Typography variant="body2">Notas: {details.notes}</Typography>}
+            {details.session_link && <Typography variant="body2">Enlace: {details.session_link}</Typography>}
+          </Stack>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>Cerrar</Button>
+      </DialogActions>
+    </Dialog>
   );
 }
 

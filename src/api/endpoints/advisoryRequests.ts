@@ -5,13 +5,12 @@
 
 import { apiClient } from '../client';
 import type {
-  AdvisoryRequest,
+  AdvisoryRequestResponseDto,
   CreateAdvisoryRequestDto,
   ApproveRequestDto,
   RejectRequestDto,
-  AvailableSchedulesResponse,
-} from '../types/advisoryRequests.types';
-import type { AdvisoryRequestResponseDto } from '../types';
+} from '../types';
+import type { AvailableSchedulesResponse } from '../types/advisoryRequests.types';
 
 /**
  * Create a new advisory request (STUDENT role required)
@@ -24,8 +23,8 @@ import type { AdvisoryRequestResponseDto } from '../types';
  */
 export async function createAdvisoryRequest(
   data: CreateAdvisoryRequestDto
-): Promise<AdvisoryRequest> {
-  const response = await apiClient.post<AdvisoryRequest>(
+): Promise<AdvisoryRequestResponseDto> {
+  const response = await apiClient.post<AdvisoryRequestResponseDto>(
     '/advisory-requests',
     data
   );

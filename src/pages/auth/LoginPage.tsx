@@ -109,6 +109,7 @@ export function LoginPage() {
   const handleLogin = async (credentials: LoginDto) => {
     try {
       setError(null);
+      clearLoginError();
       setIsLoading(true);
 
       // Call login API
@@ -126,6 +127,9 @@ export function LoginPage() {
 
       // Set the redirect path, which will trigger navigation in useEffect
       setRedirectPath(path);
+
+      // Ensure stale login errors do not reappear after logout/navigation
+      clearLoginError();
     } catch (err: unknown) {
       // Handle error - extract message from different error types
       let errorMessage = 'Credenciales inválidas. Por favor, intenta nuevamente.';

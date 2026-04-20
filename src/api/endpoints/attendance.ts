@@ -4,56 +4,11 @@
  */
 
 import { apiClient } from '../client';
-import type { BulkAttendanceDto, CompleteSessionDto } from '../types';
-
-/**
- * Session Students Response Interface
- */
-export interface SessionStudentsResponse {
-  session: {
-    advisory_date_id: number;
-    advisory_id: number;
-    topic: string;
-    date: string;
-    notes: string;
-    session_link?: string;
-    venue: {
-      venue_id: number;
-      building: string;
-      classroom: string;
-      capacity: number;
-    };
-    subject: {
-      subject_id: number;
-      subject_name: string;
-    };
-    professor: {
-      user_id: number;
-      name: string;
-      last_name: string;
-      email: string;
-      photo_url?: string;
-    };
-    max_students: number;
-    completed_at?: string;
-  };
-  students: Array<{
-    user_id: number;
-    username?: string;
-    name: string;
-    last_name: string;
-    email: string;
-    photo_url?: string;
-    phone_number?: string;
-    attended: boolean;
-    attendance_notes?: string;
-    join_type: string;
-  }>;
-  total_students: number;
-  attended_count: number;
-  absent_count: number;
-  attendance_rate: number;
-}
+import type {
+  BulkAttendanceDto,
+  CompleteSessionDto,
+  SessionStudentsResponseDto,
+} from '../types';
 
 /**
  * Register bulk attendance for a session
@@ -92,8 +47,8 @@ export async function getSessionAttendance(sessionId: number): Promise<unknown> 
  */
 export async function getSessionStudents(
   sessionId: number
-): Promise<SessionStudentsResponse> {
-  const response = await apiClient.get<SessionStudentsResponse>(
+): Promise<SessionStudentsResponseDto> {
+  const response = await apiClient.get<SessionStudentsResponseDto>(
     `/advisories/sessions/${sessionId}/students`
   );
   return response.data;

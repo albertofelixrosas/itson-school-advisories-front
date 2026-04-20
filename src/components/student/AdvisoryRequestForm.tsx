@@ -100,6 +100,8 @@ export function AdvisoryRequestForm({ onSuccess, onCancel }: AdvisoryRequestForm
     queryFn: getAllSubjectDetails,
   });
 
+  const availableSubjectDetails = subjectDetails.filter((detail) => detail.is_active !== false);
+
   // Create request mutation
   const createMutation = useMutation({
     mutationFn: (data: CreateAdvisoryRequestDto) => createAdvisoryRequest(data),
@@ -157,7 +159,7 @@ export function AdvisoryRequestForm({ onSuccess, onCancel }: AdvisoryRequestForm
                 <MenuItem value={0}>
                   <em>Seleccione una materia y profesor</em>
                 </MenuItem>
-                {subjectDetails.map((detail) => (
+                {availableSubjectDetails.map((detail) => (
                   <MenuItem key={detail.subject_detail_id} value={detail.subject_detail_id}>
                     <Box>
                       <Typography variant="body1">

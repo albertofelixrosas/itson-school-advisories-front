@@ -196,14 +196,20 @@ const handleApiError = (error: AxiosError) => {
 
   const { status, data } = error.response;
   const errorMessage = (data as { message?: string | string[] })?.message;
+  const backendMessages = Array.isArray(errorMessage)
+    ? errorMessage.filter(Boolean)
+    : errorMessage
+      ? [errorMessage]
+      : [];
+  const showBackendMessages = () => {
+    backendMessages.forEach((msg) => toast.error(msg));
+  };
 
   switch (status) {
     case 400:
       // Bad Request - Validation errors
-      if (Array.isArray(errorMessage)) {
-        errorMessage.forEach((msg) => toast.error(msg));
-      } else if (errorMessage) {
-        toast.error(errorMessage);
+      if (backendMessages.length > 0) {
+        showBackendMessages();
       } else {
         toast.error('Datos inválidos. Por favor verifica tu información.');
       }
@@ -211,17 +217,29 @@ const handleApiError = (error: AxiosError) => {
 
     case 401:
       // Unauthorized - Handled by interceptor
-      toast.error('Sesión expirada. Por favor inicia sesión nuevamente.');
+      if (backendMessages.length > 0) {
+        showBackendMessages();
+      } else {
+        toast.error('Sesión expirada. Por favor inicia sesión nuevamente.');
+      }
       break;
 
     case 403:
       // Forbidden - No permission
-      toast.error('No tienes permisos para realizar esta acción.');
+      if (backendMessages.length > 0) {
+        showBackendMessages();
+      } else {
+        toast.error('No tienes permisos para realizar esta acción.');
+      }
       break;
 
     case 404:
       // Not Found
-      toast.error('Recurso no encontrado.');
+      if (backendMessages.length > 0) {
+        showBackendMessages();
+      } else {
+        toast.error('Recurso no encontrado.');
+      }
       break;
 
     case 409:
