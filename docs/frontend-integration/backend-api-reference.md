@@ -217,14 +217,25 @@ Authorization: Bearer {token}
 Content-Type: application/json
 
 {
+  "professor_id": number,
   "subject_detail_id": number,
   "day_of_week": "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY" | "SATURDAY" | "SUNDAY",
   "start_time": "HH:MM", // 24-hour format
   "end_time": "HH:MM",
+  "max_students_per_slot": number,
+  "slot_duration_minutes": number,
   "is_recurring": boolean,
-  "max_students_per_slot": number // optional
+  "effective_from": "YYYY-MM-DD", // optional
+  "effective_until": "YYYY-MM-DD", // optional
+  "notes": "string" // optional
 }
 ```
+
+Notas del backend actual:
+- `professor_id` sigue siendo requerido por validación global aunque el controller lo sobrescriba con el usuario autenticado.
+- La respuesta puede traer `start_time` y `end_time` en formato `HH:mm:ss`.
+- `subject_detail` llega aplanado como `{ subject_detail_id, subject_name }`, no como `subject_detail.subject.subject`.
+- `PUT /professor-availability/slots/:id` no acepta `is_active`; para desactivar se debe usar `DELETE /professor-availability/slots/:id/deactivate`.
 
 #### Get Available Slots
 ```http

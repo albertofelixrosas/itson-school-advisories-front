@@ -367,12 +367,14 @@ export const availabilityApi = {
    * Create availability slot (Professor only)
    * @example
    * await availabilityApi.createSlot({
+    *   professor_id: 7,
    *   subject_detail_id: 1,
    *   day_of_week: 'MONDAY',
    *   start_time: '10:00',
-   *   end_time: '12:00',
-   *   is_recurring: true,
-   *   max_students_per_slot: 3
+    *   end_time: '12:00',
+    *   max_students_per_slot: 3,
+    *   slot_duration_minutes: 30,
+    *   is_recurring: true,
    * });
    */
   async createSlot(
@@ -421,6 +423,22 @@ export const availabilityApi = {
     );
 
     return handleApiResponse<AvailabilitySlotResponseDto[]>(response);
+  },
+
+  /**
+   * Deactivate availability slot.
+   * Backend does not support toggling `is_active` via PUT.
+   */
+  async deactivateSlot(availabilityId: number): Promise<void> {
+    const response = await fetch(
+      `${API_BASE_URL}/professor-availability/slots/${availabilityId}/deactivate`,
+      {
+        method: "DELETE",
+        headers: createAuthHeaders(),
+      }
+    );
+
+    await handleApiResponse(response);
   },
 };
 

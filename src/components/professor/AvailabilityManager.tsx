@@ -5,6 +5,7 @@
  * Component for professors to manage their availability schedules
  */
 
+import { useState } from 'react';
 import {
   Box,
   Button,
@@ -30,12 +31,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import {
   getMyAvailability,
+  deactivateAvailability,
   deleteAvailability,
-  updateAvailability,
 } from '@/api/endpoints/professors';
 import { useConfirmDialog } from '@/hooks/useConfirmDialog';
 import { ConfirmDialog } from '@/components/common';
+import { AvailabilityFormModal } from './AvailabilityFormModal';
 import type { ProfessorAvailability, WeekDay } from '@/api/types';
+import { formatAvailabilityTimeRange } from '@/utils/availabilityTime';
 
 /**
  * Week Days
@@ -56,6 +59,8 @@ const WEEK_DAYS: { value: WeekDay; label: string }[] = [
 export function AvailabilityManager() {
   const queryClient = useQueryClient();
   const confirmDialog = useConfirmDialog();
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedAvailability, setSelectedAvailability] = useState<ProfessorAvailability | null>(null);
 
   // Fetch availabilities
   const {
@@ -67,17 +72,16 @@ export function AvailabilityManager() {
     queryFn: getMyAvailability,
   });
 
-  // Update availability mutation
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: { is_active?: boolean } }) =>
-      updateAvailability(id, data),
+  // Deactivate availability mutation
+  const deactivateMutation = useMutation({
+    mutationFn: (id: number) => deactivateAvailability(id),
     onSuccess: () => {
-      toast.success('Disponibilidad actualizada exitosamente');
+      toast.success('Disponibilidad desactivada exitosamente');
       queryClient.invalidateQueries({ queryKey: ['my-availability'] });
     },
     onError: (error: Error) => {
       const apiError = error as { response?: { data?: { message?: string } } };
-      const errorMessage = apiError.response?.data?.message || 'Error al actualizar la disponibilidad';
+      const errorMessage = apiError.response?.data?.message || 'Error al desactivar la disponibilidad';
       toast.error(errorMessage);
     },
   });
@@ -100,9 +104,10 @@ export function AvailabilityManager() {
    * Handle delete with confirmation
    */
   const handleDeleteAvailability = (availability: ProfessorAvailability) => {
+    const timeRange = formatAvailabilityTimeRange(availability.start_time, availability.end_time);
     confirmDialog.showDialog({
       title: 'Eliminar Disponibilidad',
-      message: `¿Está seguro de eliminar la disponibilidad del ${getDayLabel(availability.day_of_week)} de ${availability.start_time} a ${availability.end_time}?`,
+      message: `¿Está seguro de eliminar la disponibilidad del ${getDayLabel(availability.day_of_week)} de ${timeRange}?`,
       confirmText: 'Eliminar',
       severity: 'error',
       onConfirm: async () => {
@@ -114,18 +119,14 @@ export function AvailabilityManager() {
   /**
    * Toggle availability active status
    */
-  const handleToggleActive = (availability: ProfessorAvailability) => {
-    const action = availability.is_active ? 'desactivar' : 'activar';
+  const handleDeactivateAvailability = (availability: ProfessorAvailability) => {
     confirmDialog.showDialog({
-      title: `${action.charAt(0).toUpperCase() + action.slice(1)} Disponibilidad`,
-      message: `¿Está seguro de ${action} esta disponibilidad?`,
-      confirmText: action.charAt(0).toUpperCase() + action.slice(1),
-      severity: availability.is_active ? 'warning' : 'info',
+      title: 'Desactivar Disponibilidad',
+      message: '¿Está seguro de desactivar esta disponibilidad?',
+      confirmText: 'Desactivar',
+      severity: 'warning',
       onConfirm: async () => {
-        updateMutation.mutate({
-          id: availability.availability_id,
-          data: { is_active: !availability.is_active },
-        });
+        deactivateMutation.mutate(availability.availability_id);
       },
     });
   };
@@ -135,6 +136,21 @@ export function AvailabilityManager() {
    */
   const getDayLabel = (day: WeekDay): string => {
     return WEEK_DAYS.find(d => d.value === day)?.label || day;
+  };
+
+  const handleCreateAvailability = () => {
+    setSelectedAvailability(null);
+    setIsFormOpen(true);
+  };
+
+  const handleEditAvailability = (availability: ProfessorAvailability) => {
+    setSelectedAvailability(availability);
+    setIsFormOpen(true);
+  };
+
+  const handleCloseForm = () => {
+    setIsFormOpen(false);
+    setSelectedAvailability(null);
   };
 
   return (
@@ -147,14 +163,14 @@ export function AvailabilityManager() {
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          disabled
+          onClick={handleCreateAvailability}
         >
           Nueva Disponibilidad
         </Button>
       </Box>
 
       <Alert severity="info" sx={{ mb: 2 }}>
-        Funcionalidad de crear/editar disponibilidad próximamente. Por ahora puedes activar/desactivar y eliminar.
+        El backend devuelve horas como `HH:mm` o `HH:mm:ss`; esta vista ya las normaliza a `HH:mm` y usa el contrato real para crear, editar, desactivar y eliminar.
       </Alert>
 
       {/* Error Alert */}
@@ -190,11 +206,11 @@ export function AvailabilityManager() {
               {availabilities.map((availability) => (
                 <TableRow key={availability.availability_id}>
                   <TableCell>
-                    {availability.subject_detail?.subject?.subject || 'N/A'}
+                    {availability.subject_detail?.subject_name || 'General'}
                   </TableCell>
                   <TableCell>{getDayLabel(availability.day_of_week)}</TableCell>
                   <TableCell>
-                    {availability.start_time} - {availability.end_time}
+                    {formatAvailabilityTimeRange(availability.start_time, availability.end_time)}
                   </TableCell>
                   <TableCell align="center">
                     {availability.max_students_per_slot}
@@ -211,15 +227,15 @@ export function AvailabilityManager() {
                       label={availability.is_active ? 'Activo' : 'Inactivo'}
                       size="small"
                       color={availability.is_active ? 'success' : 'default'}
-                      onClick={() => handleToggleActive(availability)}
-                      sx={{ cursor: 'pointer' }}
+                      onClick={availability.is_active ? () => handleDeactivateAvailability(availability) : undefined}
+                      sx={{ cursor: availability.is_active ? 'pointer' : 'default' }}
                     />
                   </TableCell>
                   <TableCell align="right">
                     <IconButton
                       size="small"
                       color="primary"
-                      disabled
+                      onClick={() => handleEditAvailability(availability)}
                     >
                       <EditIcon fontSize="small" />
                     </IconButton>
@@ -245,10 +261,16 @@ export function AvailabilityManager() {
             No tienes disponibilidades configuradas
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Por ahora, las disponibilidades deben ser creadas desde el backend.
+            Usa el botón "Nueva Disponibilidad" para crear tu primer slot.
           </Typography>
         </Paper>
       )}
+
+      <AvailabilityFormModal
+        open={isFormOpen}
+        availability={selectedAvailability}
+        onClose={handleCloseForm}
+      />
 
       {/* Confirm Dialog */}
       <ConfirmDialog

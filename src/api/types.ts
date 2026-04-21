@@ -216,18 +216,28 @@ export interface StudentInvitation {
 export interface ProfessorAvailability {
   availability_id: number;
   professor_id: number;
-  subject_detail_id: number;
+  subject_detail_id: number | null;
   day_of_week: WeekDay;
-  start_time: string; // "HH:MM"
-  end_time: string; // "HH:MM"
+  start_time: string; // Backend may return "HH:MM" or "HH:MM:SS"
+  end_time: string; // Backend may return "HH:MM" or "HH:MM:SS"
   max_students_per_slot: number;
+  slot_duration_minutes: number;
   is_recurring: boolean;
   is_active: boolean;
+  effective_from: string | null;
+  effective_until: string | null;
+  notes: string | null;
   created_at: string;
+  updated_at: string;
+  current_bookings?: number;
+  available_spots?: number;
 
   // Relations
   professor?: User;
-  subject_detail?: SubjectDetails;
+  subject_detail?: {
+    subject_detail_id: number;
+    subject_name: string;
+  };
 }
 
 // ===== NOTIFICATIONS =====
@@ -450,26 +460,56 @@ export interface InviteStudentsDto {
 
 // Availability DTOs
 export interface CreateAvailabilitySlotDto {
-  subject_detail_id: number;
+  professor_id: number;
+  subject_detail_id?: number;
   day_of_week: WeekDay;
   start_time: string; // "HH:MM"
   end_time: string; // "HH:MM"
-  max_students_per_slot?: number;
+  max_students_per_slot: number;
+  slot_duration_minutes: number;
   is_recurring?: boolean;
+  effective_from?: string;
+  effective_until?: string;
+  notes?: string;
+}
+
+export interface UpdateAvailabilitySlotDto {
+  professor_id?: number;
+  subject_detail_id?: number;
+  day_of_week?: WeekDay;
+  start_time?: string;
+  end_time?: string;
+  max_students_per_slot?: number;
+  slot_duration_minutes?: number;
+  is_recurring?: boolean;
+  effective_from?: string;
+  effective_until?: string;
+  notes?: string;
 }
 
 export interface AvailabilitySlotResponseDto {
   availability_id: number;
   professor_id: number;
-  subject_detail_id: number;
+  subject_detail_id: number | null;
   day_of_week: WeekDay;
   start_time: string;
   end_time: string;
   max_students_per_slot: number;
+  slot_duration_minutes: number;
   is_recurring: boolean;
   is_active: boolean;
+  effective_from?: string | null;
+  effective_until?: string | null;
+  notes?: string | null;
+  created_at?: string;
+  updated_at?: string;
+  current_bookings?: number;
+  available_spots?: number;
 
-  subject_detail?: SubjectDetailDto;
+  subject_detail?: {
+    subject_detail_id: number;
+    subject_name: string;
+  };
 }
 
 // Invitation DTOs

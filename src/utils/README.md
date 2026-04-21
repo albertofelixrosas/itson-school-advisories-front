@@ -22,6 +22,12 @@ Utilidades para manejo de JWT:
 - `isTokenExpired(token)` - Verificar expiración
 - `refreshAuthToken()` - Refrescar token
 
+### `availabilityTime.ts`
+Helpers para normalizar tiempos de disponibilidad:
+- `normalizeAvailabilityTime(value)` - Convierte `HH:mm:ss` a `HH:mm`
+- `formatAvailabilityTimeRange(start, end)` - Construye rangos legibles para UI
+- `toDateInputValue(value)` - Convierte ISO a `YYYY-MM-DD`
+
 ### `dateUtils.ts`
 Utilidades para manejo de fechas con date-fns:
 - `formatDate(date, format)` - Formatear fecha

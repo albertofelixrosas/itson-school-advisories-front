@@ -9,6 +9,8 @@ import type {
   Subject, 
   AdvisoryRequest, 
   ProfessorAvailability,
+  CreateAvailabilitySlotDto,
+  UpdateAvailabilitySlotDto,
   PaginatedResponse 
 } from '../types';
 
@@ -88,25 +90,8 @@ export async function getMyAvailability(): Promise<ProfessorAvailability[]> {
   return response.data;
 }
 
-/**
- * Create new availability slot
- * Endpoint: POST /professor-availability/slots
- */
-export interface CreateAvailabilityDto {
-  subject_detail_id?: number;
-  day_of_week: string; // 'MONDAY' | 'TUESDAY' | etc.
-  start_time: string; // "HH:MM"
-  end_time: string; // "HH:MM"
-  max_students_per_slot: number;
-  slot_duration_minutes: number;
-  is_recurring: boolean;
-  effective_from?: string;
-  effective_until?: string;
-  notes?: string;
-}
-
 export async function createAvailability(
-  data: CreateAvailabilityDto
+  data: CreateAvailabilitySlotDto
 ): Promise<ProfessorAvailability> {
   const response = await apiClient.post<ProfessorAvailability>('/professor-availability/slots', data);
   return response.data;
@@ -116,26 +101,23 @@ export async function createAvailability(
  * Update availability slot
  * Endpoint: PUT /professor-availability/slots/:id
  */
-export interface UpdateAvailabilityDto {
-  day_of_week?: string;
-  start_time?: string;
-  end_time?: string;
-  max_students_per_slot?: number;
-  slot_duration_minutes?: number;
-  is_recurring?: boolean;
-  is_active?: boolean;
-  notes?: string;
-}
-
 export async function updateAvailability(
   availabilityId: number,
-  data: UpdateAvailabilityDto
+  data: UpdateAvailabilitySlotDto
 ): Promise<ProfessorAvailability> {
   const response = await apiClient.put<ProfessorAvailability>(
     `/professor-availability/slots/${availabilityId}`,
     data
   );
   return response.data;
+}
+
+/**
+ * Deactivate availability slot
+ * Endpoint: DELETE /professor-availability/slots/:id/deactivate
+ */
+export async function deactivateAvailability(availabilityId: number): Promise<void> {
+  await apiClient.delete(`/professor-availability/slots/${availabilityId}/deactivate`);
 }
 
 /**

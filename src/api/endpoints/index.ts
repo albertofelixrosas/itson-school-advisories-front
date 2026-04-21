@@ -13,6 +13,7 @@ export {
 	getMyAvailability,
 	createAvailability,
 	updateAvailability,
+	deactivateAvailability,
 	deleteAvailability,
 } from './professors';
 export {

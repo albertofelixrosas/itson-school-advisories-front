@@ -26,6 +26,14 @@ El módulo **Professor Availability** permite a los profesores gestionar sus hor
 - ✅ Consulta de slots disponibles para reserva
 - ✅ Activación/desactivación de horarios sin eliminarlos
 
+### Estado real del backend actual
+
+- `POST /professor-availability/slots` exige `professor_id` por validación global, aunque el controller lo reemplace con el usuario autenticado.
+- `PUT /professor-availability/slots/:id` no acepta `is_active`; la desactivación oficial es `DELETE /professor-availability/slots/:id/deactivate`.
+- `start_time` y `end_time` pueden volver desde backend como `HH:mm:ss`, no siempre `HH:mm`.
+- `subject_detail` llega aplanado como `{ subject_detail_id, subject_name }`.
+- `current_bookings` y `available_spots` existen en lecturas, pero hoy son placeholders del servicio.
+
 ---
 
 ## Modelo de Datos
@@ -36,10 +44,10 @@ El módulo **Professor Availability** permite a los profesores gestionar sus hor
 interface ProfessorAvailability {
   availability_id: number;
   professor_id: number;
-  subject_detail_id?: number;        // Opcional: para disponibilidad específica de materia
+  subject_detail_id?: number | null; // Opcional: para disponibilidad específica de materia
   day_of_week: WeekDay;              // MONDAY, TUESDAY, etc.
-  start_time: string;                // Formato: "HH:mm" (ej: "09:00")
-  end_time: string;                  // Formato: "HH:mm" (ej: "12:00")
+  start_time: string;                // Backend puede responder "HH:mm" o "HH:mm:ss"
+  end_time: string;                  // Backend puede responder "HH:mm" o "HH:mm:ss"
   max_students_per_slot: number;     // Máximo de estudiantes (1-50)
   slot_duration_minutes: number;     // Duración de cada slot (15-180 minutos)
   is_active: boolean;                // Si el horario está activo
@@ -73,7 +81,7 @@ interface AvailabilitySlotResponse {
   // Campos básicos de la entidad
   availability_id: number;
   professor_id: number;
-  subject_detail_id?: number;
+  subject_detail_id?: number | null;
   day_of_week: WeekDay;
   start_time: string;
   end_time: string;
@@ -166,6 +174,7 @@ Crea un nuevo horario de disponibilidad para el profesor autenticado.
 
 ```typescript
 {
+  "professor_id": 3,                  // Requerido actualmente por ValidationPipe global
   "subject_detail_id": 5,              // Opcional: ID de la materia
   "day_of_week": "MONDAY",             // Día de la semana
   "start_time": "09:00",               // Hora de inicio
@@ -214,11 +223,12 @@ Crea un nuevo horario de disponibilidad para el profesor autenticado.
 #### Validaciones
 
 - ✅ `start_time` y `end_time` deben estar en formato `HH:mm` (24 horas)
-- ✅ `end_time` debe ser mayor que `start_time`
+- ⚠️ El frontend debe validar que `end_time` sea mayor que `start_time`; hoy backend no lo garantiza
 - ✅ `max_students_per_slot`: entre 1 y 50
 - ✅ `slot_duration_minutes`: entre 15 y 180
 - ✅ No puede haber solapamiento con otros horarios del mismo profesor en el mismo día
 - ✅ Si se especifica `subject_detail_id`, debe ser una materia asignada al profesor
+- ⚠️ `effective_until < effective_from` no se valida hoy en backend
 
 ---
 
@@ -421,6 +431,8 @@ GET /professor-availability/my-availability?day_of_week=MONDAY
 
 Mismo formato que el endpoint `/slots`.
 
+**Nota real del controller/service**: este endpoint solo devuelve slots activos y la validación de query es más laxa que en `GET /slots`.
+
 ---
 
 ### 6. Actualizar Slot de Disponibilidad
@@ -477,6 +489,8 @@ Todos los campos son opcionales (solo se actualizan los proporcionados):
 
 Desactiva un horario sin eliminarlo (mantiene el historial).
 
+**Importante**: este es el flujo oficial para apagar un slot. `PUT /slots/:id` no acepta `is_active`.
+
 #### Path Parameters
 
 - `id` (number): ID del slot de disponibilidad
@@ -509,7 +523,9 @@ Status: 200 OK
 
 #### Restricciones
 
-❌ **No se puede eliminar** si existen reservas futuras asociadas al slot.
+⚠️ **Diseño esperado:** no se puede eliminar si existen reservas futuras asociadas al slot.
+
+⚠️ **Implementación actual:** el chequeo de reservas futuras está placeholder y hoy el borrado duro puede proceder.
 
 En ese caso, se recomienda usar el endpoint `/deactivate` en su lugar.
 
